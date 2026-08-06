@@ -50,7 +50,8 @@
           '<div class="team-member-name-wrapper">' +
           '<div class="h6 dark-font-color">' + escapeHtml(vet.nome) + "</div>" +
           '<div class="paragraph dark-grey-color">' + escapeHtml(vet.especialidade) + "</div>" +
-          "</div>" +
+          '</div>' +
+          '<button class="vet-perfil-btn" data-vet="' + index + '" aria-label="Ver perfil de ' + escapeHtml(vet.nome) + '">Ver Perfil</button>' +
           "</div>"
         );
       })
