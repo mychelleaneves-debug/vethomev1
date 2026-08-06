@@ -473,8 +473,8 @@
   padding:10px 16px;
   margin-top:auto;
   background:transparent;
-  color:#25d366;
-  border:1.5px solid #25d366;
+  color:#6B7280;
+  border:1.5px solid #6B7280;
   border-radius:6px;
   font-size:13px;
   font-weight:600;
@@ -485,9 +485,9 @@
 }
 
 .vet-perfil-btn:hover{
-  background:#25d366;
+  background:#6B7280;
   color:#fff;
-  border-color:#25d366;
+  border-color:#6B7280;
 }
 
 .vet-perfil-btn:active{
@@ -495,6 +495,6 @@
 }
 
 .vet-perfil-btn:focus{
-  outline:2px solid #25d366;
+  outline:2px solid #6B7280;
   outline-offset:1px;
 }
