@@ -1,0 +1,134 @@
+[
+  {
+    "nome": "Dra. Lethicia Santos",
+    "especialidade": "Clínica Médica",
+    "crmv": "CRMV-DF 5653",
+    "foto": "assets/vets/lethicia-santos.jpg",
+    "descricao": "Médica Veterinária especialista em pequenos animais. Atendimento humanizado e preventivo no conforto do seu lar. Cuidando de quem você ama com amor, técnica e total segurança!"
+  },
+  {
+    "nome": "Dra. Helena Bambirra",
+    "especialidade": "Clínica Geral e Gastroenterologia",
+    "crmv": "CRMV-DF 5490",
+    "foto": "assets/vets/helena-bambirra.jpg",
+    "descricao": "Atendimento domiciliar especializado, com atuação da Bahia ao Distrito Federal.\n\nComprometida com a excelência na medicina veterinária, oferecendo cuidado individualizado, segurança e bem-estar aos pacientes, além de suporte completo e humanizado aos tutores."
+  },
+  {
+    "nome": "Dra. Ludimila Ladislau",
+    "especialidade": "Cirurgia de Pequenos Animais",
+    "foto": "assets/vets/ludimila-ladislau.jpg",
+    "descricao": "Médica Veterinária formada pela Faculdade ICESP (2018), com residência em Cirurgia de Pequenos Animais pelo Hospital Público Veterinário de Brasília (2020–2022).\n\nApós a residência, atuou como cirurgiã no Hospital Público Veterinário de Brasília (2022–2026), consolidando ampla experiência em procedimentos de média e alta complexidade, além do manejo de casos de urgência e emergência.\n\nPossui pós-graduação em Cirurgia de Tecidos Moles de Pequenos Animais pela Anclivepa Brasília (2024–2025), além de curso intensivo em Técnicas Cirúrgicas pela Anclivepa São Paulo (2025).\n\nCom mais de 6 anos de experiência na área, já realizou mais de 3.000 procedimentos cirúrgicos, atuando em cirurgias eletivas, urgências e emergenciais.\n\nAtende de forma volante nas áreas de clínica médica, cirúrgica, e cirurgia em clínicas parceiras, com ampla vivência em ambiente hospitalar e preparo para situações críticas, sempre com responsabilidade, agilidade e precisão.\n\nSeu trabalho é guiado pelo compromisso com a vida, unindo técnica, ética e sensibilidade, proporcionando um atendimento seguro, humanizado e dedicado a cada paciente."
+  },
+  {
+    "nome": "Dra. Iamylle Carmo",
+    "especialidade": "Ortopedia e Neurologia",
+    "crmv": "CRMV-DF 3992",
+    "foto": "assets/vets/iamylle-carmo.jpg",
+    "descricao": "Médica Veterinária formada pela Universidade de Brasília (UnB), com residência em Clínica Cirúrgica de Pequenos Animais pela mesma instituição.\n\nPossui especialização em Cirurgias Ortopédicas e Neuroespinhais pelo CETAC–UNIP e atualmente cursa Mestrado com ênfase em Neurologia Veterinária na UnB.\n\nAtuou como preceptora de residência na UnB por 1 ano e meio. Atualmente é docente da Universidade Católica de Brasília, ministrando disciplinas de Clínica Cirúrgica e Ortopedia.\n\nRealiza atendimentos volantes nas áreas de Cirurgia Geral, Ortopedia e Neurocirurgia."
+  },
+  {
+    "nome": "Dra. Grasiela Meireles",
+    "especialidade": "Dermatologia e Alergologia",
+    "crmv": "CRMV-DF 5307",
+    "foto": "assets/vets/grasiela-meireles.jpg",
+    "descricao": "Médica-veterinária graduada pelo Centro Universitário de Brasília (UniCEUB) em 2021, com especialização em Dermatologia e Alergologia Veterinária pela Associação Nacional de Clínicos Veterinários de Pequenos Animais de São Paulo (Anclivepa-SP), concluída em 2025.\n\nAtualmente, dedica-se ao atendimento especializado em Dermatologia Veterinária, com foco no diagnóstico, tratamento e acompanhamento de doenças dermatológicas e alérgicas em cães e gatos."
+  },
+  {
+    "nome": "Dra. Júlia Cristina Oliveira da Silva",
+    "especialidade": "Oncologia Veterinária",
+    "crmv": "CRMV-DF 5911",
+    "foto": "assets/vets/julia-cristina.jpg",
+    "descricao": "• Formada na instituição UNICEPLAC em 2023\n• Pós-graduada em Oncologia Veterinária pela Faculdade Qualittas\n• Atua como clínica médica e oncologista no Hospital Veterinário Mais Pet\n• Certificação Feliway – Cat Handling Programme\n• Certificação em Patologia Clínica – Interpretação de Exames Laboratoriais"
+  },
+  {
+    "nome": "Dra. Fernanda Franco dos Santos",
+    "especialidade": "Anestesiologia",
+    "crmv": "CRMV-DF 4889",
+    "foto": "assets/vets/fernanda-franco.jpg",
+    "descricao": "• Formada pela UNICEPLAC em 2020\n• Aprimoramento em anestesiologia de cão e gato pela ANCLIVEPA SP em 2023\n• Cursos intensivos em bloqueios locorregionais\n• Curso intensivo em ventilação mecânica\n• Anestesista no Hospital Veterinário Mais Pet e na Voxel Centro de Diagnóstico Veterinário"
+  },
+  {
+    "nome": "Dra. Débora Euclydes",
+    "especialidade": "Cardiologia",
+    "crmv": "CRMV-DF 2927",
+    "foto": "assets/vets/debora-euclydes.jpg",
+    "descricao": "Formada em medicina veterinária pela Universidade de Brasília (UnB) em 2012, fez mestrado na área de ciência animal pela Universidade de Brasília (UnB) em 2016 e pós-graduação (lato sensu) em Cardiologia Veterinária pela UFAPE em 2024.\n\nAtua no serviço volante de cardiologia veterinária de pequenos animais em diversos hospitais e clínicas do Distrito Federal."
+  },
+  {
+    "nome": "Dr. Neander Oíbio",
+    "especialidade": "Endocrinologia",
+    "crmv": "CRMV-DF 4286",
+    "foto": "assets/vets/endocrinologista.jpg",
+    "descricao": "• Médico Veterinário – Universidade de Brasília (UnB)\n• Mestre em Biologia Microbiana – Universidade de Brasília (UnB)\n• Pós-graduado em Endocrinologia Veterinária – ANCLIVEPA-SP\n• Coordenador e docente do curso de Medicina Veterinária – UNINASSAU Brasília\n• Atuação nas áreas de Endocrinologia Médica de Pequenos Animais, ensino superior e gestão acadêmica"
+  },
+  {
+    "nome": "Dra. Selene Fernandes",
+    "especialidade": "Endocrinologia e Gastroenterologia",
+    "crmv": "CRMV 4126DF",
+    "foto": "assets/vets/selene-fernandes.jpg",
+    "descricao": "Graduada em Medicina Veterinária pela União Pioneira de Integração Social – UPIS.\n\nPós-graduada em Clínica Médica de Pequenos Animais pelo Instituto Qualittas e em Endocrinologia e Metabolismo de Pequenos Animais também pelo Instituto Qualittas.\n\nPossui experiência consolidada com Endocrinologia e Metabolismo desde a graduação, com realização de diversos cursos na área de endocrinologia, reposição hormonal, inibidores de SGLT2 e nutracêuticos orais.\n\nParticipante ativa em congressos nacionais e internacionais, membro da ABEV – Associação Brasileira de Endocrinologia Veterinária, tendo ministrado diversas palestras na área de Endocrinologia.\n\nAtualmente é pós-graduanda em Gastroenterologia Veterinária pelo IEP Ranvier e membro da ABRAGA – Associação Brasileira de Gastroenterologia Animal."
+  },
+  {
+    "nome": "Dr. Fabrício Hugo de Almeida Ferreira",
+    "especialidade": "Emergência e Terapia Intensiva",
+    "crmv": "CRMV-DF 6091",
+    "foto": "assets/vets/fabricio-hugo.jpg",
+    "descricao": "• Médico veterinário formado pela União Pioneira de Integração Social – UPIS\n• Coordenador da ala de internação e unidade de terapia intensiva do Hospital Veterinário +PET\n• Certificação em células-tronco – BioCell\n• Certificação em medicina de emergências, urgência e cuidados intensivos pela LAVECS e Intensivet\n• Certificação Feliway Cat Handling Programme pela International Cat Care\n• Certificação em reanimação cardiopulmonar pela UFAPE"
+  },
+  {
+    "nome": "Dra. Júlia Oliveira",
+    "especialidade": "Clínica Médica, Fisioterapia e Medicina Integrativa",
+    "crmv": "CRMV-DF 5168",
+    "foto": "assets/vets/julia-oliveira.jpg",
+    "descricao": ""
+  },
+  {
+    "nome": "Dr. Flávio Castanhede",
+    "especialidade": "Clínica Cirúrgica",
+    "crmv": "CRMV-DF 4379",
+    "foto": "assets/vets/flavio-castanhede.jpg",
+    "descricao": ""
+  },
+  {
+    "nome": "Dra. Maria Eduarda",
+    "especialidade": "Odontologia",
+    "crmv": "CRMV-DF 4149",
+    "foto": "assets/vets/maria-eduarda.jpg",
+    "descricao": ""
+  },
+  {
+    "nome": "Dr. André Camargo",
+    "especialidade": "Ortopedia",
+    "crmv": "CRMV-DF 5234",
+    "foto": "assets/vets/andre-camargo.jpg",
+    "descricao": "Médico veterinário especialista em ortopedia de pequenos animais. Experiência em fraturas, luxações e lesões articulares. Atendimento domiciliar com diagnóstico por imagem."
+  },
+  {
+    "nome": "Dra. Camila Santos",
+    "especialidade": "Oftalmologia",
+    "crmv": "CRMV-DF 5456",
+    "foto": "assets/vets/camila-santos.jpg",
+    "descricao": "Especialista em doenças oftalmológicas de cães e gatos. Realiza exames completos de visão e tratamento de úlceras de córnea e cataratas. Atendimento em domicílio."
+  },
+  {
+    "nome": "Dr. Ricardo Alves",
+    "especialidade": "Reprodução Animal",
+    "crmv": "CRMV-DF 5378",
+    "foto": "assets/vets/ricardo-alves.jpg",
+    "descricao": "Veterinário reprodutor com experiência em diagnósticos reprodutivos, planejamento de cruzamentos e acompanhamento gestacional. Consultas domiciliares."
+  },
+  {
+    "nome": "Dra. Beatriz Costa",
+    "especialidade": "Acupuntura Veterinária",
+    "crmv": "CRMV-DF 5567",
+    "foto": "assets/vets/beatriz-costa.jpg",
+    "descricao": "Especialista em acupuntura e fitoenergética. Tratamento de dor crônica, problemas articulares e reabilitação. Abordagem integrativa e humanizada."
+  },
+  {
+    "nome": "Dr. Felipe Martins",
+    "especialidade": "Oftalmologia Veterinária",
+    "crmv": "CRMV-DF 5689",
+    "foto": "assets/vets/felipe-martins.jpg",
+    "descricao": "Especialista em afecções oftalmológicas. Realiza cirurgias oculares e diagnósticos complexos. Atendimento domiciliar com equipamento de última geração."
+  }
+]
