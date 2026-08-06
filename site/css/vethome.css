@@ -461,35 +461,40 @@
 }
 
 /* ---------- Botão Ver Perfil nos cards de veterinários ---------- */
+.team-block{
+  display:flex;
+  flex-direction:column;
+  min-height:100%;
+}
+
 .vet-perfil-btn{
   display:block;
   width:100%;
-  padding:12px 20px;
-  margin-top:16px;
-  background:linear-gradient(135deg, #25d366 0%, #1da851 100%);
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  font-size:14px;
+  padding:10px 16px;
+  margin-top:auto;
+  background:transparent;
+  color:#25d366;
+  border:1.5px solid #25d366;
+  border-radius:6px;
+  font-size:13px;
   font-weight:600;
-  letter-spacing:.5px;
+  letter-spacing:.3px;
   cursor:pointer;
-  transition:all .3s ease;
-  box-shadow:0 4px 12px rgba(37, 211, 102, .2);
+  transition:all .25s ease;
   text-transform:uppercase;
 }
 
 .vet-perfil-btn:hover{
-  background:linear-gradient(135deg, #1da851 0%, #158a41 100%);
-  box-shadow:0 6px 20px rgba(37, 211, 102, .3);
-  transform:translateY(-2px);
+  background:#25d366;
+  color:#fff;
+  border-color:#25d366;
 }
 
 .vet-perfil-btn:active{
-  transform:translateY(0);
+  opacity:.9;
 }
 
 .vet-perfil-btn:focus{
-  outline:2px solid rgba(37, 211, 102, .5);
-  outline-offset:2px;
+  outline:2px solid #25d366;
+  outline-offset:1px;
 }
