@@ -690,3 +690,339 @@
     align-items:center;
   }
 }
+/* ==========================================================================
+   MOBILE — adaptação própria, não é o desktop encolhido
+   --------------------------------------------------------------------------
+   Diagnóstico que motivou este bloco (medido em 375x812):
+     página inteira = 24.309px = 30 telas de rolagem.
+     Os 22 cards da página eram verticais (ícone centralizado em cima,
+     título, texto) e custavam 245-305px CADA. O Instagram empilhava 7 fotos
+     de 300px. A equipe empilhava 6 cards de 368px. As seções somavam 180px
+     de padding cada uma.
+   Estratégia: no celular o olho lê em linha, não em bloco. Os cards viram
+   horizontais (ícone à esquerda, texto à direita), o que é o padrão de lista
+   nativa de celular e corta ~60% da altura de cada um. Galeria e equipe
+   deixam de empilhar. Nada é removido — só reorganizado.
+   Tudo aqui vive em max-width:767px. O desktop não é tocado.
+   ========================================================================== */
+
+@media screen and (max-width:767px){
+
+  /* ---------- ritmo geral: menos ar morto entre as seções ---------- */
+  .service-section,
+  .about-section,
+  .feature-section,
+  .team-member-section,
+  .testimonial-section,
+  .instagram-section,
+  .faq-section,
+  .contact-section{
+    padding-top:52px;
+    padding-bottom:52px;
+  }
+
+  /* cabeçalho de seção: era 207px de altura, quase um quarto de tela */
+  .service-heading-wrapper,
+  .feature-heading-wrapper,
+  .testimonial-heading-wrapper,
+  .instagram-container > .h1,
+  .faq-heading-wrapper{
+    row-gap:10px;
+  }
+  .h1{
+    font-size:1.625rem;
+    line-height:2rem;
+    letter-spacing:-.01em;
+  }
+  .service-container{row-gap:34px}
+  .secao-sub{font-size:.9375rem;line-height:1.6}
+  .tag{padding:5px 16px}
+  .upper-heading{font-size:.6875rem;letter-spacing:.14rem}
+
+  /* ---------- cards em lista horizontal ----------
+     O ganho principal da página. Vale para "Por que escolher",
+     "Nossos Serviços" e "O que esperar da consulta".
+     Os passos do "Como funciona" têm numeração própria e são tratados
+     logo abaixo, por isso ficam de fora aqui. */
+  .service-blocks-wrapper{
+    grid-row-gap:14px;
+    grid-column-gap:0;
+  }
+  .service-block:not(.passo-block):not(.parceiro-block){
+    display:grid;
+    grid-template-columns:46px 1fr;
+    grid-template-areas:"ic tt" "ic tx";
+    column-gap:15px;
+    row-gap:4px;
+    align-items:start;
+    justify-content:stretch;
+    text-align:left;
+    max-width:none;
+    width:100%;
+    padding:18px 18px 20px;
+    border-radius:16px;
+  }
+  .service-block:not(.passo-block):not(.parceiro-block) .service-block-icon{
+    grid-area:ic;
+    width:46px;
+    height:46px;
+    margin-bottom:0;
+    object-fit:contain;
+  }
+  .service-block:not(.passo-block):not(.parceiro-block) .h6{
+    grid-area:tt;
+    font-size:1rem;
+    line-height:1.3;
+  }
+  .service-block:not(.passo-block):not(.parceiro-block) .paragraph{
+    grid-area:tx;
+    font-size:.875rem;
+    line-height:1.55;
+  }
+  /* a sombra deslocada de 8px some num card estreito; 5px mantém o efeito */
+  .service-block.shadow{box-shadow:5px 6px 0 0 rgba(21,11,51,.1)}
+
+  /* ---------- Como funciona: o número vira o marcador da linha ---------- */
+  .passos-wrapper{grid-row-gap:12px}
+  .passo-block{
+    display:grid;
+    grid-template-columns:46px 1fr;
+    grid-template-areas:"nu tt" "nu tx";
+    column-gap:15px;
+    row-gap:4px;
+    align-items:start;
+    text-align:left;
+    max-width:none;
+    width:100%;
+    padding:18px 18px 20px;
+    border-radius:16px;
+  }
+  .passo-block .passo-numero{
+    grid-area:nu;
+    position:static;
+    transform:none;
+    width:46px;
+    height:46px;
+    font-size:1.125rem;
+  }
+  /* no celular o ícone e o número diziam a mesma coisa; fica o número */
+  .passo-block .service-block-icon{display:none}
+  .passo-block .h6{grid-area:tt;font-size:1rem;line-height:1.3}
+  .passo-block .paragraph{grid-area:tx;font-size:.875rem;line-height:1.55}
+
+  /* ---------- Diferenciais ---------- */
+  .feature-blocks-wrapper{grid-row-gap:14px}
+  .feature-block-column{grid-row-gap:14px}
+  .feature-block{
+    display:flex;
+    flex-direction:row;
+    grid-column-gap:14px;
+    column-gap:14px;
+    align-items:flex-start;
+    padding:18px;
+    border-radius:16px;
+  }
+  .feature-block-icon{width:44px;height:44px;flex:none}
+  .feature-block .h6{font-size:1rem;line-height:1.3}
+  .feature-block .paragraph{font-size:.875rem;line-height:1.55}
+  .feature-block-text{grid-row-gap:4px}
+  /* a foto decorativa não some, só deixa de ocupar meia tela */
+  .feature-image-wrapper img{max-height:240px;object-fit:cover;width:100%}
+
+  /* ---------- Comparativo ---------- */
+  .comparativo-wrapper{row-gap:16px}
+  .comparativo-block{padding:22px 20px 24px;row-gap:16px;border-radius:16px}
+  .comparativo-header{column-gap:11px}
+  .comparativo-selo{width:32px;height:32px;background-size:16px 16px}
+  .comparativo-header .h6{font-size:1rem}
+  .comparativo-lista{row-gap:10px}
+  .comparativo-lista li{font-size:.875rem;line-height:1.5;padding-left:27px}
+  .comparativo-lista li:before{width:16px;height:16px;top:.2em}
+
+  /* ---------- Equipe: duas colunas em vez de seis cards empilhados ----------
+     Empilhado, cada card custava 368px e a seção inteira quase 4 telas.
+     Em duas colunas a mesma informação cabe em pouco mais de uma tela. */
+  .team-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    column-gap:12px;
+    row-gap:20px;
+  }
+  .team-grid .team-block{
+    padding:16px 10px 14px;
+    border-radius:18px;
+    border-width:2px;
+    row-gap:8px;
+    box-shadow:4px 5px 0 0 rgba(21,11,51,.12);
+  }
+  .team-grid .team-member-image{
+    width:84px;
+    height:84px;
+    margin:0 auto;
+    border-radius:50%;
+    object-fit:cover;
+  }
+  .team-grid .team-member-name-wrapper{row-gap:2px}
+  .team-grid .team-block .h6{font-size:.8125rem;line-height:1.25}
+  .team-grid .team-block .paragraph{font-size:.6875rem;line-height:1.35}
+  .vet-perfil-btn{
+    padding:7px 8px;
+    font-size:.625rem;
+    letter-spacing:.02em;
+    border-width:1px;
+    border-radius:8px;
+  }
+  .team-grid-wrapper{row-gap:26px}
+
+  /* ---------- Depoimentos ---------- */
+  .testimonial-slide-content-wrapper{padding:22px 20px 26px;row-gap:16px;border-radius:20px}
+  .testimonial-image-wrapper img{max-height:210px;object-fit:cover;width:100%}
+  .testimonial-slide-text-wrapper .h4{font-size:1.125rem;line-height:1.3}
+  .testimonial-slide-text-wrapper .paragraph{font-size:.875rem;line-height:1.55}
+  .testimonial-star-widget{transform:scale(.82);transform-origin:left center}
+
+  /* ---------- Instagram: faixa que desliza, não pilha ----------
+     Eram 7 fotos de 300px de altura, 2.709px de decoração pura.
+     Vira uma tira horizontal com encaixe, no gesto natural do polegar. */
+  .instagram-feed-blocks-wrapper{
+    display:flex !important;
+    /* o template vira coluna abaixo de 479px; aqui a tira e horizontal */
+    flex-direction:row !important;
+    grid-template-columns:none !important;
+    grid-template-rows:none !important;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    column-gap:10px;
+    /* sangra até as bordas da tela para indicar que continua */
+    margin-left:-20px;
+    margin-right:-20px;
+    padding:4px 20px;
+  }
+  .instagram-feed-blocks-wrapper::-webkit-scrollbar{display:none}
+  .instagram-feed-block{
+    flex:0 0 auto;
+    width:152px;
+    height:152px;
+    scroll-snap-align:start;
+  }
+  .instagram-feed-block > a,
+  .instagram-feed-block-image{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:14px;
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-ajuda .faq-image{max-width:210px}
+  .faq-ajuda .faq-image-wrapper:before{width:186px;height:186px;bottom:38px}
+  .faq-ajuda .faq-image-wrapper{margin-top:-16px;margin-bottom:-22px}
+  .faq-left-block.faq-ajuda{padding:26px 22px 0}
+  .faq-ajuda .h4{font-size:1.25rem}
+  .faq-ajuda .paragraph{font-size:.875rem}
+
+  /* ---------- Contato ---------- */
+  .contato-acoes{padding:28px 22px;row-gap:10px}
+  .contato-secundario{padding:12px 16px;font-size:.9375rem}
+
+  /* ---------- Rodapé ---------- */
+  .footer-section{padding-top:48px;padding-bottom:34px}
+
+  /* ---------- alvos de toque confortáveis ---------- */
+  .primary-button,
+  .secondary-button,
+  .w-button{min-height:48px;display:inline-flex;align-items:center;justify-content:center}
+  /* alvos que ficavam abaixo dos 40px confortaveis para o polegar */
+  .vet-perfil-btn{min-height:40px}
+  .footer-simples-link{padding-top:6px;padding-bottom:8px;display:inline-block}
+  .contato-secundario{min-height:44px;display:flex;align-items:center;justify-content:center}
+}
+
+/* ==========================================================================
+   Atalho fixo do WhatsApp — só no celular
+   Os CTAs da página ficavam presos dentro das seções: em 30 telas de
+   rolagem, na maior parte do tempo não havia nenhum botão à mão. Este fica
+   sempre na zona do polegar, no canto inferior direito.
+   ========================================================================== */
+.zap-fixo{display:none}
+
+@media screen and (max-width:767px){
+  .zap-fixo{
+    position:fixed;
+    right:16px;
+    bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index:900;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    column-gap:9px;
+    height:52px;
+    padding:0 20px;
+    background-color:#25d366;
+    color:var(--white);
+    border-radius:999px;
+    font-size:.9375rem;
+    font-weight:700;
+    text-decoration:none;
+    box-shadow:0 6px 20px rgba(21,11,51,.28);
+  }
+  .zap-fixo svg{flex:none}
+  .zap-fixo:active{background-color:#1da851}
+  .zap-fixo:focus-visible{outline:3px solid var(--dark);outline-offset:3px}
+  /* espaço para o botão não cobrir o fim do rodapé */
+  .footer-section{padding-bottom:96px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .instagram-feed-blocks-wrapper{scroll-behavior:auto}
+}
+
+/* ==========================================================================
+   TABLET (768-991px)
+   Aqui o problema e o oposto do celular: sobra largura e ela nao era usada.
+   O template empilha os cards em uma coluna so, entao a pagina ficava tao
+   longa quanto no celular (23.786px) com metade da tela vazia dos lados.
+   Solucao: duas colunas. Os cards continuam verticais, como no desktop.
+   ========================================================================== */
+@media screen and (min-width:768px) and (max-width:991px){
+  .service-section,
+  .about-section,
+  .feature-section,
+  .team-member-section,
+  .testimonial-section,
+  .instagram-section,
+  .faq-section,
+  .contact-section{
+    padding-top:70px;
+    padding-bottom:70px;
+  }
+
+  .service-blocks-wrapper{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-column-gap:22px;
+    grid-row-gap:26px;
+    align-items:stretch;
+  }
+  .service-blocks-wrapper .service-block{max-width:none;width:100%}
+  /* os passos sao tres: em duas colunas sobraria um orfao */
+  .passos-wrapper{grid-template-columns:repeat(3,minmax(0,1fr));grid-column-gap:18px}
+
+  .team-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    column-gap:26px;
+    row-gap:34px;
+  }
+  .team-grid .team-member-image{
+    width:130px;
+    height:130px;
+    margin:0 auto;
+    border-radius:50%;
+    object-fit:cover;
+  }
+
+  .comparativo-block{flex-basis:100%}
+  .h1{font-size:2.25rem;line-height:2.6rem}
+}
