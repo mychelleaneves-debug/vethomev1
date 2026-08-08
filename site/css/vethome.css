@@ -228,6 +228,101 @@
 .secao-como{background-color:#f0f4f5}
 .secao-esperar{background-color:var(--white)}
 
+/* ---------- Comparativo: antes x com a VetHome ----------
+   Dois cards do mesmo tamanho, com a borda, o raio e a sombra deslocada do
+   template (.shadow + *-shadow). O que muda aqui é só o texto alinhado à
+   esquerda e a lista com marcador de ✕ / ✓. */
+.secao-comparativo{background-color:var(--light-blue)}
+
+.comparativo-wrapper{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:stretch;
+  column-gap:55px;
+  row-gap:75px;
+  width:100%;
+}
+
+.comparativo-block{
+  background-color:var(--white);
+  flex:1 1 420px;
+  max-width:470px;
+  padding:42px 44px 46px;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  row-gap:26px;
+}
+
+.comparativo-header{
+  display:flex;
+  align-items:center;
+  column-gap:14px;
+}
+.comparativo-header .h6{margin:0}
+
+/* selo redondo com o mesmo traço dos ícones do template */
+.comparativo-selo{
+  flex:none;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background-color:#fdeae3;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:19px 19px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23e8613a' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M5 5l10 10M15 5L5 15'/%3E%3C/svg%3E");
+}
+.comparativo-selo.depois{
+  background-color:#e4f8ea;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%231da851' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 10.6 4.2 4.2L16 5.4'/%3E%3C/svg%3E");
+}
+
+.comparativo-lista{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  row-gap:14px;
+}
+.comparativo-lista li{
+  position:relative;
+  padding-left:32px;
+  color:var(--dark-grey);
+  font-size:1rem;
+  line-height:1.6;
+}
+.comparativo-lista li:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.34em;
+  width:18px;
+  height:18px;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23e8613a' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M5 5l10 10M15 5L5 15'/%3E%3C/svg%3E");
+}
+.comparativo-lista.depois li:before{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%231da851' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 10.6 4.2 4.2L16 5.4'/%3E%3C/svg%3E");
+}
+
+/* as sombras coloridas do template já existem; aqui só o par usado */
+.comparativo-block.shadow.orange-shadow{box-shadow:8px 9px #fc886480}
+.comparativo-block.shadow.green-shadow{box-shadow:8px 9px #97f59780}
+
+@media screen and (max-width:991px){
+  .comparativo-block{flex-basis:100%;max-width:520px}
+}
+@media screen and (max-width:767px){
+  .comparativo-block{padding:34px 26px 38px}
+}
+
+
+
 /* subtítulo abaixo do H2, na largura de leitura confortável */
 .secao-sub{
   max-width:56ch;
@@ -497,4 +592,101 @@
 .vet-perfil-btn:focus{
   outline:2px solid #6B7280;
   outline-offset:1px;
+}
+
+/* ==========================================================================
+   Rodapé enxuto
+   Substitui o rodapé do template (newsletter, quick links em inglês, ícones
+   sociais genéricos e os créditos Pebo/Webflow). Mantém o fundo, o container
+   e a tipografia do template — só o conteúdo muda.
+   ========================================================================== */
+.footer-simples{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  row-gap:22px;
+  width:100%;
+}
+
+.footer-simples-logo{
+  width:190px;
+  height:auto;
+}
+
+.footer-simples-tagline{
+  max-width:46ch;
+  margin:0;
+  color:var(--white);
+  font-size:1rem;
+  line-height:1.7;
+  opacity:.85;
+}
+
+.footer-simples-links{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:10px 34px;
+  margin-top:2px;
+}
+
+.footer-simples-link{
+  color:var(--white);
+  font-size:1rem;
+  font-weight:700;
+  text-decoration:none;
+  padding-bottom:3px;
+  border-bottom:2px solid rgba(255,255,255,.25);
+  transition:border-color .2s ease,color .2s ease;
+}
+.footer-simples-link:hover{
+  border-bottom-color:var(--orange);
+  color:var(--orange);
+}
+.footer-simples-link:focus-visible{
+  outline:3px solid var(--white);
+  outline-offset:4px;
+}
+
+.footer-simples-divider{
+  width:100%;
+  height:1px;
+  background-color:rgba(255,255,255,.2);
+  margin-top:16px;
+}
+
+.footer-simples-copy{
+  margin:0;
+  color:var(--white);
+  font-size:.875rem;
+  opacity:.65;
+}
+
+@media screen and (max-width:767px){
+  .footer-simples{row-gap:18px}
+  .footer-simples-logo{width:152px}
+  .footer-simples-links{gap:10px 20px}
+  .footer-simples-link{font-size:.9375rem}
+}
+
+/* ==========================================================================
+   Depoimentos: todos os cards com a mesma altura
+   O slider dimensiona a moldura pelo slide mais alto. Sem isto, o depoimento
+   mais longo esticava a moldura e nos outros sobrava um vao vazio embaixo,
+   com a seta solta longe do conteudo.
+   O texto foi levemente reduzido para o depoimento mais longo caber em uma
+   caixa menor - 624px em vez dos 756px que ele pedia no tamanho original.
+   ========================================================================== */
+.testimonial-slide-text-wrapper .paragraph{
+  font-size:.9375rem;
+  line-height:1.6;
+}
+
+@media screen and (min-width:992px){
+  .testimonial-slide-content-wrapper{
+    min-height:624px;
+    align-items:center;
+  }
 }

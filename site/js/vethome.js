@@ -1,12 +1,12 @@
 /* ==========================================================================
    VetHome — seção de veterinários
-   Lê data/veterinarios.json, mostra 9 por página em grade 3x3 e abre um
+   Lê data/veterinarios.json, mostra 6 por página em grade 3x2 e abre um
    modal com a descrição ao clicar no card. A descrição NÃO aparece no card.
    ========================================================================== */
 (function () {
   "use strict";
 
-  var PER_PAGE = 9;
+  var PER_PAGE = 6;
   var SHADOWS = ["purple-shadow", "orange-shadow", "yellow-shadow"];
 
   var grid = document.getElementById("vetGrid");
