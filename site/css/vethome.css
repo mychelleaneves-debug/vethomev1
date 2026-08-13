@@ -413,6 +413,15 @@
   height:auto;
 }
 
+/* O selo da Farmina esta no tamanho nativo (138x120), entao nao da para
+   aumentar sem borrar. Quem cede e a Avert: um disco vermelho chapado pesa
+   mais no olho que um selo azul-e-branco de contorno fino, mesmo ocupando
+   area parecida. 104px equilibra os dois. */
+.parceiro-logo img.parceiro-logo-solido{
+  max-width:104px;
+  max-height:104px;
+}
+
 /* ==========================================================================
    Contato: o formulário deu lugar aos canais diretos
    ========================================================================== */
