@@ -130,5 +130,11 @@
     "crmv": "CRMV-DF 5689",
     "foto": "assets/vets/felipe-martins.jpg",
     "descricao": "Especialista em afecções oftalmológicas. Realiza cirurgias oculares e diagnósticos complexos. Atendimento domiciliar com equipamento de última geração."
+  },
+  {
+    "nome": "Dra. Maira Freitas",
+    "especialidade": "Médica-Veterinária",
+    "crmv": "CRMV-DF 5615",
+    "foto": "assets/vets/maira-freitas.jpg"
   }
 ]
