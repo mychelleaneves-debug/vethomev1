@@ -398,7 +398,22 @@
 /* os dois cards com a mesma altura: o nome da Avert ocupa duas linhas e o
    da Farmina uma so, entao sem isto um card ficava mais baixo que o outro */
 .parceiros-wrapper{align-items:stretch}
-.parceiro-block{width:100%}
+.parceiro-block{
+  width:100%;
+  /* o template centraliza o conteudo na vertical. Com os cards forcados a
+     ter a mesma altura, o card de texto mais longo subia o bloco inteiro e
+     nada alinhava entre os dois. Ancorado no topo, logo e titulo comecam
+     na mesma linha. */
+  justify-content:flex-start;
+}
+
+/* Lado a lado, o nome da Farmina cabe em uma linha e o da Avert precisa
+   de duas, entao os paragrafos comecavam em alturas diferentes. Reservar
+   duas linhas (2 x 35px de line-height) alinha os dois. Empilhados no
+   celular isso nao faz falta e so criaria um vazio, por isso o min-width. */
+@media screen and (min-width:768px){
+  .parceiro-block .h6{min-height:70px}
+}
 
 .parceiro-logo{
   display:flex;
