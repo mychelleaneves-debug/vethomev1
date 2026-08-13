@@ -20,6 +20,12 @@
   column-gap:60px;
   row-gap:76px; /* 60px do template + 16px da sombra deslocada */
   justify-content:center;
+  /* O JS trava uma altura minima na grade para a pagina nao pular ao trocar
+     de pagina. Sem isto, na ultima pagina — que tem menos cards e portanto
+     menos linhas — a linha unica esticava para preencher essa altura e os
+     cards dobravam de tamanho. align-content mantem as linhas na altura
+     natural e deixa a sobra embaixo. */
+  align-content:start;
   width:100%;
 }
 
