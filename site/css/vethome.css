@@ -391,8 +391,13 @@
    ========================================================================== */
 .secao-parcerias{background-color:#f0f4f5}
 
-.parceiros-wrapper{max-width:420px;margin:0 auto}
+/* era 420px, a largura de um parceiro so. 880px acomoda dois lado a lado
+   (370px de card + 55px de gap do template) e continua centralizando. */
+.parceiros-wrapper{max-width:880px;margin:0 auto}
 
+/* os dois cards com a mesma altura: o nome da Avert ocupa duas linhas e o
+   da Farmina uma so, entao sem isto um card ficava mais baixo que o outro */
+.parceiros-wrapper{align-items:stretch}
 .parceiro-block{width:100%}
 
 .parceiro-logo{
