@@ -202,3 +202,140 @@
         '<p class="paragraph dark-grey-color">Não foi possível carregar a equipe agora. Recarregue a página.</p>';
     });
 })();
+
+/* ==========================================================================
+   VetHome — depoimentos no celular
+   No celular o CSS transforma o slider do template em uma faixa que desliza
+   no dedo. Este trecho cuida das duas peças que o CSS não resolve:
+     - as bolinhas que dizem quantos depoimentos existem e onde você está
+     - o "ler mais" dos depoimentos longos, para o card não virar parede
+   Acima de 767px nada disso roda: lá o slider do template segue intacto.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  var CELULAR = "(max-width:767px)";
+  var LINHAS = 6; /* precisa bater com o -webkit-line-clamp do CSS */
+
+  var mask = document.querySelector(".testimonial-slider-mask");
+  var slider = document.querySelector(".testimonial-slider");
+  if (!mask || !slider) return;
+
+  var slides = Array.prototype.slice.call(mask.querySelectorAll(".testimonial-slide"));
+  if (slides.length < 2) return;
+
+  var dots = null;
+  var montado = false;
+
+  /* ---------- "ler mais" ---------- */
+  function montarLerMais() {
+    slides.forEach(function (slide) {
+      var p = slide.querySelector(".testimonial-slide-text-wrapper .paragraph");
+      var wrapper = slide.querySelector(".testimonial-slide-text-wrapper");
+      if (!p || !wrapper || slide.querySelector(".dep-mais")) return;
+
+      /* só ganha botão quem realmente foi cortado */
+      if (p.scrollHeight <= p.clientHeight + 2) return;
+
+      var botao = document.createElement("button");
+      botao.type = "button";
+      botao.className = "dep-mais";
+      botao.textContent = "ler mais";
+      botao.setAttribute("aria-expanded", "false");
+
+      botao.addEventListener("click", function () {
+        var aberto = slide.classList.toggle("dep-aberto");
+        botao.textContent = aberto ? "ler menos" : "ler mais";
+        botao.setAttribute("aria-expanded", aberto ? "true" : "false");
+      });
+
+      /* entra logo depois do texto, antes da assinatura */
+      var assinatura = wrapper.querySelector(".reviewer-details");
+      if (assinatura) wrapper.insertBefore(botao, assinatura);
+      else wrapper.appendChild(botao);
+    });
+  }
+
+  function removerLerMais() {
+    mask.querySelectorAll(".dep-mais").forEach(function (b) { b.remove(); });
+    slides.forEach(function (s) { s.classList.remove("dep-aberto"); });
+  }
+
+  /* ---------- bolinhas ---------- */
+  function montarDots() {
+    if (dots) return;
+    dots = document.createElement("ul");
+    dots.className = "dep-dots";
+
+    slides.forEach(function (slide, i) {
+      var li = document.createElement("li");
+      var b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-label", "Ver depoimento " + (i + 1) + " de " + slides.length);
+      b.setAttribute("aria-current", i === 0 ? "true" : "false");
+      b.addEventListener("click", function () {
+        mask.scrollTo({ left: slide.offsetLeft - mask.offsetLeft, behavior: "smooth" });
+      });
+      li.appendChild(b);
+      dots.appendChild(li);
+    });
+
+    slider.parentNode.insertBefore(dots, slider.nextSibling);
+    mask.addEventListener("scroll", aoRolar, { passive: true });
+  }
+
+  function removerDots() {
+    if (!dots) return;
+    mask.removeEventListener("scroll", aoRolar);
+    dots.remove();
+    dots = null;
+  }
+
+  /* qual card está mais perto do centro da faixa */
+  var agendado;
+  function aoRolar() {
+    if (agendado) return;
+    agendado = requestAnimationFrame(function () {
+      agendado = null;
+      if (!dots) return;
+      var centro = mask.scrollLeft + mask.clientWidth / 2;
+      var maisPerto = 0;
+      var menorDist = Infinity;
+      slides.forEach(function (s, i) {
+        var meio = s.offsetLeft - mask.offsetLeft + s.offsetWidth / 2;
+        var d = Math.abs(meio - centro);
+        if (d < menorDist) { menorDist = d; maisPerto = i; }
+      });
+      Array.prototype.forEach.call(dots.querySelectorAll("button"), function (b, i) {
+        b.setAttribute("aria-current", i === maisPerto ? "true" : "false");
+      });
+    });
+  }
+
+  /* ---------- liga e desliga conforme a largura ---------- */
+  function aplicar() {
+    var celular = window.matchMedia(CELULAR).matches;
+    if (celular && !montado) {
+      montarDots();
+      montarLerMais();
+      montado = true;
+    } else if (!celular && montado) {
+      removerDots();
+      removerLerMais();
+      montado = false;
+    }
+  }
+
+  /* o clamp só mede certo depois das fontes carregarem */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(aplicar);
+  }
+  aplicar();
+  window.addEventListener("load", aplicar);
+
+  var redimensionar;
+  window.addEventListener("resize", function () {
+    clearTimeout(redimensionar);
+    redimensionar = setTimeout(aplicar, 200);
+  });
+})();

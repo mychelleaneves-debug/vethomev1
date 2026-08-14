@@ -1207,3 +1207,203 @@
      Esta faixa abre espaco proprio para elas, abaixo do card. */
   .testimonial-slider{padding-bottom:76px}
 }
+
+/* ==========================================================================
+   MOBILE — terceira rodada: marca, hero e depoimentos
+   ========================================================================== */
+
+@media screen and (max-width:767px){
+
+  /* ---------- 1. A LOGO ----------
+     Ela nao estava so pequena: estava DISTORCIDA. O template fixa
+     height:35px e eu tinha dado width:150px. Como o arquivo tem 444x174
+     (proporcao 2,55) e o object-fit e contain, a arte real aparecia com
+     89x35 dentro de uma caixa de 150px -- quase metade do espaco vazio.
+     Tirando a altura fixa, a altura passa a seguir a largura e a arte
+     ocupa a caixa inteira. */
+  .navbar .logo{
+    width:168px;
+    max-width:168px;
+    height:auto;
+    max-height:none;
+  }
+  /* a barra tinha 75px fixos; com a marca em 66px sobravam 5px de cada
+     lado. Passa a acompanhar o conteudo. */
+  .navbar{height:auto;min-height:88px}
+  .navbar .nav-container{padding-top:11px;padding-bottom:11px}
+
+  /* ---------- 2. HERO: marca > servico > beneficio > acao ----------
+     O titulo vinha em 41,6px fixos, largo demais para 320px, e os blocos
+     tinham respiros de tamanhos diferentes. Agora o corpo acompanha a
+     largura da tela e o ritmo entre os blocos e constante. */
+  .hero-section .display{
+    font-size:clamp(1.9rem, 8.6vw, 2.5rem);
+    line-height:1.12;
+    letter-spacing:-.015em;
+    margin-bottom:0;
+  }
+  .hero-text-wrapper{row-gap:18px}
+  .hero-para-wrapper{margin:0}
+  .hero-section .paragraph-big{
+    font-size:1rem;
+    line-height:1.6;
+  }
+  /* a linha do telefone e prova de proximidade, nao um bloco a parte */
+  .hero-section .phone-link{
+    margin:0;
+    column-gap:10px;
+  }
+  .hero-section .phone-link .h6{font-size:.9375rem;line-height:1.35}
+  .hero-section .phone-icon{width:22px;height:22px}
+  .hero-container{row-gap:22px}
+
+  /* ==========================================================================
+     3. DEPOIMENTOS — carrossel que desliza no dedo
+     Antes: um card de 810px de altura por vez, texto corrido de ate 656
+     caracteres, e a moldura do slider dimensionada pelo depoimento mais
+     longo. No celular isso vira uma parede de texto.
+     Agora: cards lado a lado que deslizam no gesto natural, com a foto do
+     pet em destaque, as estrelas, o texto recolhido em 6 linhas com "ler
+     mais" e o nome do tutor. Nenhuma palavra foi removida -- o texto
+     completo continua a um toque.
+     ========================================================================== */
+  .testimonial-slider{
+    height:auto !important;
+    padding-bottom:0;
+    overflow:visible;
+  }
+  .testimonial-slider-mask{
+    display:flex !important;
+    height:auto !important;
+    overflow-x:auto;
+    overflow-y:visible;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    column-gap:14px;
+    /* sangra ate as bordas: o proximo card espia e convida ao gesto */
+    margin-left:-20px;
+    margin-right:-20px;
+    padding:6px 20px 10px;
+    white-space:normal;
+  }
+  .testimonial-slider-mask::-webkit-scrollbar{display:none}
+
+  .testimonial-slide{
+    position:static !important;
+    transform:none !important;
+    opacity:1 !important;
+    display:block !important;
+    float:none !important;
+    /* largura da tela menos a espiada do proximo card */
+    flex:0 0 calc(100vw - 76px);
+    width:auto !important;
+    margin:0 !important;
+    scroll-snap-align:center;
+  }
+
+  .testimonial-slide-content-wrapper{
+    min-height:0;
+    height:100%;
+    justify-content:flex-start;
+    row-gap:14px;
+    padding:16px 16px 20px;
+    border-radius:22px;
+  }
+
+  /* a foto do pet ganha o topo do card, larga e recortada */
+  .testimonial-image-container{width:100%}
+  .testimonial-image-wrapper{width:100%;border-radius:16px;overflow:hidden}
+  .testimonial-image-wrapper img{
+    width:100%;
+    height:186px;
+    object-fit:cover;
+    display:block;
+  }
+  .testimonial-star-widget{margin:12px 0 0}
+  .testimonial-star-widget svg{width:104px}
+
+  .testimonial-slide-text-wrapper{row-gap:8px}
+  .testimonial-slide-text-wrapper .h4{
+    font-size:1.0625rem;
+    line-height:1.28;
+  }
+  /* recolhido em 6 linhas; o botao abaixo abre o restante */
+  .testimonial-slide-text-wrapper .paragraph{
+    font-size:.875rem;
+    line-height:1.55;
+    display:-webkit-box;
+    -webkit-line-clamp:6;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .testimonial-slide.dep-aberto .testimonial-slide-text-wrapper .paragraph{
+    -webkit-line-clamp:unset;
+    overflow:visible;
+  }
+  .dep-mais{
+    align-self:flex-start;
+    margin-top:2px;
+    padding:0;
+    border:none;
+    background:none;
+    font-size:.8125rem;
+    font-weight:700;
+    text-decoration:underline;
+    text-underline-offset:3px;
+    cursor:pointer;
+    color:inherit;
+    opacity:.85;
+  }
+  .dep-mais:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+  .reviewer-details{margin-top:2px}
+  .reviewer-details .h6{font-size:1rem}
+  .reviewer-details .paragraph-big{font-size:.875rem}
+
+  /* as setas do template nao servem a um carrossel de gesto */
+  .testimonial-slider .slider-arrow{display:none !important}
+
+  /* bolinhas: quantos depoimentos existem e onde voce esta */
+  .dep-dots{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    column-gap:7px;
+    margin-top:16px;
+    padding:0;
+    list-style:none;
+  }
+  .dep-dots button{
+    width:8px;
+    height:8px;
+    padding:0;
+    border:none;
+    border-radius:999px;
+    background:rgba(21,11,51,.22);
+    cursor:pointer;
+    transition:width .2s ease,background .2s ease;
+  }
+  .dep-dots button[aria-current="true"]{width:24px;background:var(--dark)}
+  .dep-dots button:focus-visible{outline:2px solid var(--dark);outline-offset:3px}
+
+  /* ---------- 4. Hierarquia e respiro ---------- */
+  /* a barra fixa ficou mais alta com a marca maior */
+  section,
+  .anchor-div,
+  [id]{scroll-margin-top:104px}
+
+  /* titulos de secao acompanham a largura da tela em vez de um valor fixo */
+  .h1{font-size:clamp(1.5rem, 6.6vw, 1.75rem)}
+
+  /* o botao flutuante ja existia; aqui so garante que nunca encoste na
+     borda inferior do iPhone nem cubra o fim do rodape */
+  .zap-fixo{bottom:calc(16px + env(safe-area-inset-bottom, 0px))}
+  .footer-section{padding-bottom:calc(92px + env(safe-area-inset-bottom, 0px))}
+}
+
+/* telas bem estreitas: o card do carrossel ganha quase a tela toda */
+@media screen and (max-width:360px){
+  .testimonial-slide{flex-basis:calc(100vw - 58px)}
+  .testimonial-image-wrapper img{height:168px}
+  .navbar .logo{width:148px;max-width:148px}
+}
