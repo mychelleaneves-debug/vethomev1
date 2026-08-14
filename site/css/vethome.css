@@ -1088,3 +1088,122 @@
     width:100%;
   }
 }
+/* ==========================================================================
+   MOBILE — segunda rodada de ajustes
+   Cada bloco abaixo corrige um ponto observado no iPhone.
+   ========================================================================== */
+
+@media screen and (max-width:767px){
+
+  /* ---------- 1. a faixa cinza depois do hero ----------
+     A seção do hero tinha 140px de padding embaixo. A foto terminava em
+     700px e a seção ia até 849px: 149px de cinza vazio, que na tela do
+     celular viravam quase um quarto de tela sem nada. */
+  .hero-section{padding-bottom:18px}
+
+  /* ---------- 2. a moça boiando no azul dos Diferenciais ----------
+     Eu tinha limitado a foto a 240px de altura com object-fit:cover, o que
+     cortava a moça na altura do peito e deixava o azul sobrando embaixo.
+     Agora a foto aparece inteira, na proporção dela (374x495), e encosta
+     na borda da seção — sem faixa vazia. */
+  .feature-image-wrapper img{
+    max-height:none;
+    object-fit:contain;
+    width:100%;
+    height:auto;
+    display:block;
+  }
+  .feature-section{padding-bottom:0}
+  .feature-image-wrapper{margin-bottom:-4px}
+
+  /* ---------- 3. as estrelas em cima do texto ----------
+     No desktop as estrelas flutuam sobre o canto da foto, onde há espaço.
+     No celular a foto é estreita e elas caíam por cima do título. Aqui
+     saem do posicionamento absoluto e entram no fluxo, centradas entre a
+     foto e o título. */
+  .testimonial-star-widget{
+    position:static;
+    transform:none;
+    display:flex;
+    justify-content:center;
+    margin:16px 0 4px;
+    inset:auto;
+  }
+  .testimonial-image-container{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:static;
+  }
+  .testimonial-star-widget svg{width:118px;height:auto}
+
+  /* ---------- 4. a seta solta embaixo do depoimento ----------
+     O slider dimensiona a moldura pelo depoimento mais alto. O da Viviane
+     tinha 791px contra 541px do mais curto, então nos outros sobravam até
+     250px de vazio e a seta ficava boiando longe do card.
+     Texto um pouco mais justo derruba o mais alto, e a altura mínima
+     iguala todos: a seta encosta no card em qualquer depoimento. */
+  .testimonial-slide-text-wrapper .paragraph{
+    font-size:.8125rem;
+    line-height:1.5;
+  }
+  .testimonial-slide-content-wrapper{
+    min-height:810px;
+    /* o template usa space-between, que com a altura fixa abria um buraco
+       entre a foto e o texto; centralizado, a sobra se divide em cima e
+       embaixo e o card fica arejado em vez de furado */
+    justify-content:center;
+  }
+  .testimonial-slider .slider-arrow{
+    border-width:2px;
+    background-color:var(--white);
+  }
+
+  /* ---------- 5. o "Entre em contato" repetido ----------
+     Logo acima já existe o bloco com WhatsApp, telefone, Instagram e
+     e-mail em botões clicáveis. Este segundo bloco repetia os mesmos
+     quatro dados, só que como texto. No celular, repetir custa uma tela
+     inteira de rolagem. */
+  .contact-text-wrapper{display:none}
+
+  /* ---------- 6. logo maior ---------- */
+  .navbar .logo{width:150px;max-width:150px}
+
+  /* ==========================================================================
+     7. Ajustes de experiência — o que ajuda o tutor a fechar
+     ========================================================================== */
+
+  /* O botão flutuante era uma pílula de 128px e cobria texto em boa parte
+     das telas. Vira um círculo só com o ícone: o verde do WhatsApp já diz
+     o que é, e a área coberta cai para menos de um terço. */
+  .zap-fixo{
+    width:58px;
+    height:58px;
+    padding:0;
+    column-gap:0;
+    font-size:0;
+    right:14px;
+    bottom:calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+  .zap-fixo svg{width:27px;height:27px}
+  .footer-section{padding-bottom:88px}
+
+  /* A barra de navegação é fixa e cobria o título da seção quando se
+     chega por um link do menu. Agora a seção para abaixo dela. */
+  section,
+  .anchor-div,
+  [id]{scroll-margin-top:88px}
+
+  /* O primeiro botão é o que mais converte: ganha largura total e passa a
+     ser o elemento mais evidente da primeira tela. */
+  .hero-text-wrapper .primary-button{
+    width:100%;
+    text-align:center;
+    font-size:1rem;
+  }
+
+  /* As setas sao posicionadas no rodape do slider. Com o card ocupando a
+     moldura inteira, elas caiam em cima do nome de quem deu o depoimento.
+     Esta faixa abre espaco proprio para elas, abaixo do card. */
+  .testimonial-slider{padding-bottom:76px}
+}
