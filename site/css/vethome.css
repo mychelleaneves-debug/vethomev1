@@ -1040,6 +1040,8 @@
     grid-column-gap:22px;
     grid-row-gap:26px;
     align-items:stretch;
+    /* iguala tambem as linhas entre si, nao so os cards de cada linha */
+    grid-auto-rows:1fr;
   }
   .service-blocks-wrapper .service-block{max-width:none;width:100%}
   /* os passos sao tres: em duas colunas sobraria um orfao */
@@ -1060,4 +1062,29 @@
 
   .comparativo-block{flex-basis:100%}
   .h1{font-size:2.25rem;line-height:2.6rem}
+}
+
+/* ==========================================================================
+   Cards de servico com a mesma altura
+   O template usa flex com align-items:flex-start, entao cada card ficava
+   com a altura do proprio texto: variavam de 316 a 351px na mesma secao.
+   Em grade, align-items:stretch iguala os cards de uma mesma linha e
+   grid-auto-rows:1fr iguala as linhas entre si -- todos ficam do tamanho
+   do maior. As colunas seguem em 370px, a mesma medida de antes.
+   Vale para: Por que escolher / Nossos Servicos / O que esperar.
+   Fora: os passos do Como funciona (tem numeracao e sao tres) e as
+   parcerias (ja tem tratamento proprio).
+   ========================================================================== */
+@media screen and (min-width:992px){
+  .service-blocks-wrapper:not(.passos-wrapper):not(.parceiros-wrapper){
+    display:grid;
+    grid-template-columns:repeat(3,370px);
+    grid-auto-rows:1fr;
+    justify-content:center;
+    align-items:stretch;
+  }
+  .service-blocks-wrapper:not(.passos-wrapper):not(.parceiros-wrapper) .service-block{
+    max-width:none;
+    width:100%;
+  }
 }
