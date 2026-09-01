@@ -249,7 +249,7 @@
     "foto": "assets/vets/beatriz-costa.jpg",
     "descricao": "Especialista em acupuntura e fitoenergética. Tratamento de dor crônica, problemas articulares e reabilitação. Abordagem integrativa e humanizada.",
     "areas": [],
-    "status": "ativo",
+    "status": "inativo",
     "ordem": 18,
     "slug": "dra-beatriz-costa"
   },
