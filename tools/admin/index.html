@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Equipe VetHome — painel</title>
+<title>VetHome — painel</title>
 <style>
   :root{
     --verde:#BCE6AA; --teal:#59AABF; --verde-escuro:#4C722F;
     --escuro:#150B33; --cinza:#6b7280; --fundo:#F0F4F5;
-    --borda:#dfe5e8; --erro:#c0392b; --ok:#1da851;
+    --borda:#dfe5e8; --erro:#c0392b; --ok:#1da851; --alerta:#b7791f;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{
@@ -17,12 +17,13 @@
   }
   .topo{
     background:#fff; border-bottom:1px solid var(--borda);
-    padding:16px 20px; display:flex; align-items:center; gap:16px;
+    padding:16px 20px; display:flex; align-items:center; gap:12px;
     position:sticky; top:0; z-index:10;
   }
-  .topo h1{font-size:1.0625rem; font-weight:700; flex:1}
+  .topo h1{font-size:1.0625rem; font-weight:700; flex:1; min-width:0}
   .topo .sub{color:var(--cinza); font-size:.8125rem; font-weight:400; display:block}
   .container{max-width:900px; margin:0 auto; padding:24px 20px 80px}
+  .container.largo{max-width:1180px}
 
   button{font:inherit; cursor:pointer; border:none; border-radius:10px}
   .btn{
@@ -33,6 +34,8 @@
   .btn.secundario{background:#fff; color:var(--escuro); border:1.5px solid var(--borda)}
   .btn.grande{width:100%; padding:15px; font-size:1rem}
   .btn.verde{background:var(--ok)}
+  .btn.perigo{background:var(--erro)}
+  .btn.pequeno{padding:7px 12px; font-size:.8125rem; border-radius:8px}
   .btn:disabled{opacity:.5; cursor:default}
 
   input,textarea,select{
@@ -44,6 +47,31 @@
   label{display:block; font-weight:600; font-size:.875rem; margin-bottom:6px}
   .ajuda{font-weight:400; color:var(--cinza); font-size:.8125rem; margin-top:5px}
   .campo{margin-bottom:20px}
+  .campo.curto{margin-bottom:14px}
+
+  /* ---------- casca com menu lateral ---------- */
+  .app{display:flex; min-height:100vh}
+  .lateral{
+    width:238px; flex:none; background:#fff; border-right:1px solid var(--borda);
+    position:sticky; top:0; height:100vh; overflow-y:auto; padding:18px 0 30px;
+  }
+  .marca{padding:0 20px 16px; font-weight:800; font-size:1rem; letter-spacing:-.01em}
+  .marca span{display:block; font-weight:400; font-size:.75rem; color:var(--cinza)}
+  .grupo{
+    padding:18px 20px 6px; font-size:.6875rem; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--cinza); font-weight:700;
+  }
+  .item{
+    display:flex; align-items:center; gap:9px; padding:10px 20px; color:var(--escuro);
+    text-decoration:none; font-size:.9375rem; border-left:3px solid transparent;
+  }
+  .item:hover{background:var(--fundo)}
+  .item.ativo{background:#eef8fb; border-left-color:var(--teal); font-weight:700}
+  .item.travado{opacity:.45; cursor:not-allowed}
+  .item .conta{margin-left:auto; font-size:.75rem; color:var(--cinza); font-weight:600}
+  .conteudo{flex:1; min-width:0}
+  .abrir-menu{display:none}
+  .veu{display:none}
 
   /* ---------- login ---------- */
   .login{max-width:380px; margin:12vh auto; background:#fff; padding:32px;
@@ -51,7 +79,7 @@
   .login h2{font-size:1.25rem; margin-bottom:6px}
   .login p{color:var(--cinza); font-size:.875rem; margin-bottom:22px}
 
-  /* ---------- lista ---------- */
+  /* ---------- listas ---------- */
   .barra{display:flex; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap}
   .barra h2{font-size:1.125rem; flex:1}
   .contagem{color:var(--cinza); font-size:.875rem; font-weight:400}
@@ -67,10 +95,13 @@
   .cartao .meta{color:var(--cinza); font-size:.8125rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .selo{
     font-size:.6875rem; font-weight:700; padding:3px 9px; border-radius:99px;
-    text-transform:uppercase; letter-spacing:.04em; flex:none;
+    text-transform:uppercase; letter-spacing:.04em; flex:none; white-space:nowrap;
   }
   .selo.ativo{background:#e4f8ea; color:var(--ok)}
   .selo.inativo{background:#eee; color:var(--cinza)}
+  .selo.aviso{background:#fdf3e2; color:var(--alerta)}
+  .selo.perigo{background:#fdecea; color:var(--erro)}
+  .selo.info{background:#eef8fb; color:#2b7f96}
   .setas{display:flex; flex-direction:column; gap:3px; flex:none}
   .setas button{
     width:28px; height:22px; background:var(--fundo); color:var(--escuro);
@@ -82,15 +113,16 @@
   .form{background:#fff; border-radius:16px; padding:26px; box-shadow:0 4px 24px rgba(21,11,51,.07)}
   .form h2{font-size:1.125rem; margin-bottom:22px}
   .linha{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .linha.tres{grid-template-columns:1fr 1fr 1fr}
   .foto-area{display:flex; align-items:center; gap:16px}
   .foto-area img{width:92px; height:92px; border-radius:50%; object-fit:cover;
     background:var(--fundo); border:1.5px solid var(--borda); flex:none}
   .rodape-form{display:flex; gap:10px; margin-top:26px; padding-top:20px; border-top:1px solid var(--borda)}
   .rodape-form .btn{flex:1}
 
-  .status-linha{display:flex; gap:10px}
+  .status-linha{display:flex; gap:10px; flex-wrap:wrap}
   .status-op{
-    flex:1; padding:13px; border:2px solid var(--borda); border-radius:10px;
+    flex:1; min-width:120px; padding:13px; border:2px solid var(--borda); border-radius:10px;
     background:#fff; text-align:center; font-weight:600; font-size:.875rem;
   }
   .status-op.escolhido{border-color:var(--teal); background:#eef8fb}
@@ -98,12 +130,180 @@
   .aviso{padding:12px 15px; border-radius:10px; margin-bottom:16px; font-size:.875rem}
   .aviso.erro{background:#fdecea; color:var(--erro)}
   .aviso.ok{background:#e4f8ea; color:var(--ok)}
-  .vazio{text-align:center; color:var(--cinza); padding:40px 0}
+  .aviso.atencao{background:#fdf3e2; color:var(--alerta)}
+  .aviso ul{margin:6px 0 0 18px}
+  .vazio{
+    text-align:center; color:var(--cinza); padding:44px 20px; background:#fff;
+    border:1px dashed var(--borda); border-radius:14px;
+  }
+  .vazio p{margin-bottom:14px}
+  .carregando{text-align:center; color:var(--cinza); padding:44px 0}
 
+  /* ---------- cards do painel ---------- */
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:12px; margin-bottom:24px}
+  .card{background:#fff; border:1px solid var(--borda); border-radius:14px; padding:16px 18px}
+  .card .n{font-size:1.875rem; font-weight:800; line-height:1.15}
+  .card .r{color:var(--cinza); font-size:.8125rem; font-weight:600}
+  .card.destaque{border-color:var(--teal); background:#f6fcfd}
+  .paineis{display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start}
+  .bloco{background:#fff; border:1px solid var(--borda); border-radius:14px; padding:18px}
+  .bloco h3{font-size:.9375rem; margin-bottom:12px}
+  .bloco .linha-lista{display:flex; gap:10px; padding:9px 0; border-top:1px solid var(--borda); font-size:.875rem}
+  .bloco .linha-lista:first-of-type{border-top:none}
+  .bloco .quando{font-weight:700; flex:none; min-width:96px}
+  .atalhos{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px}
+
+  /* ---------- agenda ---------- */
+  .agenda-topo{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px}
+  .agenda-topo .titulo{font-size:1.0625rem; font-weight:700; flex:1; min-width:150px}
+  .modos{display:flex; border:1.5px solid var(--borda); border-radius:10px; overflow:hidden; background:#fff}
+  .modos button{padding:8px 14px; background:#fff; font-size:.875rem; font-weight:600; border-radius:0}
+  .modos button.escolhido{background:var(--teal); color:#fff}
+  .setas-data{display:flex; gap:6px}
+  .setas-data button{width:34px; height:34px; background:#fff; border:1.5px solid var(--borda); font-size:.9rem}
+
+  .filtros{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:14px}
+  .filtros select,.filtros input{padding:9px 11px; font-size:.875rem}
+
+  .rolagem{overflow-x:auto; background:#fff; border:1px solid var(--borda); border-radius:14px}
+  .grade{display:grid; grid-template-columns:54px repeat(var(--colunas,7), minmax(132px,1fr)); min-width:min-content}
+  .grade .cabeca{
+    position:sticky; top:0; z-index:2; background:#fff; border-bottom:1px solid var(--borda);
+    padding:10px 8px; text-align:center; font-size:.75rem; font-weight:700;
+  }
+  .grade .cabeca small{display:block; font-weight:400; color:var(--cinza); font-size:.6875rem}
+  .grade .cabeca.hoje{background:#eef8fb}
+  .grade .horas{border-right:1px solid var(--borda)}
+  .grade .hora{height:64px; font-size:.6875rem; color:var(--cinza); text-align:right; padding:2px 6px 0 0}
+  .coluna{position:relative; border-right:1px solid var(--borda)}
+  .coluna:last-child{border-right:none}
+  .faixa-hora{position:absolute; left:0; right:0; border-top:1px solid var(--borda)}
+  .fora{position:absolute; left:0; right:0; background:repeating-linear-gradient(45deg,#f7f9fa,#f7f9fa 6px,#f1f4f5 6px,#f1f4f5 12px)}
+  .bloqueio{position:absolute; left:2px; right:2px; background:#fdf3e2; border:1px dashed #e2c489;
+    border-radius:6px; font-size:.6875rem; color:var(--alerta); padding:2px 5px; overflow:hidden}
+
+  .evento{
+    position:absolute; left:3px; right:3px; border-radius:8px; padding:3px 7px;
+    font-size:.75rem; overflow:hidden; cursor:pointer; text-align:left;
+    background:#eef8fb; border-left:3px solid var(--teal); color:var(--escuro);
+    box-shadow:0 1px 2px rgba(21,11,51,.06);
+  }
+  .evento:hover{filter:brightness(.97)}
+  .evento{line-height:1.32}
+  .evento .h{font-weight:700}
+  .evento .p{font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .evento .t{color:var(--cinza); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .evento.confirmado{background:#eaf8ef; border-left-color:var(--ok)}
+  .evento.em_atendimento{background:#fdf3e2; border-left-color:var(--alerta)}
+  .evento.realizado{background:#f2f4f5; border-left-color:#9aa5ab}
+  .evento.faltou{background:#fdecea; border-left-color:var(--erro)}
+  .evento.cancelado{background:#f7f8f9; border-left-color:#c7ced2; opacity:.7}
+  .evento.cancelado .p{text-decoration:line-through}
+  .evento.encaixe{border-style:dashed; border:1px dashed var(--alerta); border-left:3px solid var(--alerta)}
+
+  .mes{display:grid; grid-template-columns:repeat(7,1fr); background:#fff;
+    border:1px solid var(--borda); border-radius:14px; overflow:hidden}
+  .mes .dh{padding:8px; text-align:center; font-size:.6875rem; font-weight:700;
+    color:var(--cinza); border-bottom:1px solid var(--borda); text-transform:uppercase}
+  .mes .dia{min-height:92px; border-top:1px solid var(--borda); border-right:1px solid var(--borda);
+    padding:6px; cursor:pointer}
+  .mes .dia:nth-child(7n+7){border-right:none}
+  .mes .dia:hover{background:var(--fundo)}
+  .mes .dia.outro{background:#fafbfb; color:#b5bcc1}
+  .mes .dia.hoje .num{background:var(--teal); color:#fff; border-radius:99px; padding:1px 7px}
+  .mes .num{font-size:.8125rem; font-weight:700}
+  .mes .chip{font-size:.6875rem; background:#eef8fb; border-left:2px solid var(--teal);
+    border-radius:4px; padding:1px 4px; margin-top:3px; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap}
+  .mes .chip.cancelado{background:#f7f8f9; border-left-color:#c7ced2; text-decoration:line-through}
+  .mes .mais{font-size:.6875rem; color:var(--cinza); margin-top:2px}
+
+  .lista-dia .hora-linha{display:flex; gap:12px; padding:10px 0; border-top:1px solid var(--borda)}
+  .lista-dia .hora-linha:first-child{border-top:none}
+  .lista-dia .marcador{flex:none; width:52px; font-size:.8125rem; font-weight:700; color:var(--cinza)}
+  .lista-dia .eventos{flex:1; display:flex; flex-direction:column; gap:6px}
+  .cartao-evento{
+    background:#fff; border:1px solid var(--borda); border-left:4px solid var(--teal);
+    border-radius:10px; padding:10px 12px; cursor:pointer; text-align:left; width:100%;
+  }
+  .cartao-evento.confirmado{border-left-color:var(--ok)}
+  .cartao-evento.em_atendimento{border-left-color:var(--alerta)}
+  .cartao-evento.realizado{border-left-color:#9aa5ab}
+  .cartao-evento.faltou{border-left-color:var(--erro)}
+  .cartao-evento.cancelado{border-left-color:#c7ced2; opacity:.65}
+  .cartao-evento .top{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .cartao-evento .p{font-weight:700}
+  .cartao-evento .m{color:var(--cinza); font-size:.8125rem}
+
+  /* ---------- disponibilidade / escala ---------- */
+  .dia-bloco{background:#fff; border:1px solid var(--borda); border-radius:12px;
+    padding:12px 14px; margin-bottom:10px}
+  .dia-bloco .cab{display:flex; align-items:center; gap:10px; margin-bottom:8px}
+  .dia-bloco .cab h4{font-size:.9375rem; flex:1}
+  .periodo{display:flex; gap:8px; align-items:center; margin-bottom:8px}
+  .periodo input{width:auto; flex:1; min-width:0; max-width:150px; padding:8px 10px; font-size:.875rem}
+  .periodo .x{width:32px; height:32px; flex:none; background:var(--fundo); color:var(--erro); font-weight:700}
+  .sem-periodo{color:var(--cinza); font-size:.8125rem; padding:4px 0 8px}
+
+  .turno{background:var(--fundo); border-radius:10px; padding:12px; margin-bottom:10px}
+  .turno .h{font-weight:700; font-size:.875rem; margin-bottom:8px}
+  .pessoas{display:flex; gap:8px; flex-wrap:wrap}
+  .pessoa{background:#fff; border:1px solid var(--borda); border-radius:99px;
+    padding:5px 12px; font-size:.8125rem; display:flex; align-items:center; gap:7px}
+  .pessoa button{background:none; color:var(--erro); font-weight:700; padding:0 2px}
+
+  /* ---------- modal ---------- */
+  .veu-modal{
+    position:fixed; inset:0; background:rgba(21,11,51,.45); z-index:50;
+    display:flex; align-items:flex-start; justify-content:center; padding:24px 16px; overflow-y:auto;
+  }
+  .modal{background:#fff; border-radius:16px; width:100%; max-width:620px; padding:24px;
+    box-shadow:0 12px 40px rgba(21,11,51,.22); margin:auto}
+  .modal h3{font-size:1.0625rem; margin-bottom:4px}
+  .modal .sub{color:var(--cinza); font-size:.875rem; margin-bottom:18px}
+  .modal .rodape{display:flex; gap:10px; margin-top:22px; padding-top:18px; border-top:1px solid var(--borda); flex-wrap:wrap}
+  .modal .rodape .btn{flex:1; min-width:120px}
+  .fechar{background:var(--fundo); width:32px; height:32px; font-size:1rem; flex:none}
+  .modal-cab{display:flex; align-items:flex-start; gap:12px; margin-bottom:14px}
+  .modal-cab div{flex:1}
+  .acoes-rapidas{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px}
+
+  .horarios{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
+  .horarios button{padding:6px 11px; font-size:.8125rem; background:var(--fundo);
+    color:var(--escuro); border:1.5px solid transparent}
+  .horarios button.escolhido{background:var(--teal); color:#fff}
+  .detalhe{display:grid; grid-template-columns:110px 1fr; gap:6px 12px; font-size:.875rem}
+  .detalhe dt{color:var(--cinza)}
+  .detalhe dd{font-weight:600}
+
+  @media (max-width:900px){
+    .paineis{grid-template-columns:1fr}
+  }
+  @media (max-width:760px){
+    .lateral{
+      position:fixed; top:0; left:-260px; transition:left .22s ease; z-index:60;
+      box-shadow:0 0 40px rgba(21,11,51,.18);
+    }
+    .lateral.aberta{left:0}
+    .veu.aberto{display:block; position:fixed; inset:0; background:rgba(21,11,51,.35); z-index:50}
+    .abrir-menu{display:block; width:38px; height:38px; flex:none;
+      background:var(--fundo); font-size:1.1rem; line-height:1}
+  }
   @media (max-width:600px){
-    .linha{grid-template-columns:1fr}
+    /* Sem isto o botao de acao espreme o titulo ate ele sumir. Em duas linhas:
+       menu e titulo em cima, botoes embaixo, todos alcancaveis com o polegar. */
+    .topo{flex-wrap:wrap}
+    .topo h1{flex:1 1 auto; min-width:58%}
+    .topo .btn,.topo a.btn{flex:1; text-align:center}
+    .linha,.linha.tres{grid-template-columns:1fr}
     .container{padding:16px 14px 60px}
     .form{padding:18px}
+    .modal{padding:18px}
+    .cards{grid-template-columns:1fr 1fr}
+    .card .n{font-size:1.5rem}
+    .agenda-topo .titulo{order:-1; width:100%}
+    .mes .dia{min-height:62px}
+    .mes .chip{display:none}
   }
 </style>
 </head>
@@ -116,21 +316,57 @@
   "use strict";
 
   var app = document.getElementById("app");
-  var vets = [];
-  var editando = null;   // objeto sendo editado, ou null
-  var fotoNova = null;   // base64 da foto escolhida agora
-  var aviso = null;      // {tipo, texto}
-  /* Onde o site mora. Local e aqui mesmo; na nuvem o servidor diz o
-     endereco do GitHub Pages - as fotos nao passam por este servidor. */
-  var baseFotos = "/";
-  var urlSite = "/";
 
-  function urlFoto(caminho) {
-    if (!caminho) return "";
-    return baseFotos + String(caminho).replace(/^\//, "");
+  /* Estado do painel inteiro. A parte de cima ja existia (equipe); a de baixo
+     e a operacao da clinica, que so carrega quando a pessoa entra nela. */
+  var S = {
+    vets: [],            // equipe do site, com todos os campos
+    editando: null,
+    fotoNova: null,
+    aviso: null,
+    baseFotos: "/",
+    urlSite: "/",
+    quem: "",
+    temOperacao: false,
+    motivoSemOperacao: "",
+    ondeOperacao: "",
+
+    tela: "equipe",
+    op: null,            // constantes e equipe resumida, de /api/op/inicio
+    atendimentos: null,
+    disponibilidade: null,
+    bloqueios: null,
+    ausencias: null,
+    /* No celular a semana inteira nao cabe sem apertar os olhos; o dia sim. */
+    agendaModo: window.innerWidth < 760 ? "dia" : "semana",
+    agendaData: null,    // Date
+    filtros: {vet: "", tipo: "", status: ""},
+    escalaData: null,
+    dispVet: ""
+  };
+
+  var MENU = [
+    {grupo: "Site"},
+    {id: "equipe", rotulo: "Veterinários", op: false},
+    {grupo: "Operação"},
+    {id: "operacao", rotulo: "Painel", op: true},
+    {id: "agenda", rotulo: "Agenda", op: true},
+    {id: "disponibilidade", rotulo: "Disponibilidade", op: true},
+    {id: "escalas", rotulo: "Escalas", op: true},
+    {id: "bloqueios", rotulo: "Bloqueios", op: true},
+    {id: "ausencias", rotulo: "Férias e folgas", op: true},
+    {id: "cancelamentos", rotulo: "Cancelamentos", op: true},
+    {id: "pacientes", rotulo: "Pacientes", op: true},
+    {id: "historico", rotulo: "Histórico", op: true}
+  ];
+
+  /* =========================================================== basico === */
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
-  /* ------------------------------------------------------------- rede --- */
   function api(metodo, rota, corpo) {
     return fetch(rota, {
       method: metodo,
@@ -138,34 +374,130 @@
       body: corpo ? JSON.stringify(corpo) : undefined
     }).then(function (r) {
       return r.json().then(function (dados) {
-        if (!r.ok) throw new Error(dados.erro || "Algo deu errado.");
+        if (!r.ok) {
+          var e = new Error(dados.erro || "Algo deu errado.");
+          e.dados = dados;
+          e.status = r.status;
+          throw e;
+        }
         return dados;
       });
     });
   }
 
-  function esc(s) {
-    return String(s == null ? "" : s)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  function urlFoto(caminho) {
+    if (!caminho) return "";
+    return S.baseFotos + String(caminho).replace(/^\//, "");
   }
 
-  /* ------------------------------------------------------------ login --- */
+  function ehVazio(v) { return v === null || v === undefined || v === ""; }
+
+  /* ---------------------------------------------------------- datas ---- */
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function iso(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function daISO(s) {
+    var p = String(s || "").split("-");
+    return new Date(+p[0], +p[1] - 1, +p[2]);
+  }
+  function maisDias(d, n) {
+    var c = new Date(d.getTime());
+    c.setDate(c.getDate() + n);
+    return c;
+  }
+  function segundaDe(d) { return maisDias(d, -((d.getDay() + 6) % 7)); }
+  function br(s) {
+    if (!s) return "";
+    var p = String(s).split("-");
+    return p[2] + "/" + p[1] + "/" + p[0];
+  }
+  var DIAS_CURTO = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+  var MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho",
+               "agosto", "setembro", "outubro", "novembro", "dezembro"];
+  function minutos(h) {
+    var p = String(h || "0:0").split(":");
+    return (+p[0]) * 60 + (+p[1] || 0);
+  }
+  function hhmm(m) { return pad(Math.floor(m / 60)) + ":" + pad(m % 60); }
+
+  function maiuscula(s) {
+    return String(s || "").charAt(0).toUpperCase() + String(s || "").slice(1);
+  }
+
+  function nomeVet(id) {
+    var v = (S.op && S.op.vets || []).filter(function (x) { return x.id === id; })[0];
+    return v ? v.nome : (id || "—");
+  }
+  function rotuloStatus(s) {
+    return (S.op && S.op.statusRotulo && S.op.statusRotulo[s]) || s || "";
+  }
+
+  /* =========================================================== modal === */
+  var modalAberto = null;
+
+  function modal(html, aoAbrir) {
+    fecharModal();
+    var veu = document.createElement("div");
+    veu.className = "veu-modal";
+    veu.innerHTML = '<div class="modal">' + html + "</div>";
+    veu.addEventListener("mousedown", function (e) {
+      if (e.target === veu) fecharModal();
+    });
+    document.body.appendChild(veu);
+    modalAberto = veu;
+    document.body.style.overflow = "hidden";
+    if (aoAbrir) aoAbrir(veu);
+    return veu;
+  }
+
+  function fecharModal() {
+    if (modalAberto) modalAberto.remove();
+    modalAberto = null;
+    document.body.style.overflow = "";
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") fecharModal();
+  });
+
+  function confirmar(titulo, texto, rotuloOk, aoConfirmar, perigo) {
+    modal(
+      "<h3>" + esc(titulo) + "</h3>" +
+      '<p class="sub">' + esc(texto) + "</p>" +
+      '<div class="rodape">' +
+        '<button class="btn secundario" data-nao>Voltar</button>' +
+        '<button class="btn ' + (perigo ? "perigo" : "verde") + '" data-sim>' + esc(rotuloOk) + "</button>" +
+      "</div>",
+      function (v) {
+        v.querySelector("[data-nao]").onclick = fecharModal;
+        v.querySelector("[data-sim]").onclick = function () {
+          fecharModal();
+          aoConfirmar();
+        };
+      });
+  }
+
+  /* ============================================================ login === */
   function telaLogin(erro) {
     app.innerHTML =
       '<div class="login">' +
-        '<h2>Equipe VetHome</h2>' +
-        '<p>Digite a senha para gerenciar os veterinários.</p>' +
-        (erro ? '<div class="aviso erro">' + esc(erro) + '</div>' : '') +
+        "<h2>Painel VetHome</h2>" +
+        "<p>Entre para gerenciar a equipe e a operação da clínica.</p>" +
+        (erro ? '<div class="aviso erro">' + esc(erro) + "</div>" : "") +
+        '<div class="campo"><label for="quem">Seu nome</label>' +
+        '<input id="quem" autocomplete="name" placeholder="Mychelle" value="' +
+          esc(localStorage.getItem("vethome_quem") || "") + '"/>' +
+        '<div class="ajuda">Fica registrado em quem criou e cancelou cada atendimento.</div></div>' +
         '<div class="campo"><label for="senha">Senha</label>' +
         '<input type="password" id="senha" autocomplete="current-password" autofocus/></div>' +
         '<button class="btn grande" id="entrar">Entrar</button>' +
-      '</div>';
+      "</div>";
 
     function entrar() {
-      var s = document.getElementById("senha").value;
-      api("POST", "/api/login", {senha: s})
-        .then(carregar)
+      var quem = document.getElementById("quem").value.trim();
+      var senha = document.getElementById("senha").value;
+      try { localStorage.setItem("vethome_quem", quem); } catch (e) {}
+      api("POST", "/api/login", {senha: senha, quem: quem})
+        .then(function () { return iniciar(); })
         .catch(function (e) { telaLogin(e.message); });
     }
     document.getElementById("entrar").onclick = entrar;
@@ -174,61 +506,170 @@
     };
   }
 
-  /* ------------------------------------------------------------ lista --- */
-  function telaLista() {
-    var ativos = vets.filter(function (v) { return v.status === "ativo"; }).length;
-
-    var itens = vets.map(function (v, i) {
-      var meta = [v.especialidade, v.crmv, v.cidade].filter(Boolean).join(" · ");
-      return '' +
-        '<div class="cartao ' + (v.status === "inativo" ? "inativo" : "") + '">' +
-          '<div class="setas">' +
-            '<button data-sobe="' + i + '" title="Subir" ' + (i === 0 ? "disabled" : "") + '>&#9650;</button>' +
-            '<button data-desce="' + i + '" title="Descer" ' + (i === vets.length - 1 ? "disabled" : "") + '>&#9660;</button>' +
-          '</div>' +
-          '<img src="' + esc(urlFoto(v.foto)) + '" alt="" onerror="this.style.visibility=\'hidden\'"/>' +
-          '<div class="dados">' +
-            '<div class="nome">' + esc(v.nome) + '</div>' +
-            '<div class="meta">' + esc(meta || "sem informações ainda") + '</div>' +
-          '</div>' +
-          '<span class="selo ' + (v.status === "inativo" ? "inativo" : "ativo") + '">' +
-            (v.status === "inativo" ? "Oculto" : "No site") + '</span>' +
-          '<button class="btn secundario" data-editar="' + i + '">Editar</button>' +
-        '</div>';
+  /* ============================================================ casca === */
+  function casca(titulo, sub, acoes, corpo, largo) {
+    var menu = MENU.map(function (m) {
+      if (m.grupo) return '<div class="grupo">' + esc(m.grupo) + "</div>";
+      var travado = m.op && !S.temOperacao;
+      return '<a class="item ' + (S.tela === m.id ? "ativo" : "") +
+        (travado ? " travado" : "") + '" href="#' + m.id + '"' +
+        (travado ? ' title="Falta configurar o repositório privado"' : "") + ">" +
+        esc(m.rotulo) + (travado ? '<span class="conta">off</span>' : "") + "</a>";
     }).join("");
 
     app.innerHTML =
-      '<div class="topo">' +
-        '<h1>Equipe VetHome<span class="sub">' + ativos + ' aparecendo no site · ' +
-          (vets.length - ativos) + ' ocultos</span></h1>' +
-        (urlSite ? '<a class="btn secundario" href="' + esc(urlSite) + '#Our-Team" target="_blank" style="text-decoration:none">Ver o site</a>' : '') +
-        '<button class="btn secundario" id="sair">Sair</button>' +
-      '</div>' +
-      '<div class="container">' +
-        (aviso ? '<div class="aviso ' + aviso.tipo + '">' + esc(aviso.texto) + '</div>' : '') +
-        '<div class="barra">' +
-          '<h2>Veterinários <span class="contagem">(' + vets.length + ')</span></h2>' +
-          '<button class="btn" id="novo">+ Adicionar veterinário</button>' +
-        '</div>' +
-        (vets.length ? itens : '<div class="vazio">Nenhum veterinário cadastrado ainda.</div>') +
-      '</div>';
+      '<div class="app">' +
+        '<div class="veu" id="veuMenu"></div>' +
+        '<aside class="lateral" id="lateral">' +
+          '<div class="marca">VetHome<span>painel de gestão</span></div>' +
+          menu +
+        "</aside>" +
+        '<div class="conteudo">' +
+          '<div class="topo">' +
+            '<button class="abrir-menu" id="abrirMenu" aria-label="Abrir menu">☰</button>' +
+            "<h1>" + esc(titulo) +
+              (sub ? '<span class="sub">' + esc(sub) + "</span>" : "") + "</h1>" +
+            (acoes || "") +
+            '<button class="btn secundario" id="sair">Sair</button>' +
+          "</div>" +
+          '<div class="container' + (largo ? " largo" : "") + '" id="corpo">' +
+            (S.aviso ? '<div class="aviso ' + S.aviso.tipo + '">' + esc(S.aviso.texto) + "</div>" : "") +
+            corpo +
+          "</div>" +
+        "</div>" +
+      "</div>";
 
-    aviso = null;
+    S.aviso = null;
 
     document.getElementById("sair").onclick = function () {
       api("POST", "/api/logout").then(function () { telaLogin(); });
     };
+    var lateral = document.getElementById("lateral");
+    var veu = document.getElementById("veuMenu");
+    document.getElementById("abrirMenu").onclick = function () {
+      lateral.classList.add("aberta");
+      veu.classList.add("aberto");
+    };
+    veu.onclick = function () {
+      lateral.classList.remove("aberta");
+      veu.classList.remove("aberto");
+    };
+    app.querySelectorAll(".item.travado").forEach(function (a) {
+      a.onclick = function (e) {
+        e.preventDefault();
+        modal("<h3>Operação indisponível</h3>" +
+              '<p class="sub">' + esc(S.motivoSemOperacao) + "</p>" +
+              '<div class="rodape"><button class="btn" data-ok>Entendi</button></div>',
+              function (v) { v.querySelector("[data-ok]").onclick = fecharModal; });
+      };
+    });
+  }
+
+  function erroNoCorpo(e) {
+    var corpo = document.getElementById("corpo");
+    if (corpo) {
+      corpo.innerHTML = '<div class="aviso erro">' + esc(e.message) + "</div>";
+    }
+  }
+
+  function carregando(titulo) {
+    casca(titulo, "", "", '<div class="carregando">Carregando…</div>');
+  }
+
+  /* ====================================================== roteamento === */
+  function irPara(tela) {
+    if (location.hash !== "#" + tela) location.hash = tela;
+    else desenhar();
+  }
+
+  function desenhar() {
+    var alvo = (location.hash || "#equipe").replace("#", "");
+    if (!MENU.some(function (m) { return m.id === alvo; })) alvo = "equipe";
+    var def = MENU.filter(function (m) { return m.id === alvo; })[0];
+    if (def && def.op && !S.temOperacao) alvo = "equipe";
+    S.tela = alvo;
+
+    if (alvo === "equipe") return telaEquipe();
+    if (alvo === "operacao") return telaPainelOperacao();
+    if (alvo === "agenda") return telaAgenda();
+    if (alvo === "disponibilidade") return telaDisponibilidade();
+    if (alvo === "escalas") return telaEscalas();
+    if (alvo === "bloqueios") return telaBloqueios();
+    if (alvo === "ausencias") return telaAusencias();
+    if (alvo === "cancelamentos") return telaCancelamentos();
+    if (alvo === "pacientes") return telaPacientes();
+    if (alvo === "historico") return telaHistorico();
+  }
+
+  window.addEventListener("hashchange", function () {
+    fecharModal();
+    desenhar();
+  });
+
+  /* Garante que as constantes da operacao (equipe, tipos, status) estao
+     carregadas antes de desenhar qualquer tela dela. */
+  function comOperacao(depois) {
+    if (S.op) return depois();
+    api("GET", "/api/op/inicio").then(function (d) {
+      S.op = d;
+      if (!S.agendaData) S.agendaData = daISO(d.hoje);
+      if (!S.escalaData) S.escalaData = daISO(d.hoje);
+      depois();
+    }).catch(erroNoCorpo);
+  }
+
+  /* ==================================================== TELA: EQUIPE === */
+  function telaEquipe() {
+    if (!S.vets.length) {
+      carregando("Veterinários");
+      return api("GET", "/api/vets").then(function (d) {
+        S.vets = d;
+        telaEquipe();
+      }).catch(function (e) { telaLogin(e.message); });
+    }
+
+    var ativos = S.vets.filter(function (v) { return v.status === "ativo"; }).length;
+
+    var itens = S.vets.map(function (v, i) {
+      var meta = [v.especialidade, v.crmv, v.cidade].filter(Boolean).join(" · ");
+      return "" +
+        '<div class="cartao ' + (v.status === "inativo" ? "inativo" : "") + '">' +
+          '<div class="setas">' +
+            '<button data-sobe="' + i + '" title="Subir" ' + (i === 0 ? "disabled" : "") + ">&#9650;</button>" +
+            '<button data-desce="' + i + '" title="Descer" ' + (i === S.vets.length - 1 ? "disabled" : "") + ">&#9660;</button>" +
+          "</div>" +
+          '<img src="' + esc(urlFoto(v.foto)) + '" alt="" onerror="this.style.visibility=\'hidden\'"/>' +
+          '<div class="dados">' +
+            '<div class="nome">' + esc(v.nome) + "</div>" +
+            '<div class="meta">' + esc(meta || "sem informações ainda") + "</div>" +
+          "</div>" +
+          '<span class="selo ' + (v.status === "inativo" ? "inativo" : "ativo") + '">' +
+            (v.status === "inativo" ? "Oculto" : "No site") + "</span>" +
+          '<button class="btn secundario" data-editar="' + i + '">Editar</button>' +
+        "</div>";
+    }).join("");
+
+    casca("Equipe VetHome",
+      ativos + " aparecendo no site · " + (S.vets.length - ativos) + " ocultos",
+      (S.urlSite ? '<a class="btn secundario" href="' + esc(S.urlSite) +
+        '#Our-Team" target="_blank" style="text-decoration:none">Ver o site</a>' : ""),
+      '<div class="barra">' +
+        '<h2>Veterinários <span class="contagem">(' + S.vets.length + ")</span></h2>" +
+        '<button class="btn" id="novo">+ Adicionar veterinário</button>' +
+      "</div>" +
+      (S.vets.length ? itens : '<div class="vazio">Nenhum veterinário cadastrado ainda.</div>'));
+
     document.getElementById("novo").onclick = function () {
-      editando = {nome: "", cargo: "Médica-Veterinária", especialidade: "", crmv: "",
-                  cidade: "", descricao: "", areas: [], status: "ativo", foto: ""};
-      fotoNova = null;
-      telaForm();
+      S.editando = {nome: "", cargo: "Médica-Veterinária", especialidade: "", crmv: "",
+                    cidade: "", descricao: "", areas: [], status: "ativo", foto: ""};
+      S.fotoNova = null;
+      formEquipe();
     };
     app.querySelectorAll("[data-editar]").forEach(function (b) {
       b.onclick = function () {
-        editando = JSON.parse(JSON.stringify(vets[+b.dataset.editar]));
-        fotoNova = null;
-        telaForm();
+        S.editando = JSON.parse(JSON.stringify(S.vets[+b.dataset.editar]));
+        S.fotoNova = null;
+        formEquipe();
       };
     });
     app.querySelectorAll("[data-sobe]").forEach(function (b) {
@@ -241,86 +682,76 @@
 
   function mover(i, passo) {
     var j = i + passo;
-    if (j < 0 || j >= vets.length) return;
-    var tmp = vets[i]; vets[i] = vets[j]; vets[j] = tmp;
-    telaLista();
-    api("POST", "/api/ordem", {ids: vets.map(function (v) { return v.id; })})
-      .catch(function (e) { aviso = {tipo: "erro", texto: e.message}; telaLista(); });
+    if (j < 0 || j >= S.vets.length) return;
+    var tmp = S.vets[i]; S.vets[i] = S.vets[j]; S.vets[j] = tmp;
+    telaEquipe();
+    api("POST", "/api/ordem", {ids: S.vets.map(function (v) { return v.id; })})
+      .catch(function (e) { S.aviso = {tipo: "erro", texto: e.message}; telaEquipe(); });
   }
 
-  /* ------------------------------------------------------- formulario --- */
-  function telaForm() {
-    var v = editando;
+  function formEquipe() {
+    var v = S.editando;
     var novo = !v.id;
-    var previa = fotoNova || urlFoto(v.foto);
+    var previa = S.fotoNova || urlFoto(v.foto);
 
-    app.innerHTML =
-      '<div class="topo"><h1>' + (novo ? "Novo veterinário" : esc(v.nome)) + '</h1></div>' +
-      '<div class="container"><div class="form">' +
+    casca(novo ? "Novo veterinário" : v.nome, "", "",
+      '<div class="form">' +
         '<div id="avisoForm"></div>' +
-
         '<div class="campo"><label>Foto</label><div class="foto-area">' +
           '<img id="previa" src="' + esc(previa) + '" alt=""/>' +
           '<div><input type="file" id="arquivo" accept="image/jpeg,image/png,image/webp"/>' +
           '<div class="ajuda">JPG, PNG ou WEBP, até 8 MB. Fotos quadradas ficam melhores.</div></div>' +
-        '</div></div>' +
-
+        "</div></div>" +
         '<div class="campo"><label for="f_nome">Nome completo *</label>' +
           '<input id="f_nome" value="' + esc(v.nome) + '" placeholder="Dra. Maria Silva"/></div>' +
-
         '<div class="linha">' +
           '<div class="campo"><label for="f_cargo">Cargo / profissão</label>' +
             '<input id="f_cargo" value="' + esc(v.cargo) + '" placeholder="Médica-Veterinária"/></div>' +
           '<div class="campo"><label for="f_esp">Especialidade</label>' +
             '<input id="f_esp" value="' + esc(v.especialidade) + '" placeholder="Clínica Médica"/></div>' +
-        '</div>' +
-
+        "</div>" +
         '<div class="linha">' +
           '<div class="campo"><label for="f_crmv">CRMV</label>' +
             '<input id="f_crmv" value="' + esc(v.crmv) + '" placeholder="CRMV-DF 1234"/></div>' +
           '<div class="campo"><label for="f_cidade">Cidade / região de atendimento</label>' +
             '<input id="f_cidade" value="' + esc(v.cidade) + '" placeholder="Brasília - DF"/></div>' +
-        '</div>' +
-
+        "</div>" +
         '<div class="campo"><label for="f_bio">Biografia</label>' +
-          '<textarea id="f_bio" placeholder="Um parágrafo curto sobre o profissional.">' + esc(v.descricao) + '</textarea>' +
+          '<textarea id="f_bio" placeholder="Um parágrafo curto sobre o profissional.">' + esc(v.descricao) + "</textarea>" +
           '<div class="ajuda">Aparece na página individual do veterinário.</div></div>' +
-
         '<div class="campo"><label for="f_areas">Áreas de atuação</label>' +
           '<textarea id="f_areas" placeholder="Vacinação&#10;Consulta domiciliar&#10;Exames">' +
-            esc((v.areas || []).join("\n")) + '</textarea>' +
+            esc((v.areas || []).join("\n")) + "</textarea>" +
           '<div class="ajuda">Uma por linha. Aperte Enter para começar a próxima.</div></div>' +
-
         '<div class="campo"><label>Status</label><div class="status-linha">' +
           '<button type="button" class="status-op ' + (v.status !== "inativo" ? "escolhido" : "") + '" data-status="ativo">Aparece no site</button>' +
           '<button type="button" class="status-op ' + (v.status === "inativo" ? "escolhido" : "") + '" data-status="inativo">Oculto</button>' +
         '</div><div class="ajuda">Oculto guarda o cadastro sem mostrar na página.</div></div>' +
-
         '<div class="rodape-form">' +
           '<button class="btn secundario" id="cancelar">Cancelar</button>' +
           '<button class="btn verde" id="salvar">Salvar</button>' +
-        '</div>' +
-      '</div></div>';
+        "</div>" +
+      "</div>");
 
     document.getElementById("arquivo").onchange = function (e) {
       var f = e.target.files[0];
       if (!f) return;
       if (f.size > 8 * 1024 * 1024) {
-        mostraErro("Essa imagem tem mais de 8 MB. Escolha uma menor.");
+        erroForm("Essa imagem tem mais de 8 MB. Escolha uma menor.");
         e.target.value = "";
         return;
       }
       var fr = new FileReader();
       fr.onload = function () {
-        fotoNova = fr.result;
-        document.getElementById("previa").src = fotoNova;
+        S.fotoNova = fr.result;
+        document.getElementById("previa").src = S.fotoNova;
       };
       fr.readAsDataURL(f);
     };
 
     app.querySelectorAll("[data-status]").forEach(function (b) {
       b.onclick = function () {
-        editando.status = b.dataset.status;
+        S.editando.status = b.dataset.status;
         app.querySelectorAll("[data-status]").forEach(function (o) {
           o.classList.toggle("escolhido", o === b);
         });
@@ -328,66 +759,1650 @@
     });
 
     document.getElementById("cancelar").onclick = function () {
-      editando = null; fotoNova = null; telaLista();
+      S.editando = null; S.fotoNova = null; telaEquipe();
     };
-    document.getElementById("salvar").onclick = salvar;
+    document.getElementById("salvar").onclick = salvarEquipe;
   }
 
-  function mostraErro(texto) {
+  function erroForm(texto) {
     var el = document.getElementById("avisoForm");
-    if (el) el.innerHTML = '<div class="aviso erro">' + esc(texto) + '</div>';
+    if (el) el.innerHTML = '<div class="aviso erro">' + esc(texto) + "</div>";
   }
 
-  function salvar() {
+  function salvarEquipe() {
     var val = function (id) { return document.getElementById(id).value.trim(); };
-    if (!val("f_nome")) return mostraErro("Preencha pelo menos o nome.");
+    if (!val("f_nome")) return erroForm("Preencha pelo menos o nome.");
 
     var botao = document.getElementById("salvar");
     botao.disabled = true;
     botao.textContent = "Salvando...";
 
-    var corpo = {
-      id: editando.id,
-      nome: val("f_nome"),
-      cargo: val("f_cargo"),
-      especialidade: val("f_esp"),
-      crmv: val("f_crmv"),
-      cidade: val("f_cidade"),
-      descricao: val("f_bio"),
-      areas: val("f_areas").split("\n"),
-      status: editando.status,
-      ordem: editando.ordem,
-      foto: editando.foto,
-      slug: editando.slug,
-      fotoNova: fotoNova
-    };
-
-    api("POST", "/api/vets", corpo)
+    api("POST", "/api/vets", {
+      id: S.editando.id, nome: val("f_nome"), cargo: val("f_cargo"),
+      especialidade: val("f_esp"), crmv: val("f_crmv"), cidade: val("f_cidade"),
+      descricao: val("f_bio"), areas: val("f_areas").split("\n"),
+      status: S.editando.status, ordem: S.editando.ordem, foto: S.editando.foto,
+      slug: S.editando.slug, fotoNova: S.fotoNova
+    })
       .then(function (r) {
-        aviso = {tipo: "ok", texto: '"' + r.vet.nome + '" foi salvo. Já está valendo no site.'};
-        editando = null; fotoNova = null;
-        return carregar();
+        S.aviso = {tipo: "ok", texto: '"' + r.vet.nome + '" foi salvo. Já está valendo no site.'};
+        S.editando = null; S.fotoNova = null; S.vets = []; S.op = null;
+        telaEquipe();
       })
       .catch(function (e) {
         botao.disabled = false;
         botao.textContent = "Salvar";
-        mostraErro(e.message);
+        erroForm(e.message);
       });
   }
 
-  /* ------------------------------------------------------------ inicio --- */
-  function carregar() {
-    return api("GET", "/api/vets")
-      .then(function (dados) { vets = dados; telaLista(); })
-      .catch(function (e) { telaLogin(e.message.indexOf("login") > -1 ? null : e.message); });
+  /* ============================================ TELA: PAINEL OPERACAO === */
+  function telaPainelOperacao() {
+    carregando("Operação da clínica");
+    comOperacao(function () {
+      api("GET", "/api/op/resumo").then(function (r) {
+        var c = r.cards;
+        var cards =
+          card(c.atendimentos, "Atendimentos hoje", true) +
+          card(c.confirmados, "Confirmados") +
+          card(c.pendentes, "A confirmar") +
+          card(c.encaixes, "Encaixes") +
+          card(c.realizados, "Realizados") +
+          card(c.cancelados, "Cancelados");
+
+        var proximos = r.proximos.length
+          ? r.proximos.map(function (a) {
+              return '<div class="linha-lista">' +
+                '<span class="quando">' + esc(br(a.data).slice(0, 5)) + " " + esc(a.inicio) + "</span>" +
+                "<span>" + esc(a.paciente) + " <span style=\"color:var(--cinza)\">· " +
+                  esc(a.tipo) + " · " + esc(a.vetNome) + "</span></span>" +
+              "</div>";
+            }).join("")
+          : '<div class="ajuda">Nada agendado por enquanto.</div>';
+
+        var fora = r.indisponiveis.length
+          ? r.indisponiveis.map(function (v) {
+              return '<div class="linha-lista">' +
+                '<span class="quando">' + esc(v.tipo) + "</span>" +
+                "<span>" + esc(v.nome) + ' <span style="color:var(--cinza)">· até ' +
+                  esc(v.ate) + "</span></span></div>";
+            }).join("")
+          : '<div class="ajuda">Toda a equipe disponível hoje.</div>';
+
+        casca("Operação da clínica", "Hoje, " + br(r.data), "",
+          '<div class="atalhos">' +
+            '<button class="btn" id="novoAt">+ Novo atendimento</button>' +
+            '<a class="btn secundario" href="#agenda" style="text-decoration:none">Ver agenda</a>' +
+            '<a class="btn secundario" href="#disponibilidade" style="text-decoration:none">Disponibilidade</a>' +
+            '<a class="btn secundario" href="#escalas" style="text-decoration:none">Escalas</a>' +
+          "</div>" +
+          '<div class="cards">' + cards + "</div>" +
+          '<div class="paineis">' +
+            '<div class="bloco"><h3>Próximos atendimentos</h3>' + proximos + "</div>" +
+            '<div class="bloco"><h3>Veterinários indisponíveis hoje</h3>' + fora + "</div>" +
+          "</div>", true);
+
+        document.getElementById("novoAt").onclick = function () {
+          formAtendimento(null, {});
+        };
+      }).catch(erroNoCorpo);
+    });
   }
 
-  api("GET", "/api/sessao").then(function (s) {
-    if (s.baseFotos) baseFotos = s.baseFotos;
-    if (typeof s.urlSite === "string") urlSite = s.urlSite;
-    if (s.autenticado) carregar();
-    else telaLogin();
-  });
+  function card(n, rotulo, destaque) {
+    return '<div class="card' + (destaque ? " destaque" : "") + '">' +
+      '<div class="n">' + n + '</div><div class="r">' + esc(rotulo) + "</div></div>";
+  }
+
+  /* ==================================================== TELA: AGENDA === */
+  function dadosAgenda() {
+    return Promise.all([
+      api("GET", "/api/op/atendimentos"),
+      api("GET", "/api/op/disponibilidade"),
+      api("GET", "/api/op/bloqueios"),
+      api("GET", "/api/op/ausencias")
+    ]).then(function (r) {
+      S.atendimentos = r[0];
+      S.disponibilidade = r[1];
+      S.bloqueios = r[2];
+      S.ausencias = r[3];
+    });
+  }
+
+  function filtrados(lista) {
+    var f = S.filtros;
+    return lista.filter(function (a) {
+      if (f.vet && a.vetId !== f.vet) return false;
+      if (f.tipo && a.tipo !== f.tipo) return false;
+      if (f.status === "encaixe") return !!a.encaixe;
+      if (f.status && a.status !== f.status) return false;
+      return true;
+    });
+  }
+
+  function telaAgenda() {
+    carregando("Agenda");
+    comOperacao(function () {
+      dadosAgenda().then(desenharAgenda).catch(erroNoCorpo);
+    });
+  }
+
+  function desenharAgenda() {
+    var d = S.agendaData;
+    var titulo, corpo;
+
+    if (S.agendaModo === "dia") {
+      titulo = maiuscula(DIAS_CURTO[d.getDay()]) + ", " + d.getDate() +
+               " de " + MESES[d.getMonth()];
+      corpo = agendaDia(d);
+    } else if (S.agendaModo === "mes") {
+      titulo = maiuscula(MESES[d.getMonth()]) + " de " + d.getFullYear();
+      corpo = agendaMes(d);
+    } else {
+      var ini = segundaDe(d), fim = maisDias(ini, 6);
+      titulo = ini.getDate() + " de " + MESES[ini.getMonth()] + " a " +
+               fim.getDate() + " de " + MESES[fim.getMonth()];
+      corpo = agendaSemana(ini);
+    }
+
+    var vetsOpc = (S.op.vets || []).map(function (v) {
+      return '<option value="' + esc(v.id) + '"' +
+        (S.filtros.vet === v.id ? " selected" : "") + ">" + esc(v.nome) + "</option>";
+    }).join("");
+    var tiposOpc = (S.op.tipos || []).map(function (t) {
+      return '<option value="' + esc(t) + '"' +
+        (S.filtros.tipo === t ? " selected" : "") + ">" + esc(t) + "</option>";
+    }).join("");
+    var statusOpc = (S.op.status || []).map(function (s) {
+      return '<option value="' + esc(s) + '"' +
+        (S.filtros.status === s ? " selected" : "") + ">" + esc(rotuloStatus(s)) + "</option>";
+    }).join("");
+
+    casca("Agenda", "", '<button class="btn" id="novoAt">+ Novo atendimento</button>',
+      '<div class="agenda-topo">' +
+        '<div class="setas-data">' +
+          '<button id="anterior" aria-label="Anterior">&#8249;</button>' +
+          '<button id="proximo" aria-label="Próximo">&#8250;</button>' +
+        "</div>" +
+        '<button class="btn secundario pequeno" id="hoje">Hoje</button>' +
+        '<div class="titulo">' + esc(titulo) + "</div>" +
+        '<div class="modos">' +
+          '<button data-modo="dia" class="' + (S.agendaModo === "dia" ? "escolhido" : "") + '">Dia</button>' +
+          '<button data-modo="semana" class="' + (S.agendaModo === "semana" ? "escolhido" : "") + '">Semana</button>' +
+          '<button data-modo="mes" class="' + (S.agendaModo === "mes" ? "escolhido" : "") + '">Mês</button>' +
+        "</div>" +
+      "</div>" +
+      '<div class="filtros">' +
+        '<select id="fVet"><option value="">Todos os veterinários</option>' + vetsOpc + "</select>" +
+        '<select id="fTipo"><option value="">Todos os tipos</option>' + tiposOpc + "</select>" +
+        '<select id="fStatus"><option value="">Todos os status</option>' + statusOpc +
+          '<option value="encaixe"' + (S.filtros.status === "encaixe" ? " selected" : "") + ">Somente encaixes</option></select>" +
+        '<input type="date" id="fData" value="' + iso(d) + '"/>' +
+      "</div>" +
+      corpo, true);
+
+    document.getElementById("novoAt").onclick = function () {
+      formAtendimento(null, {data: iso(S.agendaData)});
+    };
+    document.getElementById("hoje").onclick = function () {
+      S.agendaData = daISO(S.op.hoje);
+      desenharAgenda();
+    };
+    document.getElementById("anterior").onclick = function () { andar(-1); };
+    document.getElementById("proximo").onclick = function () { andar(1); };
+    app.querySelectorAll("[data-modo]").forEach(function (b) {
+      b.onclick = function () { S.agendaModo = b.dataset.modo; desenharAgenda(); };
+    });
+    document.getElementById("fVet").onchange = function () {
+      S.filtros.vet = this.value; desenharAgenda();
+    };
+    document.getElementById("fTipo").onchange = function () {
+      S.filtros.tipo = this.value; desenharAgenda();
+    };
+    document.getElementById("fStatus").onchange = function () {
+      S.filtros.status = this.value; desenharAgenda();
+    };
+    document.getElementById("fData").onchange = function () {
+      if (this.value) { S.agendaData = daISO(this.value); desenharAgenda(); }
+    };
+    ligarEventos();
+  }
+
+  function andar(passo) {
+    var n = S.agendaModo === "mes" ? 0 : (S.agendaModo === "dia" ? 1 : 7);
+    if (S.agendaModo === "mes") {
+      var d = new Date(S.agendaData.getTime());
+      d.setDate(1);
+      d.setMonth(d.getMonth() + passo);
+      S.agendaData = d;
+    } else {
+      S.agendaData = maisDias(S.agendaData, n * passo);
+    }
+    desenharAgenda();
+  }
+
+  function ligarEventos() {
+    app.querySelectorAll("[data-evento]").forEach(function (b) {
+      b.onclick = function () {
+        var a = S.atendimentos.filter(function (x) { return x.id === b.dataset.evento; })[0];
+        if (a) verAtendimento(a);
+      };
+    });
+    app.querySelectorAll("[data-dia]").forEach(function (c) {
+      c.onclick = function () {
+        S.agendaData = daISO(c.dataset.dia);
+        S.agendaModo = "dia";
+        desenharAgenda();
+      };
+    });
+    app.querySelectorAll("[data-novo-em]").forEach(function (b) {
+      b.onclick = function (e) {
+        e.stopPropagation();
+        formAtendimento(null, {data: b.dataset.novoEm, inicio: b.dataset.hora || ""});
+      };
+    });
+  }
+
+  /* ------------------------------------------------ agenda: semana ----- */
+  /* 64px por hora deixa um atendimento de 40 minutos com altura para a
+     hora e o nome do pet sem cortar. */
+  var HORA_INI = 7, HORA_FIM = 21, ALTURA = 64;
+
+  function faixaDoDia(dia) {
+    /* A janela de horas que a grade mostra. Comeca na configurada e estica
+       para caber atendimento marcado fora dela (encaixe de madrugada, por
+       exemplo) - senao o evento ficaria invisivel. */
+    var ini = HORA_INI * 60, fim = HORA_FIM * 60;
+    filtrados(S.atendimentos || []).forEach(function (a) {
+      if (a.data !== dia) return;
+      ini = Math.min(ini, minutos(a.inicio));
+      fim = Math.max(fim, minutos(a.fim));
+    });
+    return [Math.floor(ini / 60) * 60, Math.ceil(fim / 60) * 60];
+  }
+
+  function agendaSemana(segunda) {
+    var dias = [];
+    for (var i = 0; i < 7; i++) dias.push(maisDias(segunda, i));
+
+    var ini = HORA_INI * 60, fim = HORA_FIM * 60;
+    dias.forEach(function (d) {
+      var f = faixaDoDia(iso(d));
+      ini = Math.min(ini, f[0]); fim = Math.max(fim, f[1]);
+    });
+    var altura = (fim - ini) / 60 * ALTURA;
+
+    var horas = "";
+    for (var m = ini; m < fim; m += 60) {
+      horas += '<div class="hora">' + hhmm(m) + "</div>";
+    }
+
+    var cabecas = '<div class="cabeca"></div>';
+    var colunas = "";
+    dias.forEach(function (d) {
+      var dia = iso(d);
+      var ehHoje = dia === S.op.hoje;
+      cabecas += '<div class="cabeca' + (ehHoje ? " hoje" : "") + '">' +
+        DIAS_CURTO[d.getDay()].toUpperCase() + "<small>" + pad(d.getDate()) + "/" +
+        pad(d.getMonth() + 1) + "</small></div>";
+      colunas += '<div class="coluna" style="height:' + altura + 'px" data-novo-em="' + dia + '">' +
+        linhasDeHora(ini, fim) + camadaFundo(dia, ini) + eventosDoDia(dia, ini) + "</div>";
+    });
+
+    var vazio = filtrados(S.atendimentos).filter(function (a) {
+      return a.data >= iso(dias[0]) && a.data <= iso(dias[6]);
+    }).length === 0;
+
+    return (vazio ? avisoVazio(iso(segunda)) : "") +
+      '<div class="rolagem"><div class="grade" style="--colunas:7">' + cabecas +
+      '<div class="horas">' + horas + "</div>" + colunas + "</div></div>";
+  }
+
+  function linhasDeHora(ini, fim) {
+    var html = "";
+    for (var m = ini; m <= fim; m += 60) {
+      html += '<div class="faixa-hora" style="top:' + ((m - ini) / 60 * ALTURA) + 'px"></div>';
+    }
+    return html;
+  }
+
+  /* Areas cinzas: fora da disponibilidade, ferias, folga. Mais os bloqueios,
+     que aparecem com o motivo escrito. Sem isso a grade nao explica por que
+     um horario nao aceita agendamento. */
+  function camadaFundo(dia, ini) {
+    var vetFiltro = S.filtros.vet;
+    if (!vetFiltro) return "";   // sem vet escolhido nao da para dizer de quem e a janela
+
+    var d = daISO(dia);
+    var indice = String(d.getDay());
+    var html = "";
+
+    var ausencia = (S.ausencias || []).filter(function (a) {
+      return a.vetId === vetFiltro && a.inicio <= dia && dia <= a.fim;
+    })[0];
+
+    if (ausencia) {
+      html += '<div class="fora" style="top:0;bottom:0"></div>';
+    } else {
+      var conf = (S.disponibilidade || []).filter(function (x) {
+        return x.vetId === vetFiltro;
+      })[0];
+      var janelas = (conf && conf.semana && conf.semana[indice]) || [];
+      var fimGrade = ini + (janelas.length ? 0 : 0);
+      // pinta tudo e "recorta" as janelas disponiveis por cima
+      var pontos = [ini];
+      janelas.forEach(function (j) {
+        pontos.push(minutos(j.inicio), minutos(j.fim));
+      });
+      var lim = Math.max.apply(null, [ini].concat(janelas.map(function (j) {
+        return minutos(j.fim);
+      })));
+      html += pintarFora(janelas, ini);
+    }
+
+    (S.bloqueios || []).forEach(function (b) {
+      if (b.data !== dia) return;
+      if (b.vetId && b.vetId !== vetFiltro) return;
+      var topo = (minutos(b.inicio) - ini) / 60 * ALTURA;
+      var alt = (minutos(b.fim) - minutos(b.inicio)) / 60 * ALTURA;
+      html += '<div class="bloqueio" style="top:' + topo + "px;height:" + alt + 'px">' +
+        esc(b.motivo) + "</div>";
+    });
+
+    return html;
+  }
+
+  function pintarFora(janelas, ini) {
+    /* Desenha as sombras entre as janelas de atendimento. */
+    var fimGrade = ini + 24 * 60;
+    var ordenadas = janelas.map(function (j) {
+      return [minutos(j.inicio), minutos(j.fim)];
+    }).sort(function (a, b) { return a[0] - b[0]; });
+
+    var html = "";
+    var cursor = ini;
+    ordenadas.forEach(function (j) {
+      if (j[0] > cursor) {
+        html += faixaCinza(cursor - ini, j[0] - cursor);
+      }
+      cursor = Math.max(cursor, j[1]);
+    });
+    html += '<div class="fora" style="top:' + ((cursor - ini) / 60 * ALTURA) + 'px;bottom:0"></div>';
+    return html;
+  }
+
+  function faixaCinza(deslocaMin, duracaoMin) {
+    return '<div class="fora" style="top:' + (deslocaMin / 60 * ALTURA) +
+      "px;height:" + (duracaoMin / 60 * ALTURA) + 'px"></div>';
+  }
+
+  function eventosDoDia(dia, ini) {
+    var doDia = filtrados(S.atendimentos || []).filter(function (a) {
+      return a.data === dia;
+    }).sort(function (a, b) { return minutos(a.inicio) - minutos(b.inicio); });
+
+    /* Dois atendimentos no mesmo horario (encaixe) dividem a largura, em vez
+       de um cobrir o outro. */
+    var colunas = [];
+    doDia.forEach(function (a) {
+      a._col = 0;
+      for (var c = 0; c < colunas.length; c++) {
+        if (colunas[c] <= minutos(a.inicio)) { a._col = c; colunas[c] = minutos(a.fim); return; }
+      }
+      a._col = colunas.length;
+      colunas.push(minutos(a.fim));
+    });
+    var total = Math.max(1, colunas.length);
+
+    return doDia.map(function (a) {
+      var topo = (minutos(a.inicio) - ini) / 60 * ALTURA;
+      var alt = Math.max(22, (minutos(a.fim) - minutos(a.inicio)) / 60 * ALTURA - 2);
+      var larg = 100 / total;
+      return '<button class="evento ' + esc(a.status) + (a.encaixe ? " encaixe" : "") +
+        '" data-evento="' + esc(a.id) + '" style="top:' + topo + "px;height:" + alt +
+        "px;left:calc(" + (larg * a._col) + "% + 3px);width:calc(" + larg + '% - 6px)">' +
+        /* dividindo a coluna com outro atendimento nao cabe a palavra
+           "encaixe"; a borda tracejada ja conta a historia */
+        '<div class="h">' + esc(a.inicio) +
+          (a.encaixe && total === 1 ? " · encaixe" : "") + "</div>" +
+        '<div class="p">' + esc(a.paciente) + "</div>" +
+        (alt >= 58 ? '<div class="t">' + esc(a.tipo) + "</div>" : "") +
+        "</button>";
+    }).join("");
+  }
+
+  /* --------------------------------------------------- agenda: dia ----- */
+  function agendaDia(d) {
+    var dia = iso(d);
+    var doDia = filtrados(S.atendimentos || []).filter(function (a) {
+      return a.data === dia;
+    }).sort(function (a, b) { return minutos(a.inicio) - minutos(b.inicio); });
+
+    if (!doDia.length) return avisoVazio(dia);
+
+    var porHora = {};
+    doDia.forEach(function (a) {
+      var h = a.inicio.slice(0, 2) + ":00";
+      (porHora[h] = porHora[h] || []).push(a);
+    });
+
+    var linhas = Object.keys(porHora).sort().map(function (h) {
+      return '<div class="hora-linha">' +
+        '<div class="marcador">' + esc(h) + "</div>" +
+        '<div class="eventos">' + porHora[h].map(cartaoEvento).join("") + "</div>" +
+      "</div>";
+    }).join("");
+
+    var ausentes = (S.ausencias || []).filter(function (a) {
+      return a.inicio <= dia && dia <= a.fim;
+    }).map(function (a) {
+      return '<span class="selo aviso">' + esc(nomeVet(a.vetId)) + " · " +
+        esc(S.op.ausenciaRotulo[a.tipo]) + "</span>";
+    }).join(" ");
+
+    return (ausentes ? '<div class="aviso atencao">Fora hoje: ' + ausentes + "</div>" : "") +
+      '<div class="bloco lista-dia">' + linhas + "</div>";
+  }
+
+  function cartaoEvento(a) {
+    var meta = [a.tipo, nomeVet(a.vetId), a.tutor].filter(Boolean).join(" · ");
+    return '<button class="cartao-evento ' + esc(a.status) + '" data-evento="' + esc(a.id) + '">' +
+      '<div class="top">' +
+        '<span class="p">' + esc(a.inicio) + "–" + esc(a.fim) + " · " + esc(a.paciente) + "</span>" +
+        '<span class="selo ' + seloDeStatus(a.status) + '">' + esc(rotuloStatus(a.status)) + "</span>" +
+        (a.encaixe ? '<span class="selo aviso">Encaixe</span>' : "") +
+      "</div>" +
+      '<div class="m">' + esc(meta) + "</div>" +
+    "</button>";
+  }
+
+  function seloDeStatus(s) {
+    if (s === "confirmado" || s === "realizado") return "ativo";
+    if (s === "cancelado" || s === "faltou") return "perigo";
+    if (s === "em_atendimento") return "aviso";
+    return "info";
+  }
+
+  /* --------------------------------------------------- agenda: mes ----- */
+  function agendaMes(d) {
+    var primeiro = new Date(d.getFullYear(), d.getMonth(), 1);
+    var comeco = segundaDe(primeiro);
+    var celulas = "";
+    var cabeca = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"]
+      .map(function (n) { return '<div class="dh">' + n + "</div>"; }).join("");
+
+    for (var i = 0; i < 42; i++) {
+      var atual = maisDias(comeco, i);
+      var dia = iso(atual);
+      var doDia = filtrados(S.atendimentos || []).filter(function (a) {
+        return a.data === dia;
+      }).sort(function (a, b) { return minutos(a.inicio) - minutos(b.inicio); });
+
+      var chips = doDia.slice(0, 3).map(function (a) {
+        return '<div class="chip ' + (a.status === "cancelado" ? "cancelado" : "") + '">' +
+          esc(a.inicio) + " " + esc(a.paciente) + "</div>";
+      }).join("");
+      if (doDia.length > 3) {
+        chips += '<div class="mais">+' + (doDia.length - 3) + " mais</div>";
+      }
+
+      celulas += '<div class="dia' + (atual.getMonth() !== d.getMonth() ? " outro" : "") +
+        (dia === S.op.hoje ? " hoje" : "") + '" data-dia="' + dia + '">' +
+        '<div class="num">' + atual.getDate() + "</div>" + chips + "</div>";
+
+      if (i >= 34 && maisDias(comeco, i + 1).getMonth() !== d.getMonth()) break;
+    }
+
+    return '<div class="mes">' + cabeca + celulas + "</div>";
+  }
+
+  function avisoVazio(dia) {
+    return '<div class="vazio"><p>Não há atendimentos para este período.</p>' +
+      '<button class="btn" data-novo-em="' + esc(dia) + '">+ Novo atendimento</button></div>';
+  }
+
+  /* ------------------------------------------- detalhe do atendimento -- */
+  function verAtendimento(a) {
+    var cancelado = a.status === "cancelado";
+    var acoes = cancelado
+      ? '<button class="btn secundario pequeno" data-remarcar>Reagendar</button>'
+      : ['<button class="btn secundario pequeno" data-status="confirmado">Confirmar</button>',
+         '<button class="btn secundario pequeno" data-status="em_atendimento">Em atendimento</button>',
+         '<button class="btn secundario pequeno" data-status="realizado">Realizado</button>',
+         '<button class="btn secundario pequeno" data-status="faltou">Faltou</button>'].join("");
+
+    modal(
+      '<div class="modal-cab"><div>' +
+        "<h3>" + esc(a.paciente) +
+          (a.encaixe ? ' <span class="selo aviso">Encaixe</span>' : "") + "</h3>" +
+        '<p class="sub">' + esc(br(a.data)) + " · " + esc(a.inicio) + "–" + esc(a.fim) +
+          " · " + esc(rotuloStatus(a.status)) + "</p>" +
+      '</div><button class="fechar" data-fechar>×</button></div>' +
+      '<div class="acoes-rapidas">' + acoes + "</div>" +
+      '<dl class="detalhe">' +
+        "<dt>Tutor</dt><dd>" + esc(a.tutor) + "</dd>" +
+        (a.contato ? "<dt>Contato</dt><dd>" + esc(a.contato) + "</dd>" : "") +
+        "<dt>Veterinário</dt><dd>" + esc(nomeVet(a.vetId)) + "</dd>" +
+        "<dt>Tipo</dt><dd>" + esc(a.tipo) + "</dd>" +
+        (a.endereco ? "<dt>Endereço</dt><dd>" + esc(a.endereco) + "</dd>" : "") +
+        (a.motivoEncaixe ? "<dt>Motivo do encaixe</dt><dd>" + esc(a.motivoEncaixe) + "</dd>" : "") +
+        (a.observacoes ? "<dt>Observações</dt><dd>" + esc(a.observacoes) + "</dd>" : "") +
+        (cancelado ? "<dt>Cancelado por</dt><dd>" + esc(a.canceladoPor || "—") + "</dd>" +
+          "<dt>Motivo</dt><dd>" + esc(a.motivoCancelamento || "—") + "</dd>" +
+          (a.observacaoCancelamento ? "<dt>Observação</dt><dd>" +
+            esc(a.observacaoCancelamento) + "</dd>" : "") : "") +
+        "<dt>Criado por</dt><dd>" + esc(a.criadoPor || "—") + "</dd>" +
+      "</dl>" +
+      '<div class="rodape">' +
+        (cancelado ? "" : '<button class="btn secundario" data-editar>Editar</button>') +
+        (cancelado ? "" : '<button class="btn perigo" data-cancelar>Cancelar atendimento</button>') +
+        (cancelado ? '<button class="btn secundario" data-fechar>Fechar</button>' : "") +
+      "</div>",
+      function (v) {
+        v.querySelectorAll("[data-fechar]").forEach(function (b) { b.onclick = fecharModal; });
+        var ed = v.querySelector("[data-editar]");
+        if (ed) ed.onclick = function () { fecharModal(); formAtendimento(a, {}); };
+        var can = v.querySelector("[data-cancelar]");
+        if (can) can.onclick = function () { fecharModal(); formCancelamento(a); };
+        var rem = v.querySelector("[data-remarcar]");
+        if (rem) rem.onclick = function () {
+          fecharModal();
+          formAtendimento(null, {
+            paciente: a.paciente, tutor: a.tutor, contato: a.contato,
+            endereco: a.endereco, vetId: a.vetId, tipo: a.tipo,
+            duracao: a.duracao, observacoes: a.observacoes, reagendadoDe: a.id
+          });
+        };
+        v.querySelectorAll("[data-status]").forEach(function (b) {
+          b.onclick = function () {
+            b.disabled = true;
+            api("POST", "/api/op/atendimento/status", {id: a.id, status: b.dataset.status})
+              .then(function () {
+                fecharModal();
+                S.aviso = {tipo: "ok", texto: a.paciente + ": " +
+                  rotuloStatus(b.dataset.status) + "."};
+                recarregarAgenda();
+              })
+              .catch(function (e) { b.disabled = false; alerta(v, e.message); });
+          };
+        });
+      });
+  }
+
+  function alerta(dentro, texto, tipo) {
+    var alvo = dentro.querySelector(".modal") || dentro;
+    var velho = alvo.querySelector(".aviso-modal");
+    if (velho) velho.remove();
+    var el = document.createElement("div");
+    el.className = "aviso aviso-modal " + (tipo || "erro");
+    el.textContent = texto;
+    alvo.insertBefore(el, alvo.firstChild);
+  }
+
+  function recarregarAgenda() {
+    if (S.tela === "agenda") {
+      dadosAgenda().then(desenharAgenda).catch(erroNoCorpo);
+    } else {
+      desenhar();
+    }
+  }
+
+  /* --------------------------------- formulario de novo atendimento ---- */
+  function formAtendimento(existente, pre) {
+    var a = existente ? JSON.parse(JSON.stringify(existente)) : {};
+    var d = {
+      id: a.id || "",
+      paciente: a.paciente || pre.paciente || "",
+      tutor: a.tutor || pre.tutor || "",
+      contato: a.contato || pre.contato || "",
+      endereco: a.endereco || pre.endereco || "",
+      vetId: a.vetId || pre.vetId || S.filtros.vet || "",
+      tipo: a.tipo || pre.tipo || (S.op.tipos[0] || "Consulta"),
+      data: a.data || pre.data || S.op.hoje,
+      inicio: a.inicio || pre.inicio || "",
+      duracao: a.duracao || pre.duracao || S.op.duracaoPadrao,
+      status: a.status || "agendado",
+      observacoes: a.observacoes || pre.observacoes || "",
+      encaixe: !!a.encaixe,
+      motivoEncaixe: a.motivoEncaixe || "",
+      reagendadoDe: a.reagendadoDe || pre.reagendadoDe || ""
+    };
+
+    var opcVets = (S.op.vets || []).map(function (v) {
+      return '<option value="' + esc(v.id) + '"' + (d.vetId === v.id ? " selected" : "") +
+        ">" + esc(v.nome) + "</option>";
+    }).join("");
+    var opcTipos = (S.op.tipos || []).map(function (t) {
+      return '<option value="' + esc(t) + '"' + (d.tipo === t ? " selected" : "") +
+        ">" + esc(t) + "</option>";
+    }).join("");
+    var opcStatus = (S.op.status || []).filter(function (s) { return s !== "cancelado"; })
+      .map(function (s) {
+        return '<option value="' + esc(s) + '"' + (d.status === s ? " selected" : "") +
+          ">" + esc(rotuloStatus(s)) + "</option>";
+      }).join("");
+
+    modal(
+      '<div class="modal-cab"><div>' +
+        "<h3>" + (d.id ? "Editar atendimento" : "Novo atendimento") + "</h3>" +
+        '<p class="sub">' + (d.reagendadoDe ? "Reagendamento de um atendimento cancelado." :
+          "O horário é conferido contra a disponibilidade, férias e bloqueios.") + "</p>" +
+      '</div><button class="fechar" data-fechar>×</button></div>' +
+      '<div id="avisoModal"></div>' +
+      '<div class="linha">' +
+        '<div class="campo curto"><label for="m_pac">Paciente (pet) *</label>' +
+          '<input id="m_pac" value="' + esc(d.paciente) + '" placeholder="Thor" list="listaPacientes"/>' +
+          '<datalist id="listaPacientes"></datalist></div>' +
+        '<div class="campo curto"><label for="m_tut">Tutor *</label>' +
+          '<input id="m_tut" value="' + esc(d.tutor) + '" placeholder="Karoline"/></div>' +
+      "</div>" +
+      '<div class="linha">' +
+        '<div class="campo curto"><label for="m_con">Contato</label>' +
+          '<input id="m_con" value="' + esc(d.contato) + '" placeholder="(61) 90000-0000"/></div>' +
+        '<div class="campo curto"><label for="m_end">Endereço do atendimento</label>' +
+          '<input id="m_end" value="' + esc(d.endereco) + '" placeholder="Rua, número, bairro"/></div>' +
+      "</div>" +
+      '<div class="linha">' +
+        '<div class="campo curto"><label for="m_vet">Veterinário *</label>' +
+          '<select id="m_vet"><option value="">Escolha…</option>' + opcVets + "</select></div>" +
+        '<div class="campo curto"><label for="m_tipo">Tipo de atendimento</label>' +
+          '<select id="m_tipo">' + opcTipos + "</select></div>" +
+      "</div>" +
+      '<div class="linha tres">' +
+        '<div class="campo curto"><label for="m_data">Data</label>' +
+          '<input type="date" id="m_data" value="' + esc(d.data) + '"/></div>' +
+        '<div class="campo curto"><label for="m_hora">Horário</label>' +
+          '<input type="time" id="m_hora" value="' + esc(d.inicio) + '"/></div>' +
+        '<div class="campo curto"><label for="m_dur">Duração (min)</label>' +
+          '<input type="number" id="m_dur" min="5" max="600" step="5" value="' + esc(d.duracao) + '"/></div>' +
+      "</div>" +
+      '<div class="campo curto"><label>Horários livres</label>' +
+        '<div class="horarios" id="livres"><span class="ajuda">Escolha o veterinário e a data.</span></div></div>' +
+      '<div class="campo curto"><label for="m_status">Status</label>' +
+        '<select id="m_status">' + opcStatus + "</select></div>" +
+      '<div class="campo curto"><label for="m_obs">Observações</label>' +
+        '<textarea id="m_obs" style="min-height:70px" placeholder="O que o tutor relatou, cuidados, etc.">' +
+          esc(d.observacoes) + "</textarea></div>" +
+      '<div class="campo curto"><label style="display:flex;gap:9px;align-items:center;font-weight:600">' +
+        '<input type="checkbox" id="m_enc" style="width:auto" ' + (d.encaixe ? "checked" : "") + "/>" +
+        "Marcar como encaixe</label>" +
+        '<div class="ajuda">Encaixe passa por cima da disponibilidade, mas só depois que você confirmar.</div>' +
+        '<div id="areaEncaixe" style="margin-top:10px;' + (d.encaixe ? "" : "display:none") + '">' +
+          '<input id="m_motenc" value="' + esc(d.motivoEncaixe) + '" placeholder="Motivo do encaixe (urgência, retorno de cirurgia…)"/>' +
+        "</div></div>" +
+      '<div class="rodape">' +
+        '<button class="btn secundario" data-fechar>Cancelar</button>' +
+        '<button class="btn verde" id="salvarAt">Salvar</button>' +
+      "</div>",
+      function (v) {
+        v.querySelectorAll("[data-fechar]").forEach(function (b) { b.onclick = fecharModal; });
+
+        var enc = v.querySelector("#m_enc");
+        enc.onchange = function () {
+          v.querySelector("#areaEncaixe").style.display = enc.checked ? "" : "none";
+        };
+
+        // pacientes ja cadastrados viram sugestao, sem obrigar cadastro antes
+        api("GET", "/api/op/pacientes").then(function (ps) {
+          var dl = v.querySelector("#listaPacientes");
+          dl.innerHTML = ps.map(function (p) {
+            return '<option value="' + esc(p.nome) + '">' + esc(p.tutor) + "</option>";
+          }).join("");
+          v.querySelector("#m_pac").addEventListener("change", function () {
+            var achou = ps.filter(function (p) { return p.nome === this.value; }.bind(this))[0];
+            if (achou) {
+              if (!v.querySelector("#m_tut").value) v.querySelector("#m_tut").value = achou.tutor;
+              if (!v.querySelector("#m_con").value) v.querySelector("#m_con").value = achou.telefone || "";
+              if (!v.querySelector("#m_end").value) v.querySelector("#m_end").value = achou.endereco || "";
+            }
+          });
+        }).catch(function () {});
+
+        function atualizarLivres() {
+          var vet = v.querySelector("#m_vet").value;
+          var data = v.querySelector("#m_data").value;
+          var dur = v.querySelector("#m_dur").value;
+          var alvo = v.querySelector("#livres");
+          if (!vet || !data) {
+            alvo.innerHTML = '<span class="ajuda">Escolha o veterinário e a data.</span>';
+            return;
+          }
+          alvo.innerHTML = '<span class="ajuda">Procurando…</span>';
+          api("GET", "/api/op/horarios?vet=" + encodeURIComponent(vet) +
+              "&data=" + encodeURIComponent(data) + "&duracao=" + encodeURIComponent(dur))
+            .then(function (hs) {
+              if (!hs.length) {
+                alvo.innerHTML = '<span class="ajuda">Nenhum horário livre nesse dia. ' +
+                  "Marque como encaixe se precisar mesmo assim.</span>";
+                return;
+              }
+              alvo.innerHTML = hs.map(function (h) {
+                return '<button type="button" data-hora="' + h + '">' + h + "</button>";
+              }).join("");
+              alvo.querySelectorAll("[data-hora]").forEach(function (b) {
+                b.onclick = function () {
+                  v.querySelector("#m_hora").value = b.dataset.hora;
+                  alvo.querySelectorAll("[data-hora]").forEach(function (o) {
+                    o.classList.toggle("escolhido", o === b);
+                  });
+                };
+              });
+            })
+            .catch(function () { alvo.innerHTML = ""; });
+        }
+
+        v.querySelector("#m_vet").onchange = atualizarLivres;
+        v.querySelector("#m_data").onchange = atualizarLivres;
+        v.querySelector("#m_dur").onchange = atualizarLivres;
+        atualizarLivres();
+
+        v.querySelector("#salvarAt").onclick = function () {
+          enviarAtendimento(v, d, false);
+        };
+      });
+  }
+
+  function enviarAtendimento(v, d, confirmado) {
+    var val = function (id) { return (v.querySelector(id).value || "").trim(); };
+    var botao = v.querySelector("#salvarAt");
+
+    var corpo = {
+      id: d.id,
+      paciente: val("#m_pac"), tutor: val("#m_tut"), contato: val("#m_con"),
+      endereco: val("#m_end"), vetId: val("#m_vet"), tipo: val("#m_tipo"),
+      data: val("#m_data"), inicio: val("#m_hora"),
+      duracao: +val("#m_dur") || S.op.duracaoPadrao,
+      status: val("#m_status"), observacoes: val("#m_obs"),
+      encaixe: v.querySelector("#m_enc").checked,
+      motivoEncaixe: val("#m_motenc"),
+      reagendadoDe: d.reagendadoDe,
+      confirmado: confirmado
+    };
+
+    if (!corpo.paciente || !corpo.tutor) {
+      return alerta(v, "Preencha o paciente e o tutor.");
+    }
+    if (!corpo.vetId) return alerta(v, "Escolha o veterinário.");
+    if (!corpo.inicio) return alerta(v, "Escolha o horário.");
+
+    if (botao) { botao.disabled = true; botao.textContent = "Salvando…"; }
+
+    api("POST", "/api/op/atendimento", corpo)
+      .then(function (r) {
+        fecharModal();
+        S.aviso = {
+          tipo: r.avisos && r.avisos.length ? "atencao" : "ok",
+          texto: corpo.paciente + " " + (d.id ? "atualizado" : "agendado") + " para " +
+            br(corpo.data) + " às " + corpo.inicio +
+            (r.avisos && r.avisos.length ? " (encaixe, com conflito aceito)." : ".")
+        };
+        S.atendimentos = null;
+        recarregarAgenda();
+      })
+      .catch(function (e) {
+        if (botao) { botao.disabled = false; botao.textContent = "Salvar"; }
+        if (e.status === 409 && e.dados && e.dados.conflitos) {
+          return telaConflito(v, e.dados.conflitos, d, corpo);
+        }
+        alerta(v, e.message);
+      });
+  }
+
+  /* O servidor recusou. Mostra o motivo e, se der para encaixar, deixa o
+     usuario decidir - nunca salva por conta propria. */
+  function telaConflito(v, problemas, d, corpo) {
+    var lista = problemas.map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("");
+    var podeEncaixar = corpo.encaixe;
+
+    alerta(v, "");
+    var alvo = v.querySelector(".modal");
+    var velho = alvo.querySelector(".aviso-modal");
+    if (velho) velho.remove();
+
+    var caixa = document.createElement("div");
+    caixa.className = "aviso aviso-modal atencao";
+    caixa.innerHTML = "<strong>" + (podeEncaixar
+        ? "Este horário tem conflito."
+        : "Não dá para agendar nesse horário.") + "</strong><ul>" + lista + "</ul>" +
+      (podeEncaixar
+        ? '<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">' +
+            '<button class="btn secundario pequeno" data-voltar>Voltar</button>' +
+            '<button class="btn pequeno" data-confirmar>Confirmar encaixe</button></div>'
+        : '<div style="margin-top:8px" class="ajuda">Escolha outro horário, ' +
+          "ou marque como encaixe para agendar mesmo assim.</div>");
+    alvo.insertBefore(caixa, alvo.firstChild);
+    alvo.scrollIntoView({block: "start"});
+
+    var vol = caixa.querySelector("[data-voltar]");
+    if (vol) vol.onclick = function () { caixa.remove(); };
+    var conf = caixa.querySelector("[data-confirmar]");
+    if (conf) {
+      conf.onclick = function () {
+        caixa.remove();
+        enviarAtendimento(v, d, true);
+      };
+    }
+  }
+
+  /* ----------------------------------------------- cancelar / motivo -- */
+  function formCancelamento(a) {
+    var opc = (S.op.motivosCancelamento || []).map(function (m) {
+      return '<option value="' + esc(m) + '">' + esc(m) + "</option>";
+    }).join("");
+
+    modal(
+      "<h3>Cancelar atendimento</h3>" +
+      '<p class="sub">' + esc(a.paciente) + " · " + esc(br(a.data)) + " às " + esc(a.inicio) +
+        ". O registro não é apagado: fica guardado como cancelado.</p>" +
+      '<div id="avisoModal"></div>' +
+      '<div class="campo curto"><label for="c_mot">Motivo *</label>' +
+        '<select id="c_mot">' + opc + "</select></div>" +
+      '<div class="campo curto"><label for="c_obs">Observação</label>' +
+        '<textarea id="c_obs" style="min-height:70px" placeholder="O que aconteceu (opcional)."></textarea></div>' +
+      '<div class="rodape">' +
+        '<button class="btn secundario" data-fechar>Voltar</button>' +
+        '<button class="btn perigo" id="confirmaCancel">Cancelar atendimento</button>' +
+      "</div>",
+      function (v) {
+        v.querySelectorAll("[data-fechar]").forEach(function (b) { b.onclick = fecharModal; });
+        v.querySelector("#confirmaCancel").onclick = function () {
+          var b = this;
+          b.disabled = true; b.textContent = "Cancelando…";
+          api("POST", "/api/op/atendimento/cancelar", {
+            id: a.id,
+            motivo: v.querySelector("#c_mot").value,
+            observacao: v.querySelector("#c_obs").value
+          }).then(function () {
+            fecharModal();
+            S.aviso = {tipo: "ok", texto: a.paciente + ": atendimento cancelado."};
+            S.atendimentos = null;
+            recarregarAgenda();
+          }).catch(function (e) {
+            b.disabled = false; b.textContent = "Cancelar atendimento";
+            alerta(v, e.message);
+          });
+        };
+      });
+  }
+
+  /* ========================================== TELA: DISPONIBILIDADE === */
+  function telaDisponibilidade() {
+    carregando("Disponibilidade");
+    comOperacao(function () {
+      api("GET", "/api/op/disponibilidade").then(function (lista) {
+        S.disponibilidade = lista;
+        if (!S.dispVet && S.op.vets.length) S.dispVet = S.op.vets[0].id;
+        desenharDisponibilidade();
+      }).catch(erroNoCorpo);
+    });
+  }
+
+  function desenharDisponibilidade() {
+    var conf = (S.disponibilidade || []).filter(function (d) {
+      return d.vetId === S.dispVet;
+    })[0] || {vetId: S.dispVet, duracaoPadrao: S.op.duracaoPadrao, semana: {}};
+
+    // trabalha numa copia: nada vai para o servidor antes do Salvar
+    var rascunho = JSON.parse(JSON.stringify(conf));
+
+    var opc = (S.op.vets || []).map(function (v) {
+      return '<option value="' + esc(v.id) + '"' + (S.dispVet === v.id ? " selected" : "") +
+        ">" + esc(v.nome) + "</option>";
+    }).join("");
+
+    function blocos() {
+      var ordem = [1, 2, 3, 4, 5, 6, 0];   // segunda a domingo
+      return ordem.map(function (n) {
+        var periodos = rascunho.semana[String(n)] || [];
+        var linhas = periodos.length
+          ? periodos.map(function (p, i) {
+              return '<div class="periodo">' +
+                '<input type="time" value="' + esc(p.inicio) + '" data-dia="' + n + '" data-i="' + i + '" data-campo="inicio"/>' +
+                "<span>até</span>" +
+                '<input type="time" value="' + esc(p.fim) + '" data-dia="' + n + '" data-i="' + i + '" data-campo="fim"/>' +
+                '<button class="x" data-remover="' + n + "|" + i + '" title="Remover">×</button>' +
+              "</div>";
+            }).join("")
+          : '<div class="sem-periodo">Não atende neste dia.</div>';
+
+        return '<div class="dia-bloco">' +
+          '<div class="cab"><h4>' + esc(S.op.dias[n]) + "</h4>" +
+            '<button class="btn secundario pequeno" data-add="' + n + '">+ horário</button>' +
+            '<button class="btn secundario pequeno" data-copiar="' + n + '">Copiar para…</button>' +
+          "</div>" + linhas + "</div>";
+      }).join("");
+    }
+
+    casca("Disponibilidade", "Horários que se repetem toda semana", "",
+      '<div class="linha" style="margin-bottom:6px">' +
+        '<div class="campo curto"><label for="escolheVet">Veterinário</label>' +
+          '<select id="escolheVet">' + opc + "</select></div>" +
+        '<div class="campo curto"><label for="duracao">Duração padrão da consulta (min)</label>' +
+          '<input type="number" id="duracao" min="5" max="480" step="5" value="' +
+            esc(rascunho.duracaoPadrao || S.op.duracaoPadrao) + '"/></div>' +
+      "</div>" +
+      '<div class="ajuda" style="margin:0 0 18px">A duração padrão define os horários ' +
+        "que a agenda oferece — 40 minutos gera 08:00, 08:40, 09:20…</div>" +
+      '<div id="dias">' + blocos() + "</div>" +
+      '<div class="rodape-form" style="border:none">' +
+        '<button class="btn secundario" id="copiarSemana">Copiar segunda para a semana toda</button>' +
+        '<button class="btn verde" id="salvarDisp">Salvar disponibilidade</button>' +
+      "</div>");
+
+    function redesenhar() {
+      document.getElementById("dias").innerHTML = blocos();
+      ligar();
+    }
+
+    function ligar() {
+      app.querySelectorAll("[data-add]").forEach(function (b) {
+        b.onclick = function () {
+          var n = b.dataset.add;
+          rascunho.semana[n] = (rascunho.semana[n] || []).concat(
+            [{inicio: "08:00", fim: "12:00"}]);
+          redesenhar();
+        };
+      });
+      app.querySelectorAll("[data-remover]").forEach(function (b) {
+        b.onclick = function () {
+          var p = b.dataset.remover.split("|");
+          rascunho.semana[p[0]].splice(+p[1], 1);
+          if (!rascunho.semana[p[0]].length) delete rascunho.semana[p[0]];
+          redesenhar();
+        };
+      });
+      app.querySelectorAll("[data-campo]").forEach(function (inp) {
+        inp.onchange = function () {
+          rascunho.semana[inp.dataset.dia][+inp.dataset.i][inp.dataset.campo] = inp.value;
+        };
+      });
+      app.querySelectorAll("[data-copiar]").forEach(function (b) {
+        b.onclick = function () { copiarDia(+b.dataset.copiar); };
+      });
+    }
+
+    function copiarDia(origem) {
+      var periodos = rascunho.semana[String(origem)] || [];
+      if (!periodos.length) {
+        S.aviso = {tipo: "erro", texto: "Esse dia não tem horário para copiar."};
+        return desenharDisponibilidade();
+      }
+      var caixas = [1, 2, 3, 4, 5, 6, 0].filter(function (n) { return n !== origem; })
+        .map(function (n) {
+          return '<label style="display:flex;gap:8px;align-items:center;font-weight:400;margin-bottom:6px">' +
+            '<input type="checkbox" style="width:auto" value="' + n + '"/>' +
+            esc(S.op.dias[n]) + "</label>";
+        }).join("");
+
+      modal("<h3>Copiar " + esc(S.op.dias[origem]) + "</h3>" +
+        '<p class="sub">Os horários deste dia substituem os dos dias marcados.</p>' +
+        caixas +
+        '<div class="rodape"><button class="btn secundario" data-fechar>Voltar</button>' +
+        '<button class="btn verde" data-ok>Copiar</button></div>',
+        function (v) {
+          v.querySelector("[data-fechar]").onclick = fecharModal;
+          v.querySelector("[data-ok]").onclick = function () {
+            v.querySelectorAll("input:checked").forEach(function (c) {
+              rascunho.semana[c.value] = JSON.parse(JSON.stringify(periodos));
+            });
+            fecharModal();
+            redesenhar();
+          };
+        });
+    }
+
+    ligar();
+
+    document.getElementById("escolheVet").onchange = function () {
+      S.dispVet = this.value;
+      desenharDisponibilidade();
+    };
+    document.getElementById("duracao").onchange = function () {
+      rascunho.duracaoPadrao = +this.value;
+    };
+    document.getElementById("copiarSemana").onclick = function () {
+      var seg = rascunho.semana["1"];
+      if (!seg || !seg.length) {
+        S.aviso = {tipo: "erro", texto: "Configure a segunda-feira primeiro."};
+        return desenharDisponibilidade();
+      }
+      confirmar("Copiar a semana", "Terça a sexta ficam com os mesmos horários da segunda. " +
+        "Sábado e domingo não mudam.", "Copiar", function () {
+        [2, 3, 4, 5].forEach(function (n) {
+          rascunho.semana[String(n)] = JSON.parse(JSON.stringify(seg));
+        });
+        redesenhar();
+      });
+    };
+    document.getElementById("salvarDisp").onclick = function () {
+      var b = this;
+      b.disabled = true; b.textContent = "Salvando…";
+      api("POST", "/api/op/disponibilidade", {
+        vetId: S.dispVet,
+        duracaoPadrao: rascunho.duracaoPadrao || S.op.duracaoPadrao,
+        semana: rascunho.semana
+      }).then(function () {
+        S.aviso = {tipo: "ok", texto: "Disponibilidade de " + nomeVet(S.dispVet) + " salva."};
+        S.disponibilidade = null;
+        telaDisponibilidade();
+      }).catch(function (e) {
+        b.disabled = false; b.textContent = "Salvar disponibilidade";
+        S.aviso = {tipo: "erro", texto: e.message};
+        desenharDisponibilidade();
+      });
+    };
+  }
+
+  /* ================================================== TELA: ESCALAS === */
+  function telaEscalas() {
+    carregando("Escalas");
+    comOperacao(function () {
+      var d = S.escalaData || daISO(S.op.hoje);
+      api("GET", "/api/op/escala-semana?data=" + iso(d)).then(function (semana) {
+        desenharEscalas(semana, d);
+      }).catch(erroNoCorpo);
+    });
+  }
+
+  function desenharEscalas(semana, d) {
+    var ini = daISO(semana[0].data), fim = daISO(semana[6].data);
+
+    var dias = semana.map(function (e) {
+      var turnos = e.turnos.length
+        ? e.turnos.map(function (t) {
+            return '<div class="turno"><div class="h">' + esc(t.inicio) + " – " + esc(t.fim) + "</div>" +
+              '<div class="pessoas">' + (t.vets.length
+                ? t.vets.map(function (v) {
+                    return '<span class="pessoa">' + esc(v.nome || nomeVet(v.vetId)) + "</span>";
+                  }).join("")
+                : '<span class="ajuda">Ninguém neste turno.</span>') + "</div></div>";
+          }).join("")
+        : '<div class="ajuda">Ninguém escalado neste dia.</div>';
+
+      var ausentes = e.ausentes.map(function (a) {
+        return '<span class="selo aviso">' + esc(a.nome) + " · " +
+          esc(S.op.ausenciaRotulo[a.tipo]) + "</span>";
+      }).join(" ");
+
+      var bloqueios = e.bloqueios.map(function (b) {
+        return '<span class="selo info">' + esc(b.motivo) + " " + esc(b.inicio) +
+          "–" + esc(b.fim) + "</span>";
+      }).join(" ");
+
+      return '<div class="dia-bloco">' +
+        '<div class="cab"><h4>' + esc(e.diaSemana) + ", " + esc(br(e.data)) + "</h4>" +
+          '<span class="selo ' + (e.derivada ? "info" : "aviso") + '">' +
+            (e.derivada ? "Automática" : "Ajustada") + "</span>" +
+          '<button class="btn secundario pequeno" data-editar-escala="' + esc(e.data) + '">Editar</button>' +
+          (e.derivada ? "" :
+            '<button class="btn secundario pequeno" data-voltar-escala="' + esc(e.data) + '">Desfazer ajuste</button>') +
+        "</div>" +
+        (e.observacao ? '<div class="ajuda" style="margin-bottom:8px">' + esc(e.observacao) + "</div>" : "") +
+        turnos +
+        (ausentes || bloqueios
+          ? '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">' + ausentes + " " + bloqueios + "</div>"
+          : "") +
+      "</div>";
+    }).join("");
+
+    casca("Escalas",
+      "Semana de " + br(semana[0].data) + " a " + br(semana[6].data), "",
+      '<div class="agenda-topo">' +
+        '<div class="setas-data">' +
+          '<button id="anterior" aria-label="Semana anterior">&#8249;</button>' +
+          '<button id="proximo" aria-label="Próxima semana">&#8250;</button>' +
+        "</div>" +
+        '<button class="btn secundario pequeno" id="hoje">Esta semana</button>' +
+        '<div class="titulo"></div>' +
+      "</div>" +
+      '<div class="aviso" style="background:#eef8fb;color:#2b7f96">A escala sai sozinha da ' +
+        "disponibilidade de cada veterinário, já descontando férias e folgas. " +
+        "Editar um dia cria um ajuste só para ele.</div>" +
+      dias, true);
+
+    document.getElementById("anterior").onclick = function () {
+      S.escalaData = maisDias(d, -7); telaEscalas();
+    };
+    document.getElementById("proximo").onclick = function () {
+      S.escalaData = maisDias(d, 7); telaEscalas();
+    };
+    document.getElementById("hoje").onclick = function () {
+      S.escalaData = daISO(S.op.hoje); telaEscalas();
+    };
+    app.querySelectorAll("[data-editar-escala]").forEach(function (b) {
+      b.onclick = function () {
+        var e = semana.filter(function (x) { return x.data === b.dataset.editarEscala; })[0];
+        formEscala(e);
+      };
+    });
+    app.querySelectorAll("[data-voltar-escala]").forEach(function (b) {
+      b.onclick = function () {
+        confirmar("Desfazer o ajuste",
+          "O dia " + br(b.dataset.voltarEscala) + " volta a seguir a disponibilidade de cada um.",
+          "Desfazer", function () {
+            api("POST", "/api/op/escala/remover", {data: b.dataset.voltarEscala})
+              .then(function () {
+                S.aviso = {tipo: "ok", texto: "Ajuste desfeito."};
+                telaEscalas();
+              })
+              .catch(function (e) { S.aviso = {tipo: "erro", texto: e.message}; telaEscalas(); });
+          });
+      };
+    });
+  }
+
+  function formEscala(e) {
+    var turnos = JSON.parse(JSON.stringify(e.turnos));
+
+    function html() {
+      return turnos.map(function (t, i) {
+        var marcados = (S.op.vets || []).map(function (v) {
+          var tem = t.vets.some(function (x) { return x.vetId === v.id; });
+          return '<label style="display:flex;gap:7px;align-items:center;font-weight:400;font-size:.875rem">' +
+            '<input type="checkbox" style="width:auto" data-turno="' + i + '" value="' + esc(v.id) + '"' +
+            (tem ? " checked" : "") + "/>" + esc(v.nome) + "</label>";
+        }).join("");
+        return '<div class="turno">' +
+          '<div class="periodo">' +
+            '<input type="time" value="' + esc(t.inicio) + '" data-t="' + i + '" data-c="inicio"/>' +
+            "<span>até</span>" +
+            '<input type="time" value="' + esc(t.fim) + '" data-t="' + i + '" data-c="fim"/>' +
+            '<button class="x" data-remove-turno="' + i + '">×</button>' +
+          "</div>" + marcados + "</div>";
+      }).join("") || '<div class="ajuda">Nenhum turno ainda.</div>';
+    }
+
+    modal(
+      "<h3>Escala de " + esc(br(e.data)) + "</h3>" +
+      '<p class="sub">' + esc(e.diaSemana) + '. Marque quem trabalha em cada turno.</p>' +
+      '<div id="avisoModal"></div>' +
+      '<div id="turnos">' + html() + "</div>" +
+      '<button class="btn secundario pequeno" id="addTurno" style="margin-top:6px">+ Turno</button>' +
+      '<div class="campo curto" style="margin-top:16px"><label for="e_obs">Observação</label>' +
+        '<input id="e_obs" value="' + esc(e.observacao || "") + '" placeholder="Plantão reforçado, feriado…"/></div>' +
+      '<div class="rodape">' +
+        '<button class="btn secundario" data-fechar>Voltar</button>' +
+        '<button class="btn verde" id="salvarEsc">Salvar escala</button>' +
+      "</div>",
+      function (v) {
+        function ligar() {
+          v.querySelector("#turnos").innerHTML = html();
+          v.querySelectorAll("[data-c]").forEach(function (inp) {
+            inp.onchange = function () { turnos[+inp.dataset.t][inp.dataset.c] = inp.value; };
+          });
+          v.querySelectorAll("[data-remove-turno]").forEach(function (b) {
+            b.onclick = function () { turnos.splice(+b.dataset.removeTurno, 1); ligar(); };
+          });
+          v.querySelectorAll("[data-turno]").forEach(function (c) {
+            c.onchange = function () {
+              var t = turnos[+c.dataset.turno];
+              if (c.checked) {
+                t.vets.push({vetId: c.value, nome: nomeVet(c.value)});
+              } else {
+                t.vets = t.vets.filter(function (x) { return x.vetId !== c.value; });
+              }
+            };
+          });
+        }
+        ligar();
+
+        v.querySelector("#addTurno").onclick = function () {
+          turnos.push({inicio: "08:00", fim: "12:00", vets: []});
+          ligar();
+        };
+        v.querySelector("[data-fechar]").onclick = fecharModal;
+        v.querySelector("#salvarEsc").onclick = function () {
+          var b = this;
+          b.disabled = true; b.textContent = "Salvando…";
+          api("POST", "/api/op/escala", {
+            data: e.data, turnos: turnos, observacao: v.querySelector("#e_obs").value
+          }).then(function () {
+            fecharModal();
+            S.aviso = {tipo: "ok", texto: "Escala de " + br(e.data) + " salva."};
+            telaEscalas();
+          }).catch(function (err) {
+            b.disabled = false; b.textContent = "Salvar escala";
+            alerta(v, err.message);
+          });
+        };
+      });
+  }
+
+  /* =============================================== TELA: BLOQUEIOS === */
+  function telaBloqueios() {
+    carregando("Bloqueios");
+    comOperacao(function () {
+      api("GET", "/api/op/bloqueios").then(function (lista) {
+        var hoje = S.op.hoje;
+        var futuros = lista.filter(function (b) { return b.data >= hoje; });
+        var passados = lista.filter(function (b) { return b.data < hoje; });
+
+        function linha(b) {
+          return '<div class="cartao">' +
+            '<div class="dados"><div class="nome">' + esc(b.motivo) + " · " +
+              esc(br(b.data)) + " · " + esc(b.inicio) + "–" + esc(b.fim) + "</div>" +
+              '<div class="meta">' + esc(b.vetId ? nomeVet(b.vetId) : "Clínica inteira") +
+              (b.observacao ? " · " + esc(b.observacao) : "") + "</div></div>" +
+            '<button class="btn secundario pequeno" data-editar="' + esc(b.id) + '">Editar</button>' +
+            '<button class="btn secundario pequeno" data-remover="' + esc(b.id) + '">Remover</button>' +
+          "</div>";
+        }
+
+        casca("Bloqueios de horário",
+          futuros.length + " a partir de hoje",
+          '<button class="btn" id="novo">+ Novo bloqueio</button>',
+          (futuros.length
+            ? futuros.map(linha).join("")
+            : '<div class="vazio"><p>Nenhum bloqueio daqui para a frente.</p>' +
+              '<button class="btn" id="novo2">+ Novo bloqueio</button></div>') +
+          (passados.length
+            ? '<h2 style="font-size:1rem;margin:26px 0 12px">Já passaram</h2>' +
+              passados.slice(-10).reverse().map(linha).join("")
+            : ""));
+
+        var abrir = function () { formBloqueio(null, lista); };
+        var b1 = document.getElementById("novo");
+        if (b1) b1.onclick = abrir;
+        var b2 = document.getElementById("novo2");
+        if (b2) b2.onclick = abrir;
+
+        app.querySelectorAll("[data-editar]").forEach(function (b) {
+          b.onclick = function () {
+            formBloqueio(lista.filter(function (x) { return x.id === b.dataset.editar; })[0], lista);
+          };
+        });
+        app.querySelectorAll("[data-remover]").forEach(function (b) {
+          b.onclick = function () {
+            var alvo = lista.filter(function (x) { return x.id === b.dataset.remover; })[0];
+            confirmar("Remover bloqueio",
+              alvo.motivo + " em " + br(alvo.data) + ". O horário volta a aceitar agendamento.",
+              "Remover", function () {
+                api("POST", "/api/op/bloqueio/remover", {id: alvo.id})
+                  .then(function () {
+                    S.aviso = {tipo: "ok", texto: "Bloqueio removido."};
+                    telaBloqueios();
+                  })
+                  .catch(function (e) { S.aviso = {tipo: "erro", texto: e.message}; telaBloqueios(); });
+              }, true);
+          };
+        });
+      }).catch(erroNoCorpo);
+    });
+  }
+
+  function formBloqueio(b) {
+    b = b || {};
+    var opcVets = '<option value="">A clínica inteira</option>' +
+      (S.op.vets || []).map(function (v) {
+        return '<option value="' + esc(v.id) + '"' + (b.vetId === v.id ? " selected" : "") +
+          ">" + esc(v.nome) + "</option>";
+      }).join("");
+    var opcMotivos = (S.op.motivosBloqueio || []).map(function (m) {
+      return '<option value="' + esc(m) + '"' + (b.motivo === m ? " selected" : "") +
+        ">" + esc(m) + "</option>";
+    }).join("");
+
+    modal(
+      "<h3>" + (b.id ? "Editar bloqueio" : "Novo bloqueio") + "</h3>" +
+      '<p class="sub">O período fica indisponível para novos agendamentos.</p>' +
+      '<div id="avisoModal"></div>' +
+      '<div class="campo curto"><label for="b_vet">Quem fica bloqueado</label>' +
+        '<select id="b_vet">' + opcVets + "</select></div>" +
+      '<div class="linha tres">' +
+        '<div class="campo curto"><label for="b_data">Data</label>' +
+          '<input type="date" id="b_data" value="' + esc(b.data || S.op.hoje) + '"/></div>' +
+        '<div class="campo curto"><label for="b_ini">Das</label>' +
+          '<input type="time" id="b_ini" value="' + esc(b.inicio || "12:00") + '"/></div>' +
+        '<div class="campo curto"><label for="b_fim">Até</label>' +
+          '<input type="time" id="b_fim" value="' + esc(b.fim || "13:00") + '"/></div>' +
+      "</div>" +
+      '<div class="campo curto"><label for="b_mot">Motivo</label>' +
+        '<select id="b_mot">' + opcMotivos + "</select></div>" +
+      '<div class="campo curto"><label for="b_obs">Observação</label>' +
+        '<input id="b_obs" value="' + esc(b.observacao || "") + '" placeholder="Opcional"/></div>' +
+      '<div class="rodape">' +
+        '<button class="btn secundario" data-fechar>Voltar</button>' +
+        '<button class="btn verde" id="salvarBlo">Salvar</button>' +
+      "</div>",
+      function (v) {
+        v.querySelector("[data-fechar]").onclick = fecharModal;
+        v.querySelector("#salvarBlo").onclick = function () {
+          var bt = this;
+          bt.disabled = true; bt.textContent = "Salvando…";
+          api("POST", "/api/op/bloqueio", {
+            id: b.id, vetId: v.querySelector("#b_vet").value,
+            data: v.querySelector("#b_data").value,
+            inicio: v.querySelector("#b_ini").value,
+            fim: v.querySelector("#b_fim").value,
+            motivo: v.querySelector("#b_mot").value,
+            observacao: v.querySelector("#b_obs").value
+          }).then(function () {
+            fecharModal();
+            S.aviso = {tipo: "ok", texto: "Bloqueio salvo."};
+            telaBloqueios();
+          }).catch(function (e) {
+            bt.disabled = false; bt.textContent = "Salvar";
+            alerta(v, e.message);
+          });
+        };
+      });
+  }
+
+  /* ================================================ TELA: AUSENCIAS === */
+  function telaAusencias() {
+    carregando("Férias e folgas");
+    comOperacao(function () {
+      api("GET", "/api/op/ausencias").then(function (lista) {
+        var hoje = S.op.hoje;
+        var atuais = lista.filter(function (a) { return a.fim >= hoje; });
+        var antigas = lista.filter(function (a) { return a.fim < hoje; });
+
+        function linha(a) {
+          var agora = a.inicio <= hoje && hoje <= a.fim;
+          return '<div class="cartao">' +
+            '<div class="dados"><div class="nome">' + esc(nomeVet(a.vetId)) + "</div>" +
+              '<div class="meta">' + esc(S.op.ausenciaRotulo[a.tipo]) + " · " +
+              esc(br(a.inicio)) + " até " + esc(br(a.fim)) +
+              (a.observacao ? " · " + esc(a.observacao) : "") + "</div></div>" +
+            (agora ? '<span class="selo aviso">Agora</span>' : "") +
+            '<button class="btn secundario pequeno" data-editar="' + esc(a.id) + '">Editar</button>' +
+            '<button class="btn secundario pequeno" data-remover="' + esc(a.id) + '">Remover</button>' +
+          "</div>";
+        }
+
+        casca("Férias e folgas", atuais.length + " período(s) a partir de hoje",
+          '<button class="btn" id="novo">+ Novo período</button>',
+          (atuais.length
+            ? atuais.map(linha).join("")
+            : '<div class="vazio"><p>Ninguém com férias ou folga marcada.</p>' +
+              '<button class="btn" id="novo2">+ Novo período</button></div>') +
+          (antigas.length
+            ? '<h2 style="font-size:1rem;margin:26px 0 12px">Já passaram</h2>' +
+              antigas.slice(-10).reverse().map(linha).join("")
+            : ""));
+
+        var abrir = function () { formAusencia(null); };
+        var b1 = document.getElementById("novo");
+        if (b1) b1.onclick = abrir;
+        var b2 = document.getElementById("novo2");
+        if (b2) b2.onclick = abrir;
+
+        app.querySelectorAll("[data-editar]").forEach(function (b) {
+          b.onclick = function () {
+            formAusencia(lista.filter(function (x) { return x.id === b.dataset.editar; })[0]);
+          };
+        });
+        app.querySelectorAll("[data-remover]").forEach(function (b) {
+          b.onclick = function () {
+            var alvo = lista.filter(function (x) { return x.id === b.dataset.remover; })[0];
+            confirmar("Remover período",
+              nomeVet(alvo.vetId) + ", " + S.op.ausenciaRotulo[alvo.tipo].toLowerCase() +
+              " de " + br(alvo.inicio) + " a " + br(alvo.fim) +
+              ". A agenda volta a aceitar atendimentos nesses dias.",
+              "Remover", function () {
+                api("POST", "/api/op/ausencia/remover", {id: alvo.id})
+                  .then(function () {
+                    S.aviso = {tipo: "ok", texto: "Período removido."};
+                    telaAusencias();
+                  })
+                  .catch(function (e) { S.aviso = {tipo: "erro", texto: e.message}; telaAusencias(); });
+              }, true);
+          };
+        });
+      }).catch(erroNoCorpo);
+    });
+  }
+
+  function formAusencia(a) {
+    a = a || {};
+    var opcVets = '<option value="">Escolha…</option>' +
+      (S.op.vets || []).map(function (v) {
+        return '<option value="' + esc(v.id) + '"' + (a.vetId === v.id ? " selected" : "") +
+          ">" + esc(v.nome) + "</option>";
+      }).join("");
+    var opcTipos = (S.op.tiposAusencia || []).map(function (t) {
+      return '<option value="' + esc(t) + '"' + (a.tipo === t ? " selected" : "") +
+        ">" + esc(S.op.ausenciaRotulo[t]) + "</option>";
+    }).join("");
+
+    modal(
+      "<h3>" + (a.id ? "Editar período" : "Férias, folga ou ausência") + "</h3>" +
+      '<p class="sub">Nesses dias o veterinário não aceita novos agendamentos.</p>' +
+      '<div id="avisoModal"></div>' +
+      '<div class="linha">' +
+        '<div class="campo curto"><label for="a_vet">Veterinário *</label>' +
+          '<select id="a_vet">' + opcVets + "</select></div>" +
+        '<div class="campo curto"><label for="a_tipo">Tipo</label>' +
+          '<select id="a_tipo">' + opcTipos + "</select></div>" +
+      "</div>" +
+      '<div class="linha">' +
+        '<div class="campo curto"><label for="a_ini">De</label>' +
+          '<input type="date" id="a_ini" value="' + esc(a.inicio || S.op.hoje) + '"/></div>' +
+        '<div class="campo curto"><label for="a_fim">Até</label>' +
+          '<input type="date" id="a_fim" value="' + esc(a.fim || S.op.hoje) + '"/></div>' +
+      "</div>" +
+      '<div class="campo curto"><label for="a_obs">Observação</label>' +
+        '<input id="a_obs" value="' + esc(a.observacao || "") + '" placeholder="Opcional"/></div>' +
+      '<div class="rodape">' +
+        '<button class="btn secundario" data-fechar>Voltar</button>' +
+        '<button class="btn verde" id="salvarAus">Salvar</button>' +
+      "</div>",
+      function (v) {
+        v.querySelector("[data-fechar]").onclick = fecharModal;
+        v.querySelector("#salvarAus").onclick = function () {
+          var bt = this;
+          if (!v.querySelector("#a_vet").value) return alerta(v, "Escolha o veterinário.");
+          bt.disabled = true; bt.textContent = "Salvando…";
+          api("POST", "/api/op/ausencia", {
+            id: a.id, vetId: v.querySelector("#a_vet").value,
+            tipo: v.querySelector("#a_tipo").value,
+            inicio: v.querySelector("#a_ini").value,
+            fim: v.querySelector("#a_fim").value,
+            observacao: v.querySelector("#a_obs").value
+          }).then(function () {
+            fecharModal();
+            S.aviso = {tipo: "ok", texto: "Período salvo."};
+            telaAusencias();
+          }).catch(function (e) {
+            bt.disabled = false; bt.textContent = "Salvar";
+            alerta(v, e.message);
+          });
+        };
+      });
+  }
+
+  /* =========================================== TELA: CANCELAMENTOS === */
+  function telaCancelamentos() {
+    carregando("Cancelamentos");
+    comOperacao(function () {
+      api("GET", "/api/op/atendimentos").then(function (lista) {
+        S.atendimentos = lista;
+        var cancelados = lista.filter(function (a) { return a.status === "cancelado"; })
+          .sort(function (a, b) {
+            return String(b.canceladoEm || "").localeCompare(String(a.canceladoEm || ""));
+          });
+
+        var porMotivo = {};
+        cancelados.forEach(function (a) {
+          var m = a.motivoCancelamento || "Outro";
+          porMotivo[m] = (porMotivo[m] || 0) + 1;
+        });
+        var cards = Object.keys(porMotivo).map(function (m) {
+          return card(porMotivo[m], m);
+        }).join("");
+
+        var itens = cancelados.map(function (a) {
+          return '<div class="cartao">' +
+            '<div class="dados"><div class="nome">' + esc(a.paciente) + " · " +
+              esc(br(a.data)) + " às " + esc(a.inicio) + "</div>" +
+              '<div class="meta">' + esc(a.motivoCancelamento || "Sem motivo") +
+              " · cancelado por " + esc(a.canceladoPor || "—") +
+              (a.canceladoEm ? " em " + esc(a.canceladoEm.slice(0, 16)) : "") + "</div></div>" +
+            '<span class="selo perigo">Cancelado</span>' +
+            '<button class="btn secundario pequeno" data-remarcar="' + esc(a.id) + '">Reagendar</button>' +
+            '<button class="btn secundario pequeno" data-ver="' + esc(a.id) + '">Ver</button>' +
+          "</div>";
+        }).join("");
+
+        casca("Cancelamentos", cancelados.length + " no total", "",
+          (cancelados.length
+            ? '<div class="cards">' + cards + "</div>" + itens
+            : '<div class="vazio"><p>Nenhum atendimento cancelado até agora.</p></div>'));
+
+        app.querySelectorAll("[data-ver]").forEach(function (b) {
+          b.onclick = function () {
+            verAtendimento(lista.filter(function (x) { return x.id === b.dataset.ver; })[0]);
+          };
+        });
+        app.querySelectorAll("[data-remarcar]").forEach(function (b) {
+          b.onclick = function () {
+            var a = lista.filter(function (x) { return x.id === b.dataset.remarcar; })[0];
+            formAtendimento(null, {
+              paciente: a.paciente, tutor: a.tutor, contato: a.contato,
+              endereco: a.endereco, vetId: a.vetId, tipo: a.tipo,
+              duracao: a.duracao, observacoes: a.observacoes, reagendadoDe: a.id
+            });
+          };
+        });
+      }).catch(erroNoCorpo);
+    });
+  }
+
+  /* =============================================== TELA: PACIENTES === */
+  function telaPacientes() {
+    carregando("Pacientes");
+    comOperacao(function () {
+      api("GET", "/api/op/pacientes").then(function (lista) {
+        var itens = lista.map(function (p) {
+          var meta = [p.especie, p.raca, p.telefone].filter(Boolean).join(" · ");
+          return '<div class="cartao">' +
+            '<div class="dados"><div class="nome">' + esc(p.nome) +
+              ' <span style="color:var(--cinza);font-weight:400">· tutor: ' + esc(p.tutor) + "</span></div>" +
+              '<div class="meta">' + esc(meta || "sem outras informações") + "</div></div>" +
+            '<button class="btn secundario pequeno" data-agendar="' + esc(p.id) + '">Agendar</button>' +
+            '<button class="btn secundario pequeno" data-editar="' + esc(p.id) + '">Editar</button>' +
+          "</div>";
+        }).join("");
+
+        casca("Pacientes", lista.length + " cadastrados",
+          '<button class="btn" id="novo">+ Novo paciente</button>',
+          '<div class="campo"><input id="busca" placeholder="Buscar por pet ou tutor…"/></div>' +
+          '<div id="listaPac">' + (lista.length ? itens :
+            '<div class="vazio"><p>Nenhum paciente cadastrado ainda.</p>' +
+            '<div class="ajuda">Não é obrigatório: dá para agendar digitando o nome direto na agenda.</div></div>') +
+          "</div>");
+
+        document.getElementById("busca").oninput = function () {
+          var q = this.value.toLowerCase();
+          app.querySelectorAll("#listaPac .cartao").forEach(function (c) {
+            c.style.display = c.textContent.toLowerCase().indexOf(q) > -1 ? "" : "none";
+          });
+        };
+        document.getElementById("novo").onclick = function () { formPaciente(null); };
+        app.querySelectorAll("[data-editar]").forEach(function (b) {
+          b.onclick = function () {
+            formPaciente(lista.filter(function (x) { return x.id === b.dataset.editar; })[0]);
+          };
+        });
+        app.querySelectorAll("[data-agendar]").forEach(function (b) {
+          b.onclick = function () {
+            var p = lista.filter(function (x) { return x.id === b.dataset.agendar; })[0];
+            formAtendimento(null, {paciente: p.nome, tutor: p.tutor,
+              contato: p.telefone, endereco: p.endereco});
+          };
+        });
+      }).catch(erroNoCorpo);
+    });
+  }
+
+  function formPaciente(p) {
+    p = p || {};
+    modal(
+      "<h3>" + (p.id ? "Editar paciente" : "Novo paciente") + "</h3>" +
+      '<p class="sub">O cadastro só serve para preencher a agenda mais rápido.</p>' +
+      '<div id="avisoModal"></div>' +
+      '<div class="linha">' +
+        '<div class="campo curto"><label for="p_nome">Nome do pet *</label>' +
+          '<input id="p_nome" value="' + esc(p.nome || "") + '" placeholder="Thor"/></div>' +
+        '<div class="campo curto"><label for="p_tut">Tutor *</label>' +
+          '<input id="p_tut" value="' + esc(p.tutor || "") + '" placeholder="Karoline"/></div>' +
+      "</div>" +
+      '<div class="linha tres">' +
+        '<div class="campo curto"><label for="p_esp">Espécie</label>' +
+          '<input id="p_esp" value="' + esc(p.especie || "") + '" placeholder="Cão"/></div>' +
+        '<div class="campo curto"><label for="p_raca">Raça</label>' +
+          '<input id="p_raca" value="' + esc(p.raca || "") + '" placeholder="SRD"/></div>' +
+        '<div class="campo curto"><label for="p_tel">Telefone</label>' +
+          '<input id="p_tel" value="' + esc(p.telefone || "") + '" placeholder="(61) 90000-0000"/></div>' +
+      "</div>" +
+      '<div class="campo curto"><label for="p_end">Endereço</label>' +
+        '<input id="p_end" value="' + esc(p.endereco || "") + '"/></div>' +
+      '<div class="campo curto"><label for="p_obs">Observações</label>' +
+        '<textarea id="p_obs" style="min-height:70px">' + esc(p.observacoes || "") + "</textarea></div>" +
+      '<div class="rodape">' +
+        '<button class="btn secundario" data-fechar>Voltar</button>' +
+        '<button class="btn verde" id="salvarPac">Salvar</button>' +
+      "</div>",
+      function (v) {
+        v.querySelector("[data-fechar]").onclick = fecharModal;
+        v.querySelector("#salvarPac").onclick = function () {
+          var bt = this;
+          bt.disabled = true; bt.textContent = "Salvando…";
+          api("POST", "/api/op/paciente", {
+            id: p.id,
+            nome: v.querySelector("#p_nome").value,
+            tutor: v.querySelector("#p_tut").value,
+            especie: v.querySelector("#p_esp").value,
+            raca: v.querySelector("#p_raca").value,
+            telefone: v.querySelector("#p_tel").value,
+            endereco: v.querySelector("#p_end").value,
+            observacoes: v.querySelector("#p_obs").value
+          }).then(function () {
+            fecharModal();
+            S.aviso = {tipo: "ok", texto: "Paciente salvo."};
+            telaPacientes();
+          }).catch(function (e) {
+            bt.disabled = false; bt.textContent = "Salvar";
+            alerta(v, e.message);
+          });
+        };
+      });
+  }
+
+  /* =============================================== TELA: HISTORICO === */
+  function telaHistorico() {
+    carregando("Histórico");
+    comOperacao(function () {
+      api("GET", "/api/op/auditoria").then(function (log) {
+        var itens = log.map(function (l) {
+          return '<div class="cartao">' +
+            '<div class="dados"><div class="nome">' + esc(l.resumo) + "</div>" +
+              '<div class="meta">' + esc(l.acao) + " · " + esc(l.quem) +
+              " · " + esc(l.quando) + "</div></div></div>";
+        }).join("");
+
+        casca("Histórico", "As últimas " + log.length + " ações", "",
+          log.length ? itens :
+            '<div class="vazio"><p>Nada registrado ainda.</p></div>');
+      }).catch(erroNoCorpo);
+    });
+  }
+
+  /* ============================================================ inicio === */
+  function iniciar() {
+    return api("GET", "/api/sessao").then(function (s) {
+      if (s.baseFotos) S.baseFotos = s.baseFotos;
+      if (typeof s.urlSite === "string") S.urlSite = s.urlSite;
+      S.quem = s.quem || "";
+      S.temOperacao = !!s.operacao;
+      S.motivoSemOperacao = s.operacaoMotivo || "";
+      S.ondeOperacao = s.operacaoOnde || "";
+      if (!s.autenticado) return telaLogin();
+      desenhar();
+    });
+  }
+
+  iniciar();
 })();
 </script>
 </body>

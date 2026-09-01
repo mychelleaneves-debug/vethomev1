@@ -113,3 +113,17 @@ editar `CMS_SENHA` → **Save**. O serviço reinicia sozinho.
 
 O atalho na área de trabalho não muda em nada. Lá ele grava nos arquivos da
 pasta `site/`, como sempre, sem depender de internet nem do token.
+
+---
+
+## Operação da clínica
+
+O painel também tem agenda, disponibilidade, escalas, bloqueios, férias e
+cancelamentos. Esses dados **não** vão para o repositório do site: agendamento
+tem nome de cliente e o repositório do site é público.
+
+O passo a passo para ligar isso (criar o repositório privado, dar acesso ao
+token e apontar o Render para ele) está em **OPERACAO-DA-CLINICA.md**.
+
+Até você fazer isso, o menu OPERAÇÃO aparece esmaecido e diz o que falta.
+O resto do painel funciona normal.

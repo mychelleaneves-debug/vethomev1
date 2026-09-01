@@ -20,6 +20,7 @@ Uso:
     python tools/cms.py                     (do dia a dia)
 """
 import base64
+import datetime
 import hashlib
 import hmac
 import json
@@ -35,6 +36,7 @@ from http.cookies import SimpleCookie
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import armazenamento
+import operacao
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(BASE, "site")
@@ -48,6 +50,16 @@ SESSAO_HORAS = 12
 # ambiente do servidor estao la. Ver tools/armazenamento.py.
 ARMAZEM = armazenamento.escolher(BASE)
 NA_NUVEM = not isinstance(ARMAZEM, armazenamento.Local)
+
+# Onde a operacao da clinica e guardada. E outro lugar de proposito: agenda
+# tem nome de cliente e observacao clinica, e o repositorio do site e publico.
+# None = nao configurado; o painel mostra a Operacao desativada, com o motivo.
+try:
+    ARMAZEM_OP = armazenamento.escolher_privado(BASE)
+    ERRO_OP = ""
+except armazenamento.ErroDeArmazenamento as _e:
+    ARMAZEM_OP = None
+    ERRO_OP = str(_e)
 
 # O Render (e qualquer servico parecido) diz em qual porta escutar e exige
 # que o processo aceite conexoes de fora do container. A existencia da
@@ -277,11 +289,21 @@ class Handler(BaseHTTPRequestHandler):
         if "vethome_cms" not in c:
             return False
         tok = c["vethome_cms"].value
-        exp = sessoes.get(tok)
-        if not exp or exp < time.time():
+        sessao = sessoes.get(tok)
+        if not sessao or sessao["ate"] < time.time():
             sessoes.pop(tok, None)
             return False
         return True
+
+    def quem(self):
+        """Quem esta usando o painel, para a auditoria saber de quem foi a acao."""
+        bruto = self.headers.get("Cookie")
+        if not bruto:
+            return ""
+        c = SimpleCookie(bruto)
+        if "vethome_cms" not in c:
+            return ""
+        return (sessoes.get(c["vethome_cms"].value) or {}).get("quem", "")
 
     def do_GET(self):
         caminho = self.path.split("?")[0]
@@ -294,7 +316,14 @@ class Handler(BaseHTTPRequestHandler):
             return self.json_ok({"autenticado": self.autenticado(),
                                  "configurado": ler_config() is not None,
                                  "baseFotos": BASE_FOTOS,
-                                 "urlSite": URL_SITE})
+                                 "urlSite": URL_SITE,
+                                 "quem": self.quem(),
+                                 "operacao": ARMAZEM_OP is not None,
+                                 "operacaoMotivo": ERRO_OP or (
+                                     "" if ARMAZEM_OP else
+                                     "Falta configurar o repositório privado "
+                                     "(GITHUB_REPO_DADOS) para a operação da clínica."),
+                                 "operacaoOnde": ARMAZEM_OP.descricao() if ARMAZEM_OP else ""})
 
         if caminho == "/api/vets":
             if not self.autenticado():
@@ -305,6 +334,18 @@ class Handler(BaseHTTPRequestHandler):
                 return self.json_erro(502, str(e))
             except Exception as e:
                 return self.json_erro(500, "Nao consegui ler a equipe: " + str(e))
+
+        if caminho.startswith("/api/op/"):
+            if not self.autenticado():
+                return self.json_erro(401, "Faca login para ver os dados.")
+            try:
+                return self.op_get(caminho[len("/api/op/"):])
+            except ValueError as e:
+                return self.json_erro(400, str(e))
+            except armazenamento.ErroDeArmazenamento as e:
+                return self.json_erro(502, str(e))
+            except Exception as e:
+                return self.json_erro(500, "Erro no servidor: " + str(e))
 
         if caminho in ("/admin", "/admin/"):
             return self.arquivo(os.path.join(ADMIN, "index.html"))
@@ -329,7 +370,8 @@ class Handler(BaseHTTPRequestHandler):
                     time.sleep(1)
                     return self.json_erro(401, "Senha incorreta.")
                 tok = secrets.token_urlsafe(32)
-                sessoes[tok] = time.time() + SESSAO_HORAS * 3600
+                sessoes[tok] = {"ate": time.time() + SESSAO_HORAS * 3600,
+                                "quem": str(dados.get("quem", "")).strip()[:60]}
                 cookie = ("vethome_cms=" + tok +
                           "; Path=/; HttpOnly; SameSite=Strict; Max-Age=" +
                           str(SESSAO_HORAS * 3600))
@@ -355,8 +397,19 @@ class Handler(BaseHTTPRequestHandler):
                 return self.salvar_vet()
             if caminho == "/api/ordem":
                 return self.salvar_ordem()
+            if caminho.startswith("/api/op/"):
+                return self.op_post(caminho[len("/api/op/"):], self.corpo_json())
 
             return self.json_erro(404, "Rota nao encontrada.")
+
+        except operacao.ConflitoDeAgenda as e:
+            # 409 = conflito. O painel usa a lista para dizer o que houve e,
+            # quando for encaixe, oferecer o botao de confirmar.
+            corpo = json.dumps({"erro": "Conflito de agenda.",
+                                "conflitos": e.problemas,
+                                "podeEncaixar": True}, ensure_ascii=False)
+            return self.responder(409, corpo.encode("utf-8"),
+                                  "application/json; charset=utf-8")
 
         except ValueError as e:
             return self.json_erro(400, str(e))
@@ -415,6 +468,114 @@ class Handler(BaseHTTPRequestHandler):
         vets.sort(key=lambda v: v.get("ordem", 0))
         gravar_vets(vets, "Reordena a equipe pelo painel")
         return self.json_ok({"ok": True})
+
+    # ------------------------------------------------------- operacao ----
+    def _consulta(self, nome, padrao=""):
+        """Um parametro da URL, tipo ?data=2026-09-01."""
+        from urllib.parse import parse_qs, urlparse
+        valores = parse_qs(urlparse(self.path).query).get(nome)
+        return valores[0] if valores else padrao
+
+    def _vets(self):
+        """A equipe, que e a chave de tudo na operacao. Vem do mesmo arquivo
+        que alimenta o site - nao existe cadastro paralelo de veterinario."""
+        return [v for v in ler_vets() if v.get("status") != "inativo"]
+
+    def op_get(self, rota):
+        arm = ARMAZEM_OP
+        vets = self._vets()
+
+        if rota == "inicio":
+            # tudo que o painel precisa para desenhar as telas, de uma vez so
+            return self.json_ok({
+                "vets": [{"id": v.get("id"), "nome": v.get("nome"),
+                          "especialidade": v.get("especialidade", ""),
+                          "foto": v.get("foto", "")} for v in vets],
+                "tipos": operacao.TIPOS_ATENDIMENTO,
+                "status": operacao.STATUS,
+                "statusRotulo": operacao.STATUS_ROTULO,
+                "motivosCancelamento": operacao.MOTIVOS_CANCELAMENTO,
+                "motivosBloqueio": operacao.MOTIVOS_BLOQUEIO,
+                "tiposAusencia": operacao.TIPOS_AUSENCIA,
+                "ausenciaRotulo": operacao.AUSENCIA_ROTULO,
+                "dias": operacao.DIAS,
+                "duracaoPadrao": operacao.DURACAO_PADRAO,
+                "hoje": datetime.date.today().isoformat(),
+            })
+
+        if rota == "resumo":
+            return self.json_ok(operacao.resumo(arm, vets))
+        if rota == "atendimentos":
+            return self.json_ok(operacao.listar_atendimentos(arm))
+        if rota == "pacientes":
+            return self.json_ok(operacao.listar_pacientes(arm))
+        if rota == "disponibilidade":
+            return self.json_ok(operacao.listar_disponibilidade(arm))
+        if rota == "bloqueios":
+            return self.json_ok(operacao.listar_bloqueios(arm))
+        if rota == "ausencias":
+            return self.json_ok(operacao.listar_ausencias(arm))
+        if rota == "auditoria":
+            return self.json_ok(operacao.listar_auditoria(arm))
+        if rota == "escala":
+            dia = operacao.como_data(self._consulta(
+                "data", datetime.date.today().isoformat()))
+            return self.json_ok(operacao.escala_do_dia(arm, vets, dia))
+        if rota == "escala-semana":
+            dia = operacao.como_data(self._consulta(
+                "data", datetime.date.today().isoformat()))
+            return self.json_ok([operacao.escala_do_dia(arm, vets, d)
+                                 for d in operacao.semana_de(dia)])
+        if rota == "horarios":
+            return self.json_ok(operacao.horarios_livres(
+                arm, vets, self._consulta("vet"), self._consulta("data"),
+                self._consulta("duracao") or None))
+
+        return self.json_erro(404, "Rota nao encontrada.")
+
+    def op_post(self, rota, dados):
+        arm = ARMAZEM_OP
+        vets = self._vets()
+        eu = self.quem()
+
+        if rota == "atendimento":
+            registro, avisos = operacao.salvar_atendimento(arm, vets, dados, eu)
+            return self.json_ok({"ok": True, "atendimento": registro,
+                                 "avisos": avisos})
+        if rota == "atendimento/status":
+            return self.json_ok({"ok": True, "atendimento": operacao.mudar_status(
+                arm, dados.get("id"), dados.get("status"), eu)})
+        if rota == "atendimento/cancelar":
+            return self.json_ok({"ok": True, "atendimento": operacao.cancelar_atendimento(
+                arm, dados.get("id"), dados.get("motivo"),
+                dados.get("observacao"), eu)})
+        if rota == "paciente":
+            return self.json_ok({"ok": True,
+                                 "paciente": operacao.salvar_paciente(arm, dados, eu)})
+        if rota == "disponibilidade":
+            return self.json_ok({"ok": True, "disponibilidade":
+                                 operacao.salvar_disponibilidade(
+                                     arm, dados.get("vetId"), dados, eu)})
+        if rota == "bloqueio":
+            return self.json_ok({"ok": True,
+                                 "bloqueio": operacao.salvar_bloqueio(arm, dados, eu)})
+        if rota == "bloqueio/remover":
+            operacao.remover_bloqueio(arm, dados.get("id"), eu)
+            return self.json_ok({"ok": True})
+        if rota == "ausencia":
+            return self.json_ok({"ok": True,
+                                 "ausencia": operacao.salvar_ausencia(arm, dados, eu)})
+        if rota == "ausencia/remover":
+            operacao.remover_ausencia(arm, dados.get("id"), eu)
+            return self.json_ok({"ok": True})
+        if rota == "escala":
+            return self.json_ok({"ok": True,
+                                 "escala": operacao.salvar_escala(arm, dados, eu)})
+        if rota == "escala/remover":
+            operacao.remover_escala(arm, dados.get("data"), eu)
+            return self.json_ok({"ok": True})
+
+        return self.json_erro(404, "Rota nao encontrada.")
 
     def arquivo(self, caminho):
         caminho = os.path.normpath(caminho)

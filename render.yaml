@@ -31,6 +31,15 @@ services:
       - key: SITE_URL
         value: https://mychelleaneves-debug.github.io/vethomev1/
 
+      # Operacao da clinica (agenda, pacientes, tutores). Vai para um
+      # repositorio PRIVADO, separado: o do site e publico e nao pode receber
+      # dado de cliente. Sem esta variavel o menu Operacao fica desativado,
+      # com o motivo escrito na tela. Ver OPERACAO-DA-CLINICA.md.
+      - key: GITHUB_REPO_DADOS
+        value: mychelleaneves-debug/vethome-operacao
+      - key: GITHUB_BRANCH_DADOS
+        value: main
+
       # digitados a mao no Render, nunca aqui
       - key: GITHUB_TOKEN
         sync: false
