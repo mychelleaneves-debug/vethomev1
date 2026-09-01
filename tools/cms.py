@@ -50,9 +50,13 @@ ARMAZEM = armazenamento.escolher(BASE)
 NA_NUVEM = not isinstance(ARMAZEM, armazenamento.Local)
 
 # O Render (e qualquer servico parecido) diz em qual porta escutar e exige
-# que o processo aceite conexoes de fora do container.
+# que o processo aceite conexoes de fora do container. A existencia da
+# variavel PORT e o sinal de que nao estamos num computador pessoal - sem
+# isso o painel escutaria so internamente e a pagina ficaria carregando
+# para sempre, sem erro nenhum para explicar.
+NUM_SERVIDOR = bool(os.environ.get("PORT"))
 PORTA = int(os.environ.get("PORT") or 8791)
-ENDERECO = "0.0.0.0" if NA_NUVEM else "127.0.0.1"
+ENDERECO = "0.0.0.0" if NUM_SERVIDOR else "127.0.0.1"
 
 
 def _enderecos_do_site():
@@ -444,6 +448,17 @@ def main():
         return
 
     os.makedirs(ADMIN, exist_ok=True)
+
+    # Num servidor, gravar em arquivo perde tudo no proximo reinicio. Melhor
+    # gritar no log do que descobrir isso quando os cadastros sumirem.
+    if NUM_SERVIDOR and not NA_NUVEM:
+        print("=" * 68)
+        print("ATENCAO: faltam as variaveis GITHUB_TOKEN e GITHUB_REPO.")
+        print("Sem elas o painel grava em arquivo, e o disco deste servidor")
+        print("e apagado a cada reinicio: todo cadastro novo seria perdido.")
+        print("Adicione as duas em Environment e salve.")
+        print("=" * 68)
+
     srv = ThreadingHTTPServer((ENDERECO, PORTA), Handler)
     print("VetHome CMS no ar")
     print("  dados  " + ARMAZEM.descricao())
