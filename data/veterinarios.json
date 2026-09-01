@@ -1,14 +1,16 @@
 [
   {
     "id": "dra-lethicia-santos",
-    "nome": "Dra. Lethicia Santos565",
+    "nome": "Dra. Lethicia Santos",
     "cargo": "Médica-Veterinária",
     "especialidade": "Clínica Médica",
     "crmv": "CRMV-DF 5653",
     "cidade": "",
     "foto": "assets/vets/lethicia-santos.jpg",
     "descricao": "Médica Veterinária especialista em pequenos animais. Atendimento humanizado e preventivo no conforto do seu lar. Cuidando de quem você ama com amor, técnica e total segurança!",
-    "areas": [],
+    "areas": [
+      "VACINA"
+    ],
     "status": "ativo",
     "ordem": 1,
     "slug": "dra-lethicia-santos"
