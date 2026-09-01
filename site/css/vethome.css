@@ -1407,3 +1407,35 @@
   .testimonial-image-wrapper img{height:168px}
   .navbar .logo{width:148px;max-width:148px}
 }
+
+
+/* ==========================================================================
+   Card do veterinario: CRMV e cidade vindos do painel
+   O card virou link para a pagina individual, entao precisa perder o
+   sublinhado e a cor de link que o navegador poe por padrao.
+   ========================================================================== */
+a.team-block{
+  text-decoration:none;
+  color:inherit;
+}
+
+.vet-card-crmv{
+  font-family:Otomanopeeone,sans-serif;
+  font-size:.6875rem;
+  letter-spacing:.08rem;
+  text-transform:uppercase;
+  color:var(--dark-grey);
+  margin-top:4px;
+}
+
+.vet-card-cidade{
+  font-size:.875rem;
+  color:var(--dark-grey);
+  margin-top:2px;
+}
+
+/* o "Ver perfil" era <button> e virou <span> dentro do link */
+span.vet-perfil-btn{
+  display:block;
+  text-align:center;
+}

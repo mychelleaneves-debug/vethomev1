@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Equipe VetHome — painel</title>
+<style>
+  :root{
+    --verde:#BCE6AA; --teal:#59AABF; --verde-escuro:#4C722F;
+    --escuro:#150B33; --cinza:#6b7280; --fundo:#F0F4F5;
+    --borda:#dfe5e8; --erro:#c0392b; --ok:#1da851;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--fundo); color:var(--escuro); line-height:1.5;
+  }
+  .topo{
+    background:#fff; border-bottom:1px solid var(--borda);
+    padding:16px 20px; display:flex; align-items:center; gap:16px;
+    position:sticky; top:0; z-index:10;
+  }
+  .topo h1{font-size:1.0625rem; font-weight:700; flex:1}
+  .topo .sub{color:var(--cinza); font-size:.8125rem; font-weight:400; display:block}
+  .container{max-width:900px; margin:0 auto; padding:24px 20px 80px}
+
+  button{font:inherit; cursor:pointer; border:none; border-radius:10px}
+  .btn{
+    padding:11px 18px; font-weight:600; font-size:.9375rem;
+    background:var(--teal); color:#fff; transition:filter .15s;
+  }
+  .btn:hover{filter:brightness(.93)}
+  .btn.secundario{background:#fff; color:var(--escuro); border:1.5px solid var(--borda)}
+  .btn.grande{width:100%; padding:15px; font-size:1rem}
+  .btn.verde{background:var(--ok)}
+  .btn:disabled{opacity:.5; cursor:default}
+
+  input,textarea,select{
+    font:inherit; width:100%; padding:11px 13px; border:1.5px solid var(--borda);
+    border-radius:10px; background:#fff; color:var(--escuro);
+  }
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--teal); outline-offset:1px; border-color:transparent}
+  textarea{resize:vertical; min-height:96px}
+  label{display:block; font-weight:600; font-size:.875rem; margin-bottom:6px}
+  .ajuda{font-weight:400; color:var(--cinza); font-size:.8125rem; margin-top:5px}
+  .campo{margin-bottom:20px}
+
+  /* ---------- login ---------- */
+  .login{max-width:380px; margin:12vh auto; background:#fff; padding:32px;
+    border-radius:16px; box-shadow:0 4px 24px rgba(21,11,51,.07)}
+  .login h2{font-size:1.25rem; margin-bottom:6px}
+  .login p{color:var(--cinza); font-size:.875rem; margin-bottom:22px}
+
+  /* ---------- lista ---------- */
+  .barra{display:flex; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap}
+  .barra h2{font-size:1.125rem; flex:1}
+  .contagem{color:var(--cinza); font-size:.875rem; font-weight:400}
+
+  .cartao{
+    background:#fff; border:1px solid var(--borda); border-radius:14px;
+    padding:12px; margin-bottom:10px; display:flex; align-items:center; gap:14px;
+  }
+  .cartao.inativo{opacity:.55; background:#fafbfb}
+  .cartao img{width:52px; height:52px; border-radius:50%; object-fit:cover; flex:none; background:var(--fundo)}
+  .cartao .dados{flex:1; min-width:0}
+  .cartao .nome{font-weight:700; font-size:.9375rem}
+  .cartao .meta{color:var(--cinza); font-size:.8125rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .selo{
+    font-size:.6875rem; font-weight:700; padding:3px 9px; border-radius:99px;
+    text-transform:uppercase; letter-spacing:.04em; flex:none;
+  }
+  .selo.ativo{background:#e4f8ea; color:var(--ok)}
+  .selo.inativo{background:#eee; color:var(--cinza)}
+  .setas{display:flex; flex-direction:column; gap:3px; flex:none}
+  .setas button{
+    width:28px; height:22px; background:var(--fundo); color:var(--escuro);
+    font-size:.75rem; line-height:1; border-radius:6px;
+  }
+  .setas button:hover:not(:disabled){background:var(--verde)}
+
+  /* ---------- formulario ---------- */
+  .form{background:#fff; border-radius:16px; padding:26px; box-shadow:0 4px 24px rgba(21,11,51,.07)}
+  .form h2{font-size:1.125rem; margin-bottom:22px}
+  .linha{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .foto-area{display:flex; align-items:center; gap:16px}
+  .foto-area img{width:92px; height:92px; border-radius:50%; object-fit:cover;
+    background:var(--fundo); border:1.5px solid var(--borda); flex:none}
+  .rodape-form{display:flex; gap:10px; margin-top:26px; padding-top:20px; border-top:1px solid var(--borda)}
+  .rodape-form .btn{flex:1}
+
+  .status-linha{display:flex; gap:10px}
+  .status-op{
+    flex:1; padding:13px; border:2px solid var(--borda); border-radius:10px;
+    background:#fff; text-align:center; font-weight:600; font-size:.875rem;
+  }
+  .status-op.escolhido{border-color:var(--teal); background:#eef8fb}
+
+  .aviso{padding:12px 15px; border-radius:10px; margin-bottom:16px; font-size:.875rem}
+  .aviso.erro{background:#fdecea; color:var(--erro)}
+  .aviso.ok{background:#e4f8ea; color:var(--ok)}
+  .vazio{text-align:center; color:var(--cinza); padding:40px 0}
+
+  @media (max-width:600px){
+    .linha{grid-template-columns:1fr}
+    .container{padding:16px 14px 60px}
+    .form{padding:18px}
+  }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var app = document.getElementById("app");
+  var vets = [];
+  var editando = null;   // objeto sendo editado, ou null
+  var fotoNova = null;   // base64 da foto escolhida agora
+  var aviso = null;      // {tipo, texto}
+
+  /* ------------------------------------------------------------- rede --- */
+  function api(metodo, rota, corpo) {
+    return fetch(rota, {
+      method: metodo,
+      headers: corpo ? {"Content-Type": "application/json"} : {},
+      body: corpo ? JSON.stringify(corpo) : undefined
+    }).then(function (r) {
+      return r.json().then(function (dados) {
+        if (!r.ok) throw new Error(dados.erro || "Algo deu errado.");
+        return dados;
+      });
+    });
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  /* ------------------------------------------------------------ login --- */
+  function telaLogin(erro) {
+    app.innerHTML =
+      '<div class="login">' +
+        '<h2>Equipe VetHome</h2>' +
+        '<p>Digite a senha para gerenciar os veterinários.</p>' +
+        (erro ? '<div class="aviso erro">' + esc(erro) + '</div>' : '') +
+        '<div class="campo"><label for="senha">Senha</label>' +
+        '<input type="password" id="senha" autocomplete="current-password" autofocus/></div>' +
+        '<button class="btn grande" id="entrar">Entrar</button>' +
+      '</div>';
+
+    function entrar() {
+      var s = document.getElementById("senha").value;
+      api("POST", "/api/login", {senha: s})
+        .then(carregar)
+        .catch(function (e) { telaLogin(e.message); });
+    }
+    document.getElementById("entrar").onclick = entrar;
+    document.getElementById("senha").onkeydown = function (e) {
+      if (e.key === "Enter") entrar();
+    };
+  }
+
+  /* ------------------------------------------------------------ lista --- */
+  function telaLista() {
+    var ativos = vets.filter(function (v) { return v.status === "ativo"; }).length;
+
+    var itens = vets.map(function (v, i) {
+      var meta = [v.especialidade, v.crmv, v.cidade].filter(Boolean).join(" · ");
+      return '' +
+        '<div class="cartao ' + (v.status === "inativo" ? "inativo" : "") + '">' +
+          '<div class="setas">' +
+            '<button data-sobe="' + i + '" title="Subir" ' + (i === 0 ? "disabled" : "") + '>&#9650;</button>' +
+            '<button data-desce="' + i + '" title="Descer" ' + (i === vets.length - 1 ? "disabled" : "") + '>&#9660;</button>' +
+          '</div>' +
+          '<img src="/' + esc(v.foto) + '" alt="" onerror="this.style.visibility=\'hidden\'"/>' +
+          '<div class="dados">' +
+            '<div class="nome">' + esc(v.nome) + '</div>' +
+            '<div class="meta">' + esc(meta || "sem informações ainda") + '</div>' +
+          '</div>' +
+          '<span class="selo ' + (v.status === "inativo" ? "inativo" : "ativo") + '">' +
+            (v.status === "inativo" ? "Oculto" : "No site") + '</span>' +
+          '<button class="btn secundario" data-editar="' + i + '">Editar</button>' +
+        '</div>';
+    }).join("");
+
+    app.innerHTML =
+      '<div class="topo">' +
+        '<h1>Equipe VetHome<span class="sub">' + ativos + ' aparecendo no site · ' +
+          (vets.length - ativos) + ' ocultos</span></h1>' +
+        '<a class="btn secundario" href="/#Our-Team" target="_blank" style="text-decoration:none">Ver o site</a>' +
+        '<button class="btn secundario" id="sair">Sair</button>' +
+      '</div>' +
+      '<div class="container">' +
+        (aviso ? '<div class="aviso ' + aviso.tipo + '">' + esc(aviso.texto) + '</div>' : '') +
+        '<div class="barra">' +
+          '<h2>Veterinários <span class="contagem">(' + vets.length + ')</span></h2>' +
+          '<button class="btn" id="novo">+ Adicionar veterinário</button>' +
+        '</div>' +
+        (vets.length ? itens : '<div class="vazio">Nenhum veterinário cadastrado ainda.</div>') +
+      '</div>';
+
+    aviso = null;
+
+    document.getElementById("sair").onclick = function () {
+      api("POST", "/api/logout").then(function () { telaLogin(); });
+    };
+    document.getElementById("novo").onclick = function () {
+      editando = {nome: "", cargo: "Médica-Veterinária", especialidade: "", crmv: "",
+                  cidade: "", descricao: "", areas: [], status: "ativo", foto: ""};
+      fotoNova = null;
+      telaForm();
+    };
+    app.querySelectorAll("[data-editar]").forEach(function (b) {
+      b.onclick = function () {
+        editando = JSON.parse(JSON.stringify(vets[+b.dataset.editar]));
+        fotoNova = null;
+        telaForm();
+      };
+    });
+    app.querySelectorAll("[data-sobe]").forEach(function (b) {
+      b.onclick = function () { mover(+b.dataset.sobe, -1); };
+    });
+    app.querySelectorAll("[data-desce]").forEach(function (b) {
+      b.onclick = function () { mover(+b.dataset.desce, 1); };
+    });
+  }
+
+  function mover(i, passo) {
+    var j = i + passo;
+    if (j < 0 || j >= vets.length) return;
+    var tmp = vets[i]; vets[i] = vets[j]; vets[j] = tmp;
+    telaLista();
+    api("POST", "/api/ordem", {ids: vets.map(function (v) { return v.id; })})
+      .catch(function (e) { aviso = {tipo: "erro", texto: e.message}; telaLista(); });
+  }
+
+  /* ------------------------------------------------------- formulario --- */
+  function telaForm() {
+    var v = editando;
+    var novo = !v.id;
+    var previa = fotoNova || (v.foto ? "/" + v.foto : "");
+
+    app.innerHTML =
+      '<div class="topo"><h1>' + (novo ? "Novo veterinário" : esc(v.nome)) + '</h1></div>' +
+      '<div class="container"><div class="form">' +
+        '<div id="avisoForm"></div>' +
+
+        '<div class="campo"><label>Foto</label><div class="foto-area">' +
+          '<img id="previa" src="' + esc(previa) + '" alt=""/>' +
+          '<div><input type="file" id="arquivo" accept="image/jpeg,image/png,image/webp"/>' +
+          '<div class="ajuda">JPG, PNG ou WEBP, até 8 MB. Fotos quadradas ficam melhores.</div></div>' +
+        '</div></div>' +
+
+        '<div class="campo"><label for="f_nome">Nome completo *</label>' +
+          '<input id="f_nome" value="' + esc(v.nome) + '" placeholder="Dra. Maria Silva"/></div>' +
+
+        '<div class="linha">' +
+          '<div class="campo"><label for="f_cargo">Cargo / profissão</label>' +
+            '<input id="f_cargo" value="' + esc(v.cargo) + '" placeholder="Médica-Veterinária"/></div>' +
+          '<div class="campo"><label for="f_esp">Especialidade</label>' +
+            '<input id="f_esp" value="' + esc(v.especialidade) + '" placeholder="Clínica Médica"/></div>' +
+        '</div>' +
+
+        '<div class="linha">' +
+          '<div class="campo"><label for="f_crmv">CRMV</label>' +
+            '<input id="f_crmv" value="' + esc(v.crmv) + '" placeholder="CRMV-DF 1234"/></div>' +
+          '<div class="campo"><label for="f_cidade">Cidade / região de atendimento</label>' +
+            '<input id="f_cidade" value="' + esc(v.cidade) + '" placeholder="Brasília - DF"/></div>' +
+        '</div>' +
+
+        '<div class="campo"><label for="f_bio">Biografia</label>' +
+          '<textarea id="f_bio" placeholder="Um parágrafo curto sobre o profissional.">' + esc(v.descricao) + '</textarea>' +
+          '<div class="ajuda">Aparece na página individual do veterinário.</div></div>' +
+
+        '<div class="campo"><label for="f_areas">Áreas de atuação</label>' +
+          '<textarea id="f_areas" placeholder="Vacinação&#10;Consulta domiciliar&#10;Exames">' +
+            esc((v.areas || []).join("\n")) + '</textarea>' +
+          '<div class="ajuda">Uma por linha. Aperte Enter para começar a próxima.</div></div>' +
+
+        '<div class="campo"><label>Status</label><div class="status-linha">' +
+          '<button type="button" class="status-op ' + (v.status !== "inativo" ? "escolhido" : "") + '" data-status="ativo">Aparece no site</button>' +
+          '<button type="button" class="status-op ' + (v.status === "inativo" ? "escolhido" : "") + '" data-status="inativo">Oculto</button>' +
+        '</div><div class="ajuda">Oculto guarda o cadastro sem mostrar na página.</div></div>' +
+
+        '<div class="rodape-form">' +
+          '<button class="btn secundario" id="cancelar">Cancelar</button>' +
+          '<button class="btn verde" id="salvar">Salvar</button>' +
+        '</div>' +
+      '</div></div>';
+
+    document.getElementById("arquivo").onchange = function (e) {
+      var f = e.target.files[0];
+      if (!f) return;
+      if (f.size > 8 * 1024 * 1024) {
+        mostraErro("Essa imagem tem mais de 8 MB. Escolha uma menor.");
+        e.target.value = "";
+        return;
+      }
+      var fr = new FileReader();
+      fr.onload = function () {
+        fotoNova = fr.result;
+        document.getElementById("previa").src = fotoNova;
+      };
+      fr.readAsDataURL(f);
+    };
+
+    app.querySelectorAll("[data-status]").forEach(function (b) {
+      b.onclick = function () {
+        editando.status = b.dataset.status;
+        app.querySelectorAll("[data-status]").forEach(function (o) {
+          o.classList.toggle("escolhido", o === b);
+        });
+      };
+    });
+
+    document.getElementById("cancelar").onclick = function () {
+      editando = null; fotoNova = null; telaLista();
+    };
+    document.getElementById("salvar").onclick = salvar;
+  }
+
+  function mostraErro(texto) {
+    var el = document.getElementById("avisoForm");
+    if (el) el.innerHTML = '<div class="aviso erro">' + esc(texto) + '</div>';
+  }
+
+  function salvar() {
+    var val = function (id) { return document.getElementById(id).value.trim(); };
+    if (!val("f_nome")) return mostraErro("Preencha pelo menos o nome.");
+
+    var botao = document.getElementById("salvar");
+    botao.disabled = true;
+    botao.textContent = "Salvando...";
+
+    var corpo = {
+      id: editando.id,
+      nome: val("f_nome"),
+      cargo: val("f_cargo"),
+      especialidade: val("f_esp"),
+      crmv: val("f_crmv"),
+      cidade: val("f_cidade"),
+      descricao: val("f_bio"),
+      areas: val("f_areas").split("\n"),
+      status: editando.status,
+      ordem: editando.ordem,
+      foto: editando.foto,
+      slug: editando.slug,
+      fotoNova: fotoNova
+    };
+
+    api("POST", "/api/vets", corpo)
+      .then(function (r) {
+        aviso = {tipo: "ok", texto: '"' + r.vet.nome + '" foi salvo. Já está valendo no site.'};
+        editando = null; fotoNova = null;
+        return carregar();
+      })
+      .catch(function (e) {
+        botao.disabled = false;
+        botao.textContent = "Salvar";
+        mostraErro(e.message);
+      });
+  }
+
+  /* ------------------------------------------------------------ inicio --- */
+  function carregar() {
+    return api("GET", "/api/vets")
+      .then(function (dados) { vets = dados; telaLista(); })
+      .catch(function (e) { telaLogin(e.message.indexOf("login") > -1 ? null : e.message); });
+  }
+
+  api("GET", "/api/sessao").then(function (s) {
+    if (s.autenticado) carregar();
+    else telaLogin();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+tools/cms-config.json
+tools/backups/
+tools/__pycache__/
+site/data/veterinarios.json.antes-do-cms
