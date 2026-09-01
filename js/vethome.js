@@ -191,7 +191,10 @@
       return response.json();
     })
     .then(function (data) {
-      vets = Array.isArray(data) ? data : [];
+      vets = (Array.isArray(data) ? data : [])
+        /* o painel marca quem sai do ar sem apagar o cadastro */
+        .filter(function (v) { return v.status !== "inativo"; })
+        .sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
       pages = Math.max(1, Math.ceil(vets.length / PER_PAGE));
       page = 0;
       renderPage();
