@@ -9,7 +9,9 @@
     "foto": "assets/vets/lethicia-santos.jpg",
     "descricao": "Médica Veterinária especialista em pequenos animais. Atendimento humanizado e preventivo no conforto do seu lar. Cuidando de quem você ama com amor, técnica e total segurança!",
     "areas": [
-      "VACINA"
+      "CLÍNICA MÉDICA",
+      "ATESTADOS",
+      "VACINAS"
     ],
     "status": "ativo",
     "ordem": 1,
