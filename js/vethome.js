@@ -32,6 +32,18 @@
       .replace(/"/g, "&quot;");
   }
 
+  /* Foto recem-enviada pelo painel ja esta no repositorio, mas o site so passa
+     a servi-la depois de reconstruir. Ate la, busca a do repositorio em vez de
+     mostrar um quadrado quebrado. */
+  var RAIZ_REPO = "https://raw.githubusercontent.com/mychelleaneves-debug" +
+    "/vethomev1/gh-pages/";
+
+  function reservaDaFoto(caminho) {
+    var url = RAIZ_REPO + String(caminho || "").replace(/^\//, "");
+    return " onerror=" + '"' + "this.onerror=null;this.src=&#39;" +
+      escapeHtml(url) + "&#39;" + '"';
+  }
+
   /* as descrições vêm com quebras de linha e tópicos; preserva os parágrafos */
   function formatBio(value) {
     return escapeHtml(value).replace(/\n{2,}/g, "<br><br>").replace(/\n/g, "<br>");
@@ -46,7 +58,7 @@
         var index = start + offset;
         return (
           '<div class="team-block ' + SHADOWS[index % SHADOWS.length] + '" role="button" tabindex="0" aria-haspopup="dialog" data-vet="' + index + '">' +
-          '<img src="' + escapeHtml(vet.foto) + '" loading="lazy" alt="' + escapeHtml(vet.nome) + '" class="team-member-image"/>' +
+          '<img src="' + escapeHtml(vet.foto) + '" loading="lazy" alt="' + escapeHtml(vet.nome) + '" class="team-member-image"' + reservaDaFoto(vet.foto) + '/>' +
           '<div class="team-member-name-wrapper">' +
           '<div class="h6 dark-font-color">' + escapeHtml(vet.nome) + "</div>" +
           '<div class="paragraph dark-grey-color">' + escapeHtml(vet.especialidade) + "</div>" +
@@ -117,7 +129,7 @@
       '<button class="vet-close" type="button" id="vetClose" aria-label="Fechar">' +
       '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m2 2 12 12M14 2 2 14"/></svg>' +
       "</button>" +
-      '<img src="' + escapeHtml(vet.foto) + '" alt="' + escapeHtml(vet.nome) + '" class="team-member-image"/>' +
+      '<img src="' + escapeHtml(vet.foto) + '" alt="' + escapeHtml(vet.nome) + '" class="team-member-image"' + reservaDaFoto(vet.foto) + '/>' +
       '<h3 class="h6 dark-font-color" id="vetModalTitle">' + escapeHtml(vet.nome) + "</h3>" +
       '<div class="paragraph dark-grey-color vet-role">' + escapeHtml(vet.especialidade) + "</div>" +
       (vet.crmv ? '<span class="vet-crmv">' + escapeHtml(vet.crmv) + "</span>" : "") +
@@ -185,14 +197,33 @@
     if (event.key === "Escape" && !backdrop.hidden) closeModal();
   });
 
-  /* O GitHub manda o navegador guardar este arquivo por 10 minutos. Como ele
-     muda toda vez que a equipe e editada no painel, cada carregamento pede um
-     endereco unico - assim ninguem ve a lista velha. */
-  fetch("data/veterinarios.json?v=" + Date.now(), { cache: "no-store" })
-    .then(function (response) {
-      if (!response.ok) throw new Error("HTTP " + response.status);
-      return response.json();
-    })
+  /* De onde vem a lista da equipe.
+
+     O painel grava direto no repositorio, e o arquivo bruto do GitHub mostra
+     a mudanca na hora. A copia que o GitHub Pages serve junto com o site so
+     aparece depois que ele reconstroi tudo, o que as vezes leva varios
+     minutos - por isso ela fica de reserva, para o caso do primeiro endereco
+     falhar. O ?v= evita a copia guardada pelo navegador. */
+  var FONTE_AO_VIVO = "https://raw.githubusercontent.com/mychelleaneves-debug" +
+    "/vethomev1/gh-pages/data/veterinarios.json";
+  var FONTE_RESERVA = "data/veterinarios.json";
+
+  function buscarEquipe(endereco) {
+    return fetch(endereco + "?v=" + Date.now(), { cache: "no-store" })
+      .then(function (response) {
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.json();
+      });
+  }
+
+  /* No computador (painel local) manda o arquivo da pasta, senao a previa
+     mostraria o que esta no GitHub em vez do que acabou de ser editado aqui. */
+  var noComputador = /^(localhost|127\.0\.0\.1|)$/.test(location.hostname);
+  var primeira = noComputador ? FONTE_RESERVA : FONTE_AO_VIVO;
+  var segunda = noComputador ? FONTE_AO_VIVO : FONTE_RESERVA;
+
+  buscarEquipe(primeira)
+    .catch(function () { return buscarEquipe(segunda); })
     .then(function (data) {
       vets = (Array.isArray(data) ? data : [])
         /* o painel marca quem sai do ar sem apagar o cadastro */
