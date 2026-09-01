@@ -13,7 +13,7 @@
       "ATESTADOS",
       "VACINAS"
     ],
-    "status": "ativo",
+    "status": "inativo",
     "ordem": 1,
     "slug": "dra-lethicia-santos"
   },
