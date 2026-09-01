@@ -185,7 +185,10 @@
     if (event.key === "Escape" && !backdrop.hidden) closeModal();
   });
 
-  fetch("data/veterinarios.json")
+  /* O GitHub manda o navegador guardar este arquivo por 10 minutos. Como ele
+     muda toda vez que a equipe e editada no painel, cada carregamento pede um
+     endereco unico - assim ninguem ve a lista velha. */
+  fetch("data/veterinarios.json?v=" + Date.now(), { cache: "no-store" })
     .then(function (response) {
       if (!response.ok) throw new Error("HTTP " + response.status);
       return response.json();
