@@ -120,6 +120,15 @@
   var editando = null;   // objeto sendo editado, ou null
   var fotoNova = null;   // base64 da foto escolhida agora
   var aviso = null;      // {tipo, texto}
+  /* Onde o site mora. Local e aqui mesmo; na nuvem o servidor diz o
+     endereco do GitHub Pages - as fotos nao passam por este servidor. */
+  var baseFotos = "/";
+  var urlSite = "/";
+
+  function urlFoto(caminho) {
+    if (!caminho) return "";
+    return baseFotos + String(caminho).replace(/^\//, "");
+  }
 
   /* ------------------------------------------------------------- rede --- */
   function api(metodo, rota, corpo) {
@@ -177,7 +186,7 @@
             '<button data-sobe="' + i + '" title="Subir" ' + (i === 0 ? "disabled" : "") + '>&#9650;</button>' +
             '<button data-desce="' + i + '" title="Descer" ' + (i === vets.length - 1 ? "disabled" : "") + '>&#9660;</button>' +
           '</div>' +
-          '<img src="/' + esc(v.foto) + '" alt="" onerror="this.style.visibility=\'hidden\'"/>' +
+          '<img src="' + esc(urlFoto(v.foto)) + '" alt="" onerror="this.style.visibility=\'hidden\'"/>' +
           '<div class="dados">' +
             '<div class="nome">' + esc(v.nome) + '</div>' +
             '<div class="meta">' + esc(meta || "sem informações ainda") + '</div>' +
@@ -192,7 +201,7 @@
       '<div class="topo">' +
         '<h1>Equipe VetHome<span class="sub">' + ativos + ' aparecendo no site · ' +
           (vets.length - ativos) + ' ocultos</span></h1>' +
-        '<a class="btn secundario" href="/#Our-Team" target="_blank" style="text-decoration:none">Ver o site</a>' +
+        (urlSite ? '<a class="btn secundario" href="' + esc(urlSite) + '#Our-Team" target="_blank" style="text-decoration:none">Ver o site</a>' : '') +
         '<button class="btn secundario" id="sair">Sair</button>' +
       '</div>' +
       '<div class="container">' +
@@ -243,7 +252,7 @@
   function telaForm() {
     var v = editando;
     var novo = !v.id;
-    var previa = fotoNova || (v.foto ? "/" + v.foto : "");
+    var previa = fotoNova || urlFoto(v.foto);
 
     app.innerHTML =
       '<div class="topo"><h1>' + (novo ? "Novo veterinário" : esc(v.nome)) + '</h1></div>' +
@@ -374,6 +383,8 @@
   }
 
   api("GET", "/api/sessao").then(function (s) {
+    if (s.baseFotos) baseFotos = s.baseFotos;
+    if (typeof s.urlSite === "string") urlSite = s.urlSite;
     if (s.autenticado) carregar();
     else telaLogin();
   });

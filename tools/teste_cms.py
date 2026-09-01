@@ -122,19 +122,19 @@ ativos = [v for v in publico if v.get("status") != "inativo"]
 checa("entra na lista de ativos", any(v["slug"] == slug for v in ativos))
 checa("total subiu de %d para %d" % (total_inicial, len(publico)), len(publico) == total_inicial + 1)
 
-# --------------------------------------------------- 3. pagina individual --
-print("\n[3] Botao 'Ver perfil'")
-cod, html = buscar("/vet.html?vet=" + slug)
-checa("pagina do perfil responde 200", cod == 200)
-checa("le o parametro da URL", "URLSearchParams" in html)
-checa("tem o botao de agendar no WhatsApp", "wa.me/5561982864948" in html)
-checa("mostra as areas de atuacao", "Áreas de atuação" in html)
-checa("mostra a regiao de atendimento", "Região de atendimento" in html)
-
+# ------------------------------------------------- 3. card e modal do site --
+# A landing page usa a modal do template, nao paginas separadas: o painel so
+# alimenta os dados. Quem desenha continua sendo o site original.
+print("\n[3] Card e modal na landing page")
 cod, js = buscar("/js/vethome.js")
-checa("o card aponta para a pagina individual", "vet.html?vet=" in js)
-checa("o card mostra CRMV", "vet-card-crmv" in js)
-checa("o card mostra a cidade", "vet-card-cidade" in js)
+checa("o card abre a modal do template", "vetBackdrop" in js)
+checa("o card mostra o CRMV", "crmv" in js)
+checa("a modal mostra a biografia", "descricao" in js)
+checa("quem esta oculto nao entra", "inativo" in js)
+checa("respeita a ordem do painel", "ordem" in js)
+
+cod, html = buscar("/index.html")
+checa("a landing tem o alvo da modal", 'id="vetBackdrop"' in html)
 
 # ----------------------------------------------------------- 4/5. edicao --
 print("\n[4] Editar e ver a mudanca no site")

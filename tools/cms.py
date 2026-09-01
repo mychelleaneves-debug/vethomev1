@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
-"""CMS da equipe VetHome - servidor local, so biblioteca padrao do Python.
+"""CMS da equipe VetHome - so biblioteca padrao do Python.
 
-O que ele faz:
-  - serve o site igual ao serve.ps1 (porta 8791)
-  - serve o painel em /admin, protegido por senha
-  - le e grava site/data/veterinarios.json
-  - recebe as fotos e grava em site/assets/vets/
+Roda em dois lugares, com o mesmo codigo:
 
-Seguranca: escuta so em 127.0.0.1, entao o painel nao existe pela rede - e
-preciso estar nesta maquina. Alem disso pede senha, guardada como hash
-PBKDF2 com 200 mil iteracoes (a senha em si nunca fica escrita).
+  No computador da Mychelle (python tools/cms.py)
+      escuta em 127.0.0.1:8791, serve o site inteiro para pre-visualizar e
+      grava nos arquivos da pasta site/.
+
+  Num servidor gratuito, tipo o Render (com GITHUB_TOKEN e GITHUB_REPO)
+      escuta na porta que o servidor mandar, serve SO o painel e grava
+      direto no repositorio pela API do GitHub. O site em si continua no
+      GitHub Pages: salvar no painel ja republica.
+
+Seguranca: senha guardada como hash PBKDF2 com 200 mil iteracoes (a senha em
+si nunca fica escrita). No modo local o painel so existe nesta maquina.
 
 Uso:
-    python tools/cms.py --definir-senha     (primeira vez)
+    python tools/cms.py --definir-senha     (primeira vez, so no computador)
     python tools/cms.py                     (do dia a dia)
 """
 import base64
@@ -23,25 +27,55 @@ import mimetypes
 import os
 import re
 import secrets
-import shutil
 import sys
 import time
 import unicodedata
-from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from http.cookies import SimpleCookie
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import armazenamento
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(BASE, "site")
 ADMIN = os.path.join(BASE, "tools", "admin")
-DADOS = os.path.join(SITE, "data", "veterinarios.json")
-FOTOS = os.path.join(SITE, "assets", "vets")
 CONFIG = os.path.join(BASE, "tools", "cms-config.json")
-BACKUPS = os.path.join(BASE, "tools", "backups")
 
-PORTA = 8791
 MAX_FOTO = 8 * 1024 * 1024
 SESSAO_HORAS = 12
+
+# Onde os dados moram. Local no computador; GitHub quando as variaveis de
+# ambiente do servidor estao la. Ver tools/armazenamento.py.
+ARMAZEM = armazenamento.escolher(BASE)
+NA_NUVEM = not isinstance(ARMAZEM, armazenamento.Local)
+
+# O Render (e qualquer servico parecido) diz em qual porta escutar e exige
+# que o processo aceite conexoes de fora do container.
+PORTA = int(os.environ.get("PORT") or 8791)
+ENDERECO = "0.0.0.0" if NA_NUVEM else "127.0.0.1"
+
+
+def _enderecos_do_site():
+    """Onde o painel procura as fotos e para onde aponta o botao 'Ver o site'.
+
+    Local: tudo sai do proprio servidor. Na nuvem o site esta em outro lugar
+    (GitHub Pages); sem SITE_URL configurada, as fotos ainda aparecem porque
+    o GitHub serve o arquivo bruto do repositorio.
+    """
+    if not NA_NUVEM:
+        return "/", "/"
+    url = os.environ.get("SITE_URL", "").strip()
+    if url:
+        if not url.endswith("/"):
+            url += "/"
+        return url, url
+    bruto = ("https://raw.githubusercontent.com/"
+             + os.environ.get("GITHUB_REPO", "").strip() + "/"
+             + os.environ.get("GITHUB_BRANCH", "gh-pages").strip() + "/")
+    return bruto, ""
+
+
+BASE_FOTOS, URL_SITE = _enderecos_do_site()
 
 sessoes = {}
 
@@ -55,7 +89,25 @@ def hash_senha(senha, salt=None):
     return salt, dk.hex()
 
 
+def _config_do_ambiente():
+    """No servidor a senha chega por variavel de ambiente.
+
+    Ela e transformada em hash uma vez, quando o processo sobe, e so o hash
+    fica na memoria - o resto do programa nao ve a senha.
+    """
+    senha = os.environ.get("CMS_SENHA", "").strip()
+    if not senha:
+        return None
+    salt, h = hash_senha(senha)
+    return {"salt": salt, "hash": h}
+
+
+CONFIG_AMBIENTE = _config_do_ambiente()
+
+
 def ler_config():
+    if CONFIG_AMBIENTE:
+        return CONFIG_AMBIENTE
     if not os.path.exists(CONFIG):
         return None
     with open(CONFIG, encoding="utf-8") as f:
@@ -95,26 +147,11 @@ def slugificar(nome):
 
 
 def ler_vets():
-    with open(DADOS, encoding="utf-8") as f:
-        return json.load(f)
+    return ARMAZEM.ler()
 
 
-def gravar_vets(vets):
-    """Grava com backup e de forma atomica: se faltar energia no meio da
-    escrita, o arquivo original continua inteiro."""
-    os.makedirs(BACKUPS, exist_ok=True)
-    if os.path.exists(DADOS):
-        carimbo = datetime.now().strftime("%Y%m%d-%H%M%S")
-        shutil.copy(DADOS, os.path.join(BACKUPS, "veterinarios-" + carimbo + ".json"))
-        antigos = sorted(os.listdir(BACKUPS))
-        for velho in antigos[:-30]:
-            os.remove(os.path.join(BACKUPS, velho))
-
-    tmp = DADOS + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(vets, f, ensure_ascii=False, indent=2)
-        f.write("\n")
-    os.replace(tmp, DADOS)
+def gravar_vets(vets, mensagem="Atualiza a equipe pelo painel"):
+    ARMAZEM.gravar(vets, mensagem)
 
 
 def normalizar(v, existentes, id_atual=None):
@@ -167,7 +204,7 @@ def normalizar(v, existentes, id_atual=None):
 
 
 def salvar_foto(data_url, slug):
-    """Recebe a foto em base64 vinda do painel e grava em disco."""
+    """Recebe a foto em base64 vinda do painel, confere e manda pro armazem."""
     m = re.match(r"^data:image/(png|jpeg|jpg|webp);base64,(.+)$", data_url, re.S)
     if not m:
         raise ValueError("Formato de imagem nao aceito. Use JPG, PNG ou WEBP.")
@@ -185,11 +222,8 @@ def salvar_foto(data_url, slug):
     if not ok:
         raise ValueError("O arquivo nao parece ser uma imagem.")
 
-    os.makedirs(FOTOS, exist_ok=True)
     nome = slug + "-" + secrets.token_hex(3) + "." + ext
-    with open(os.path.join(FOTOS, nome), "wb") as f:
-        f.write(bruto)
-    return "assets/vets/" + nome
+    return ARMAZEM.gravar_foto(bruto, nome)
 
 
 # --------------------------------------------------------------- servidor --
@@ -210,6 +244,12 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         if self.command != "HEAD":
             self.wfile.write(corpo)
+
+    def redirecionar(self, destino):
+        self.send_response(302)
+        self.send_header("Location", destino)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
 
     def json_ok(self, obj, extras=None):
         corpo = json.dumps(obj, ensure_ascii=False).encode("utf-8")
@@ -244,18 +284,30 @@ class Handler(BaseHTTPRequestHandler):
 
         if caminho == "/api/sessao":
             return self.json_ok({"autenticado": self.autenticado(),
-                                 "configurado": ler_config() is not None})
+                                 "configurado": ler_config() is not None,
+                                 "baseFotos": BASE_FOTOS,
+                                 "urlSite": URL_SITE})
 
         if caminho == "/api/vets":
             if not self.autenticado():
                 return self.json_erro(401, "Faca login para ver os dados.")
-            return self.json_ok(ler_vets())
+            try:
+                return self.json_ok(ler_vets())
+            except armazenamento.ErroDeArmazenamento as e:
+                return self.json_erro(502, str(e))
+            except Exception as e:
+                return self.json_erro(500, "Nao consegui ler a equipe: " + str(e))
 
         if caminho in ("/admin", "/admin/"):
             return self.arquivo(os.path.join(ADMIN, "index.html"))
 
         if caminho.startswith("/admin/"):
             return self.arquivo(os.path.join(ADMIN, caminho[len("/admin/"):]))
+
+        # Na nuvem o site nao mora aqui - ele esta no GitHub Pages. Servir uma
+        # copia velha do site so confundiria, entao tudo vai para o painel.
+        if NA_NUVEM:
+            return self.redirecionar("/admin")
 
         rel = caminho.lstrip("/") or "index.html"
         return self.arquivo(os.path.join(SITE, rel))
@@ -273,6 +325,9 @@ class Handler(BaseHTTPRequestHandler):
                 cookie = ("vethome_cms=" + tok +
                           "; Path=/; HttpOnly; SameSite=Strict; Max-Age=" +
                           str(SESSAO_HORAS * 3600))
+                # na nuvem a conexao e https, entao o cookie so trafega nela
+                if NA_NUVEM:
+                    cookie += "; Secure"
                 return self.json_ok({"ok": True}, [("Set-Cookie", cookie)])
 
             if caminho == "/api/logout":
@@ -297,6 +352,8 @@ class Handler(BaseHTTPRequestHandler):
 
         except ValueError as e:
             return self.json_erro(400, str(e))
+        except armazenamento.ErroDeArmazenamento as e:
+            return self.json_erro(502, str(e))
         except Exception as e:
             return self.json_erro(500, "Erro no servidor: " + str(e))
 
@@ -321,6 +378,7 @@ class Handler(BaseHTTPRequestHandler):
 
         if existe:
             vets[vets.index(existe)] = registro
+            mensagem = "Atualiza " + registro["nome"] + " pelo painel"
         else:
             registro["id"] = registro["slug"]
             if not registro["ordem"]:
@@ -330,9 +388,10 @@ class Handler(BaseHTTPRequestHandler):
                         maior = v.get("ordem", 0)
                 registro["ordem"] = maior + 1
             vets.append(registro)
+            mensagem = "Adiciona " + registro["nome"] + " pelo painel"
 
         vets.sort(key=lambda v: v.get("ordem", 0))
-        gravar_vets(vets)
+        gravar_vets(vets, mensagem)
         return self.json_ok({"ok": True, "vet": registro})
 
     def salvar_ordem(self):
@@ -346,7 +405,7 @@ class Handler(BaseHTTPRequestHandler):
             if v.get("id") in posicao:
                 v["ordem"] = posicao[v["id"]]
         vets.sort(key=lambda v: v.get("ordem", 0))
-        gravar_vets(vets)
+        gravar_vets(vets, "Reordena a equipe pelo painel")
         return self.json_ok({"ok": True})
 
     def arquivo(self, caminho):
@@ -373,16 +432,23 @@ def main():
         return definir_senha()
 
     if ler_config() is None:
-        print("Nenhuma senha definida ainda. Rode primeiro:")
-        print("    python tools/cms.py --definir-senha")
+        if NA_NUVEM:
+            print("Falta a variavel de ambiente CMS_SENHA no servidor.")
+        else:
+            print("Nenhuma senha definida ainda. Rode primeiro:")
+            print("    python tools/cms.py --definir-senha")
         return
 
     os.makedirs(ADMIN, exist_ok=True)
-    srv = ThreadingHTTPServer(("127.0.0.1", PORTA), Handler)
+    srv = ThreadingHTTPServer((ENDERECO, PORTA), Handler)
     print("VetHome CMS no ar")
-    print("  site   http://localhost:" + str(PORTA) + "/")
-    print("  painel http://localhost:" + str(PORTA) + "/admin")
-    print("  (Ctrl+C para parar)")
+    print("  dados  " + ARMAZEM.descricao())
+    if NA_NUVEM:
+        print("  painel /admin na porta " + str(PORTA))
+    else:
+        print("  site   http://localhost:" + str(PORTA) + "/")
+        print("  painel http://localhost:" + str(PORTA) + "/admin")
+        print("  (Ctrl+C para parar)")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

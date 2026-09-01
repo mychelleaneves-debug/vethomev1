@@ -1,0 +1,37 @@
+# Configuracao do painel da equipe no Render (plano gratuito).
+#
+# O painel nao guarda nada no disco do servidor: o disco do plano gratuito e
+# apagado a cada reinicio. Ele grava direto no repositorio pela API do GitHub,
+# no mesmo branch que o GitHub Pages publica - entao salvar no painel ja
+# atualiza o site, sem passo extra.
+#
+# As duas chaves secretas (GITHUB_TOKEN e CMS_SENHA) NAO ficam neste arquivo.
+# Elas sao digitadas no painel do Render, em Environment.
+
+services:
+  - type: web
+    name: vethome-painel
+    runtime: python
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: python tools/cms.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.4"
+
+      # onde os dados da equipe moram
+      - key: GITHUB_REPO
+        value: mychelleaneves-debug/vethomev1
+      - key: GITHUB_BRANCH
+        value: gh-pages
+
+      # endereco publico do site, usado pelas fotos e pelo botao "Ver o site"
+      - key: SITE_URL
+        value: https://mychelleaneves-debug.github.io/vethomev1/
+
+      # digitados a mao no Render, nunca aqui
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: CMS_SENHA
+        sync: false
