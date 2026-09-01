@@ -207,7 +207,7 @@
     "foto": "assets/vets/andre-camargo.jpg",
     "descricao": "Médico veterinário especialista em ortopedia de pequenos animais. Experiência em fraturas, luxações e lesões articulares. Atendimento domiciliar com diagnóstico por imagem.",
     "areas": [],
-    "status": "ativo",
+    "status": "inativo",
     "ordem": 15,
     "slug": "dr-andre-camargo"
   },
