@@ -16,6 +16,7 @@ services:
     branch: main
     buildCommand: pip install -r requirements.txt
     startCommand: python tools/cms.py
+    healthCheckPath: /healthz
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.4"

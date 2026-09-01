@@ -282,6 +282,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         caminho = self.path.split("?")[0]
 
+        # o Render fica cutucando um endereco para saber se o painel esta de pe
+        if caminho == "/healthz":
+            return self.responder(200, b"ok")
+
         if caminho == "/api/sessao":
             return self.json_ok({"autenticado": self.autenticado(),
                                  "configurado": ler_config() is not None,
