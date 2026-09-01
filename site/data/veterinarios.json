@@ -252,20 +252,6 @@
     "slug": "dra-beatriz-costa"
   },
   {
-    "id": "dr-felipe-martins",
-    "nome": "Dr. Felipe Martins",
-    "cargo": "Médico-Veterinário",
-    "especialidade": "Oftalmologia Veterinária",
-    "crmv": "CRMV-DF 5689",
-    "cidade": "",
-    "foto": "assets/vets/felipe-martins.jpg",
-    "descricao": "Especialista em afecções oftalmológicas. Realiza cirurgias oculares e diagnósticos complexos. Atendimento domiciliar com equipamento de última geração.",
-    "areas": [],
-    "status": "ativo",
-    "ordem": 19,
-    "slug": "dr-felipe-martins"
-  },
-  {
     "id": "dr-flavio-castanhede",
     "nome": "Dr. Flávio Castanhede",
     "cargo": "Médico-Veterinário",
@@ -276,7 +262,21 @@
     "descricao": "",
     "areas": [],
     "status": "ativo",
-    "ordem": 20,
+    "ordem": 19,
     "slug": "dr-flavio-castanhede"
+  },
+  {
+    "id": "dr-felipe-martins",
+    "nome": "Dr. Felipe Martins",
+    "cargo": "Médico-Veterinário",
+    "especialidade": "Oftalmologia Veterinária",
+    "crmv": "CRMV-DF 5689",
+    "cidade": "",
+    "foto": "assets/vets/felipe-martins.jpg",
+    "descricao": "Especialista em afecções oftalmológicas. Realiza cirurgias oculares e diagnósticos complexos. Atendimento domiciliar com equipamento de última geração.",
+    "areas": [],
+    "status": "ativo",
+    "ordem": 20,
+    "slug": "dr-felipe-martins"
   }
 ]
