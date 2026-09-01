@@ -235,7 +235,7 @@
     "foto": "assets/vets/ricardo-alves.jpg",
     "descricao": "Veterinário reprodutor com experiência em diagnósticos reprodutivos, planejamento de cruzamentos e acompanhamento gestacional. Consultas domiciliares.",
     "areas": [],
-    "status": "ativo",
+    "status": "inativo",
     "ordem": 17,
     "slug": "dr-ricardo-alves"
   },
