@@ -9,6 +9,11 @@
   var PER_PAGE = 6;
   var SHADOWS = ["purple-shadow", "orange-shadow", "yellow-shadow"];
 
+  /* Onde a equipe fica guardada. O painel grava aqui; o site le daqui. */
+  var REPO = "mychelleaneves-debug/vethomev1";
+  var BRANCH = "gh-pages";
+  var ARQUIVO = "data/veterinarios.json";
+
   var grid = document.getElementById("vetGrid");
   var dots = document.getElementById("vetDots");
   var count = document.getElementById("vetCount");
@@ -35,8 +40,7 @@
   /* Foto recem-enviada pelo painel ja esta no repositorio, mas o site so passa
      a servi-la depois de reconstruir. Ate la, busca a do repositorio em vez de
      mostrar um quadrado quebrado. */
-  var RAIZ_REPO = "https://raw.githubusercontent.com/mychelleaneves-debug" +
-    "/vethomev1/gh-pages/";
+  var RAIZ_REPO = "https://raw.githubusercontent.com/" + REPO + "/" + BRANCH + "/";
 
   function reservaDaFoto(caminho) {
     var url = RAIZ_REPO + String(caminho || "").replace(/^\//, "");
@@ -199,31 +203,60 @@
 
   /* De onde vem a lista da equipe.
 
-     O painel grava direto no repositorio, e o arquivo bruto do GitHub mostra
-     a mudanca na hora. A copia que o GitHub Pages serve junto com o site so
-     aparece depois que ele reconstroi tudo, o que as vezes leva varios
-     minutos - por isso ela fica de reserva, para o caso do primeiro endereco
-     falhar. O ?v= evita a copia guardada pelo navegador. */
-  var FONTE_AO_VIVO = "https://raw.githubusercontent.com/mychelleaneves-debug" +
-    "/vethomev1/gh-pages/data/veterinarios.json";
-  var FONTE_RESERVA = "data/veterinarios.json";
+     O painel grava direto no repositorio. Tres enderecos servem o mesmo
+     arquivo, do mais fresco para o mais lento:
 
-  function buscarEquipe(endereco) {
-    return fetch(endereco + "?v=" + Date.now(), { cache: "no-store" })
-      .then(function (response) {
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        return response.json();
+       API do GitHub  a mudanca aparece no mesmo minuto. Sem cache de CDN.
+                      Limite de 60 consultas por hora por visitante.
+       arquivo bruto  fica guardado por 5 minutos.
+       copia do site  so muda quando o GitHub Pages reconstroi tudo, o que
+                      ja levou mais de dez minutos.
+
+     Falhou uma, tenta a seguinte. No computador a ordem se inverte: o
+     arquivo da pasta vem primeiro, senao a previa do painel local
+     mostraria o que esta no GitHub em vez do que acabou de ser editado. */
+  function daApi() {
+    var url = "https://api.github.com/repos/" + REPO + "/contents/" + ARQUIVO +
+      "?ref=" + BRANCH + "&v=" + Date.now();
+    return fetch(url, { cache: "no-store" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(function (d) {
+        /* a API devolve o arquivo em base64; os acentos exigem passar pelos
+           bytes, senao viram lixo */
+        var texto = atob(String(d.content || "").replace(/\s/g, ""));
+        var bytes = new Uint8Array(texto.length);
+        for (var n = 0; n < texto.length; n++) bytes[n] = texto.charCodeAt(n);
+        return JSON.parse(new TextDecoder("utf-8").decode(bytes));
       });
   }
 
-  /* No computador (painel local) manda o arquivo da pasta, senao a previa
-     mostraria o que esta no GitHub em vez do que acabou de ser editado aqui. */
-  var noComputador = /^(localhost|127\.0\.0\.1|)$/.test(location.hostname);
-  var primeira = noComputador ? FONTE_RESERVA : FONTE_AO_VIVO;
-  var segunda = noComputador ? FONTE_AO_VIVO : FONTE_RESERVA;
+  function deArquivo(endereco) {
+    return fetch(endereco + "?v=" + Date.now(), { cache: "no-store" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      });
+  }
 
-  buscarEquipe(primeira)
-    .catch(function () { return buscarEquipe(segunda); })
+  function doRepo() { return deArquivo(RAIZ_REPO + ARQUIVO); }
+  function daPasta() { return deArquivo(ARQUIVO); }
+
+  var noComputador = /^(localhost|127\.0\.0\.1|)$/.test(location.hostname);
+  var fontes = noComputador
+    ? [daPasta, daApi, doRepo]
+    : [daApi, doRepo, daPasta];
+
+  function tentarFonte(n) {
+    return fontes[n]().catch(function (erro) {
+      if (n + 1 >= fontes.length) throw erro;
+      return tentarFonte(n + 1);
+    });
+  }
+
+  tentarFonte(0)
     .then(function (data) {
       vets = (Array.isArray(data) ? data : [])
         /* o painel marca quem sai do ar sem apagar o cadastro */
