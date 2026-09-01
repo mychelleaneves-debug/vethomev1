@@ -430,14 +430,17 @@ def conflitos(arm, vets, dados, ignorar_id=None, cache=None):
     janelas = disponibilidade_do_vet(disponibilidade, vet_id)["semana"].get(
         str((dia.weekday() + 1) % 7), [])
     if not janelas:
-        problemas.append("%s não atende %s." % (nome_vet, _dia_da_semana(dia)))
+        problemas.append("%s não atende %s. Em %s não há atendimento."
+                         % (nome_vet, _dia_da_semana(dia), _dia_br(dia.isoformat())))
     else:
         cabe = any(em_minutos(j["inicio"]) <= inicio and fim <= em_minutos(j["fim"])
                    for j in janelas)
         if not cabe:
             faixas = ", ".join(j["inicio"] + "-" + j["fim"] for j in janelas)
-            problemas.append("Fora da disponibilidade de %s nesse dia (%s)."
-                             % (nome_vet, faixas))
+            problemas.append(
+                "Fora da disponibilidade de %s em %s (%s), quando o "
+                "atendimento é das %s."
+                % (nome_vet, _dia_br(dia.isoformat()), _dia_da_semana(dia), faixas))
 
     return problemas
 
