@@ -1,0 +1,1409 @@
+/* ==========================================================================
+   VetHome — estilos da seção de veterinários (grade paginada + modal)
+   Só esta seção sai do template. Todo o resto vem de css/webflow.css.
+   Os valores abaixo reaproveitam as medidas do próprio template:
+   slide 315px, gap 60px, container 1065px, borda 3px, raio 30px.
+   ========================================================================== */
+
+.team-grid-wrapper{
+  width:100%;
+  max-width:1065px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  row-gap:56px;
+}
+
+.team-grid{
+  display:grid;
+  grid-template-columns:repeat(3,315px);
+  column-gap:60px;
+  row-gap:76px; /* 60px do template + 16px da sombra deslocada */
+  justify-content:center;
+  /* O JS trava uma altura minima na grade para a pagina nao pular ao trocar
+     de pagina. Sem isto, na ultima pagina — que tem menos cards e portanto
+     menos linhas — a linha unica esticava para preencher essa altura e os
+     cards dobravam de tamanho. align-content mantem as linhas na altura
+     natural e deixa a sobra embaixo. */
+  align-content:start;
+  width:100%;
+}
+
+/* o card usa .team-block do template; aqui só o que muda por ser clicável */
+.team-grid .team-block{
+  cursor:pointer;
+  justify-content:flex-start;
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.team-grid .team-block:hover,
+.team-grid .team-block:focus-visible{transform:translateY(8px)}
+.team-grid .team-block.purple-shadow:hover,
+.team-grid .team-block.purple-shadow:focus-visible{box-shadow:0 8px 0 0 var(--purple)}
+.team-grid .team-block.orange-shadow:hover,
+.team-grid .team-block.orange-shadow:focus-visible{box-shadow:0 8px 0 0 var(--orange)}
+.team-grid .team-block.yellow-shadow:hover,
+.team-grid .team-block.yellow-shadow:focus-visible{box-shadow:0 8px 0 0 var(--yellow)}
+.team-grid .team-block:focus-visible{outline:3px solid var(--purple);outline-offset:4px}
+
+.team-grid .team-member-image{max-width:100%;height:auto;aspect-ratio:1}
+
+/* ---------- controles de página ---------- */
+.team-controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  column-gap:26px;
+}
+
+/* mesmos valores de .slider-arrow.team-left/.team-right do template */
+.vet-arrow{
+  border:2.5px solid var(--dark);
+  color:var(--dark);
+  background:transparent;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  flex:none;
+  cursor:pointer;
+  transition:all .3s ease-in-out;
+}
+/* [hidden] precisa vencer o display:flex acima, senao a seta aparece com 1 pagina so */
+.vet-arrow[hidden],.vet-count[hidden],.vet-dots[hidden]{display:none !important}
+.vet-arrow:hover:not(:disabled){border-color:var(--orange);color:var(--orange)}
+.vet-arrow:disabled{opacity:.25;cursor:default}
+.vet-arrow:focus-visible{outline:3px solid var(--purple);outline-offset:3px}
+
+.vet-dots{display:flex;column-gap:9px;list-style:none;margin:0;padding:0}
+.vet-dots button{
+  width:10px;height:10px;padding:0;border:none;border-radius:999px;
+  background:rgba(21,11,51,.25);cursor:pointer;
+  transition:width .2s ease,background .2s ease;
+}
+.vet-dots button[aria-current="true"]{width:30px;background:var(--dark)}
+.vet-dots button:focus-visible{outline:3px solid var(--purple);outline-offset:3px}
+
+.vet-count{
+  font-size:.9375rem;
+  font-weight:700;
+  color:var(--dark-grey);
+  font-variant-numeric:tabular-nums;
+  margin:0;
+}
+
+/* ---------- modal ---------- */
+.vet-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  background:rgba(21,11,51,.55);
+  display:grid;
+  place-items:center;
+  padding:24px;
+  overflow-y:auto;
+  animation:vetFade .18s ease;
+}
+.vet-backdrop[hidden]{display:none}
+
+.vet-modal{
+  width:min(620px,100%);
+  background:var(--white);
+  border:3px solid var(--dark);
+  border-radius:30px;
+  box-shadow:0 16px 0 0 var(--purple);
+  padding:40px 50px 36px;
+  position:relative;
+  text-align:center;
+  margin:16px 0;
+  animation:vetPop .2s ease;
+}
+.vet-modal .team-member-image{
+  width:150px;height:150px;
+  border-radius:50%;
+  object-fit:cover;
+  margin:0 auto;
+}
+.vet-modal h3{margin:20px 0 0}
+.vet-modal .vet-role{margin:2px 0 0}
+.vet-modal .vet-bio{margin:22px 0 0}
+
+.vet-close{
+  position:absolute;top:18px;right:18px;
+  width:40px;height:40px;
+  border:2.5px solid var(--dark);
+  border-radius:50%;
+  background:var(--white);
+  color:var(--dark);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+.vet-close:hover{border-color:var(--orange);color:var(--orange)}
+.vet-close:focus-visible{outline:3px solid var(--purple);outline-offset:3px}
+
+.vet-crmv{
+  display:inline-block;
+  margin-top:14px;
+  background:var(--light-blue);
+  color:var(--dark);
+  font-family:Otomanopeeone,sans-serif;
+  font-size:.75rem;
+  letter-spacing:.1rem;
+  text-transform:uppercase;
+  padding:6px 14px;
+  border-radius:170px;
+}
+
+.vet-block{margin-top:26px}
+.vet-block h4{
+  font-family:Otomanopeeone,sans-serif;
+  font-size:.75rem;
+  font-weight:400;
+  letter-spacing:.14rem;
+  text-transform:uppercase;
+  color:var(--dark-grey);
+  margin:0 0 12px;
+}
+.vet-regions{
+  display:flex;flex-wrap:wrap;gap:8px;
+  list-style:none;margin:0;padding:0;justify-content:center;
+}
+.vet-regions li{
+  background:var(--light-blue);
+  color:var(--dark);
+  border-radius:170px;
+  padding:5px 14px;
+  font-size:.9375rem;
+  font-weight:700;
+}
+
+@keyframes vetFade{from{opacity:0}to{opacity:1}}
+@keyframes vetPop{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+
+/* ---------- responsivo ---------- */
+@media screen and (max-width:1100px){
+  .team-grid{grid-template-columns:repeat(2,315px)}
+}
+@media screen and (max-width:820px){
+  .team-grid{grid-template-columns:315px;row-gap:64px}
+  .team-grid-wrapper{row-gap:44px}
+}
+@media screen and (max-width:400px){
+  .team-grid{grid-template-columns:1fr}
+  .team-grid .team-block{padding:32px 26px}
+  .vet-modal{padding:34px 24px 30px}
+  .team-controls{column-gap:16px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .vet-backdrop,.vet-modal{animation:none}
+  .team-grid .team-block{transition:none}
+  .team-grid .team-block:hover,
+  .team-grid .team-block:focus-visible{transform:none}
+}
+
+/* selo do Webflow: o site agora e hospedado por voce */
+.w-webflow-badge{display:none !important}
+
+/* ==========================================================================
+   Ajustes pedidos na seção "Conheça a VetHome"
+   ========================================================================== */
+
+/* títulos maiores — só nesta seção, para não mexer nas outras */
+.about-section .upper-heading{font-size:1.0625rem;letter-spacing:.2rem}
+.about-section .h1{font-size:4rem;line-height:4.75rem}
+.about-heading-wrapper{max-width:620px}
+
+
+/* ==========================================================================
+   Seções novas: Por que escolher / Como funciona / O que esperar
+   Reaproveitam a estrutura de .service-section, então herdam card, sombra
+   colorida, tipografia e responsividade do template. Aqui só o que muda.
+   ========================================================================== */
+
+.secao-porque{background-color:var(--white)}
+/* No desktop a onda do hero já faz a pausa entre as seções e ainda deixa uma
+   faixa branca própria embaixo dela; os 140px de padding somavam outro vazio.
+   Abaixo de 992px a onda vai para o topo do hero e o padding do template fica. */
+@media screen and (min-width:992px){
+  .secao-porque{padding-top:30px}
+}
+.secao-como{background-color:#f0f4f5}
+.secao-esperar{background-color:var(--white)}
+
+/* ---------- Comparativo: antes x com a VetHome ----------
+   Dois cards do mesmo tamanho, com a borda, o raio e a sombra deslocada do
+   template (.shadow + *-shadow). O que muda aqui é só o texto alinhado à
+   esquerda e a lista com marcador de ✕ / ✓. */
+.secao-comparativo{background-color:var(--light-blue)}
+
+.comparativo-wrapper{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:stretch;
+  column-gap:55px;
+  row-gap:75px;
+  width:100%;
+}
+
+.comparativo-block{
+  background-color:var(--white);
+  flex:1 1 420px;
+  max-width:470px;
+  padding:42px 44px 46px;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  row-gap:26px;
+}
+
+.comparativo-header{
+  display:flex;
+  align-items:center;
+  column-gap:14px;
+}
+.comparativo-header .h6{margin:0}
+
+/* selo redondo com o mesmo traço dos ícones do template */
+.comparativo-selo{
+  flex:none;
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background-color:#fdeae3;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:19px 19px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23e8613a' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M5 5l10 10M15 5L5 15'/%3E%3C/svg%3E");
+}
+.comparativo-selo.depois{
+  background-color:#e4f8ea;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%231da851' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 10.6 4.2 4.2L16 5.4'/%3E%3C/svg%3E");
+}
+
+.comparativo-lista{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  row-gap:14px;
+}
+.comparativo-lista li{
+  position:relative;
+  padding-left:32px;
+  color:var(--dark-grey);
+  font-size:1rem;
+  line-height:1.6;
+}
+.comparativo-lista li:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.34em;
+  width:18px;
+  height:18px;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23e8613a' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M5 5l10 10M15 5L5 15'/%3E%3C/svg%3E");
+}
+.comparativo-lista.depois li:before{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%231da851' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 10.6 4.2 4.2L16 5.4'/%3E%3C/svg%3E");
+}
+
+/* as sombras coloridas do template já existem; aqui só o par usado */
+.comparativo-block.shadow.orange-shadow{box-shadow:8px 9px #fc886480}
+.comparativo-block.shadow.green-shadow{box-shadow:8px 9px #97f59780}
+
+@media screen and (max-width:991px){
+  .comparativo-block{flex-basis:100%;max-width:520px}
+}
+@media screen and (max-width:767px){
+  .comparativo-block{padding:34px 26px 38px}
+}
+
+
+
+/* subtítulo abaixo do H2, na largura de leitura confortável */
+.secao-sub{
+  max-width:56ch;
+  margin:0 auto;
+  text-align:center;
+}
+
+/* ---------- Como funciona: numeração dos passos ---------- */
+.passos-wrapper{align-items:stretch}
+
+.passo-block{
+  position:relative;
+  padding-top:58px;
+}
+
+.passo-numero{
+  position:absolute;
+  top:-26px;
+  left:50%;
+  transform:translateX(-50%);
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:var(--white);
+  border:3px solid var(--dark);
+  color:var(--dark);
+  font-family:Otomanopeeone,sans-serif;
+  font-size:1.375rem;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* a partir de 3 passos lado a lado, o traço entre eles reforça a sequência */
+@media screen and (min-width:1240px){
+  .passos-wrapper .passo-block:not(:last-child)::after{
+    content:"";
+    position:absolute;
+    top:-1px;
+    right:-40px;
+    width:26px;
+    height:3px;
+    background:var(--dark);
+    opacity:.18;
+  }
+}
+
+@media screen and (max-width:767px){
+  .passo-block{padding-top:52px}
+  .passo-numero{width:46px;height:46px;font-size:1.25rem;top:-23px}
+}
+
+/* nas seções de fundo branco a pill do eyebrow sumia (branco no branco) */
+.secao-porque .tag,
+.secao-esperar .tag{background-color:#f0f4f5}
+
+/* ==========================================================================
+   Parcerias
+   ========================================================================== */
+.secao-parcerias{background-color:#f0f4f5}
+
+/* era 420px, a largura de um parceiro so. 880px acomoda dois lado a lado
+   (370px de card + 55px de gap do template) e continua centralizando. */
+.parceiros-wrapper{max-width:880px;margin:0 auto}
+
+/* os dois cards com a mesma altura: o nome da Avert ocupa duas linhas e o
+   da Farmina uma so, entao sem isto um card ficava mais baixo que o outro */
+.parceiros-wrapper{align-items:stretch}
+.parceiro-block{
+  width:100%;
+  /* o template centraliza o conteudo na vertical. Com os cards forcados a
+     ter a mesma altura, o card de texto mais longo subia o bloco inteiro e
+     nada alinhava entre os dois. Ancorado no topo, logo e titulo comecam
+     na mesma linha. */
+  justify-content:flex-start;
+}
+
+/* Lado a lado, o nome da Farmina cabe em uma linha e o da Avert precisa
+   de duas, entao os paragrafos comecavam em alturas diferentes. Reservar
+   duas linhas (2 x 35px de line-height) alinha os dois. Empilhados no
+   celular isso nao faz falta e so criaria um vazio, por isso o min-width. */
+@media screen and (min-width:768px){
+  .parceiro-block .h6{min-height:70px}
+}
+
+.parceiro-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:120px;
+}
+.parceiro-logo img{
+  max-width:138px;
+  max-height:120px;
+  width:auto;
+  height:auto;
+}
+
+/* O selo da Farmina esta no tamanho nativo (138x120), entao nao da para
+   aumentar sem borrar. Quem cede e a Avert: um disco vermelho chapado pesa
+   mais no olho que um selo azul-e-branco de contorno fino, mesmo ocupando
+   area parecida. 104px equilibra os dois. */
+.parceiro-logo img.parceiro-logo-solido{
+  max-width:104px;
+  max-height:104px;
+}
+
+/* ==========================================================================
+   Contato: o formulário deu lugar aos canais diretos
+   ========================================================================== */
+.contato-acoes{
+  background-color:var(--white);
+  border-radius:30px;
+  padding:48px 44px;
+  display:flex;
+  flex-direction:column;
+  row-gap:14px;
+  align-items:flex-start;
+  width:100%;
+  max-width:470px;
+}
+
+.contato-botoes{
+  display:flex;
+  flex-direction:column;
+  row-gap:12px;
+  width:100%;
+  margin-top:10px;
+}
+
+.contato-principal{
+  width:100%;
+  text-align:center;
+}
+
+.contato-secundario{
+  display:block;
+  width:100%;
+  padding:14px 20px;
+  border:2px solid var(--dark);
+  border-radius:170px;
+  color:var(--dark);
+  font-size:1rem;
+  font-weight:700;
+  text-align:center;
+  text-decoration:none;
+  transition:background-color .2s ease,color .2s ease;
+}
+.contato-secundario:hover{
+  background-color:var(--dark);
+  color:var(--white);
+}
+.contato-secundario:focus-visible{outline:3px solid var(--purple);outline-offset:3px}
+
+@media screen and (max-width:767px){
+  .contato-acoes{padding:36px 26px}
+}
+
+/* ==========================================================================
+   FAQ: cartão de ajuda com atalho para o WhatsApp
+   ========================================================================== */
+.faq-row{
+  align-items:flex-start;
+}
+
+.faq-left-block.faq-ajuda{
+  row-gap:20px;
+  align-items:flex-start;
+  padding:46px 38px 0;
+  overflow:visible;
+}
+.faq-left-block.shadow.faq-ajuda{
+  border-width:2px;
+  box-shadow:8px 9px 0 0 #25d36624;
+}
+
+.faq-ajuda .faq-left-block-text-wrapper{
+  row-gap:12px;
+  width:100%;
+  margin-left:0;
+  margin-right:0;
+}
+.faq-ajuda .h4{
+  font-size:1.5rem;
+  line-height:1.3;
+  letter-spacing:-.01em;
+}
+.faq-ajuda .paragraph{
+  color:var(--dark-grey);
+  font-size:.9375rem;
+  line-height:1.7;
+}
+
+.faq-whats{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  column-gap:10px;
+  width:auto;
+  background-color:#25d366;
+  padding:14px 22px;
+  font-size:.9375rem;
+  letter-spacing:.01em;
+  line-height:1.25;
+}
+.faq-whats svg{
+  flex:none;
+}
+.faq-whats:hover{
+  background-color:#1da851;
+}
+.faq-whats:focus-visible{
+  outline:3px solid var(--purple);
+  outline-offset:3px;
+}
+
+/* a arte tem margem transparente própria (7% no topo, 3,5% na base);
+   as margens negativas colam o cão no botão, deixam a arte sangrar até as
+   bordas do card e fazem as patas vazarem um pouco abaixo dele */
+.faq-ajuda .faq-image-wrapper{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  align-self:stretch;
+  margin:-28px -38px -34px;
+}
+.faq-ajuda .faq-image-wrapper:before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  bottom:61px;
+  left:50%;
+  width:296px;
+  height:296px;
+  background-color:#eaf8ee;
+  border-radius:50%;
+  transform:translateX(-50%);
+}
+.faq-ajuda .faq-image{
+  position:relative;
+  z-index:1;
+  display:block;
+  width:100%;
+  max-width:330px;
+  height:auto;
+}
+
+@media screen and (max-width:991px){
+  .faq-ajuda .faq-left-block-text-wrapper{
+    text-align:center;
+    align-items:center;
+  }
+  .faq-left-block.faq-ajuda{align-items:center}
+}
+@media screen and (max-width:767px){
+  .faq-left-block.faq-ajuda{padding:32px 24px 0}
+  .faq-ajuda .faq-image-wrapper{margin-left:-24px;margin-right:-24px}
+}
+
+/* ---------- Botão Ver Perfil nos cards de veterinários ---------- */
+.team-block{
+  display:flex;
+  flex-direction:column;
+  min-height:100%;
+}
+
+.vet-perfil-btn{
+  display:block;
+  width:100%;
+  padding:10px 16px;
+  margin-top:auto;
+  background:transparent;
+  color:#6B7280;
+  border:1.5px solid #6B7280;
+  border-radius:6px;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.3px;
+  cursor:pointer;
+  transition:all .25s ease;
+  text-transform:uppercase;
+}
+
+.vet-perfil-btn:hover{
+  background:#6B7280;
+  color:#fff;
+  border-color:#6B7280;
+}
+
+.vet-perfil-btn:active{
+  opacity:.9;
+}
+
+.vet-perfil-btn:focus{
+  outline:2px solid #6B7280;
+  outline-offset:1px;
+}
+
+/* ==========================================================================
+   Rodapé enxuto
+   Substitui o rodapé do template (newsletter, quick links em inglês, ícones
+   sociais genéricos e os créditos Pebo/Webflow). Mantém o fundo, o container
+   e a tipografia do template — só o conteúdo muda.
+   ========================================================================== */
+.footer-simples{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  row-gap:22px;
+  width:100%;
+}
+
+.footer-simples-logo{
+  width:190px;
+  height:auto;
+}
+
+.footer-simples-tagline{
+  max-width:46ch;
+  margin:0;
+  color:var(--white);
+  font-size:1rem;
+  line-height:1.7;
+  opacity:.85;
+}
+
+.footer-simples-links{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:10px 34px;
+  margin-top:2px;
+}
+
+.footer-simples-link{
+  color:var(--white);
+  font-size:1rem;
+  font-weight:700;
+  text-decoration:none;
+  padding-bottom:3px;
+  border-bottom:2px solid rgba(255,255,255,.25);
+  transition:border-color .2s ease,color .2s ease;
+}
+.footer-simples-link:hover{
+  border-bottom-color:var(--orange);
+  color:var(--orange);
+}
+.footer-simples-link:focus-visible{
+  outline:3px solid var(--white);
+  outline-offset:4px;
+}
+
+.footer-simples-divider{
+  width:100%;
+  height:1px;
+  background-color:rgba(255,255,255,.2);
+  margin-top:16px;
+}
+
+.footer-simples-copy{
+  margin:0;
+  color:var(--white);
+  font-size:.875rem;
+  opacity:.65;
+}
+
+@media screen and (max-width:767px){
+  .footer-simples{row-gap:18px}
+  .footer-simples-logo{width:152px}
+  .footer-simples-links{gap:10px 20px}
+  .footer-simples-link{font-size:.9375rem}
+}
+
+/* ==========================================================================
+   Depoimentos: todos os cards com a mesma altura
+   O slider dimensiona a moldura pelo slide mais alto. Sem isto, o depoimento
+   mais longo esticava a moldura e nos outros sobrava um vao vazio embaixo,
+   com a seta solta longe do conteudo.
+   O texto foi levemente reduzido para o depoimento mais longo caber em uma
+   caixa menor - 624px em vez dos 756px que ele pedia no tamanho original.
+   ========================================================================== */
+.testimonial-slide-text-wrapper .paragraph{
+  font-size:.9375rem;
+  line-height:1.6;
+}
+
+@media screen and (min-width:992px){
+  .testimonial-slide-content-wrapper{
+    min-height:624px;
+    align-items:center;
+  }
+}
+/* ==========================================================================
+   MOBILE — adaptação própria, não é o desktop encolhido
+   --------------------------------------------------------------------------
+   Diagnóstico que motivou este bloco (medido em 375x812):
+     página inteira = 24.309px = 30 telas de rolagem.
+     Os 22 cards da página eram verticais (ícone centralizado em cima,
+     título, texto) e custavam 245-305px CADA. O Instagram empilhava 7 fotos
+     de 300px. A equipe empilhava 6 cards de 368px. As seções somavam 180px
+     de padding cada uma.
+   Estratégia: no celular o olho lê em linha, não em bloco. Os cards viram
+   horizontais (ícone à esquerda, texto à direita), o que é o padrão de lista
+   nativa de celular e corta ~60% da altura de cada um. Galeria e equipe
+   deixam de empilhar. Nada é removido — só reorganizado.
+   Tudo aqui vive em max-width:767px. O desktop não é tocado.
+   ========================================================================== */
+
+@media screen and (max-width:767px){
+
+  /* ---------- ritmo geral: menos ar morto entre as seções ---------- */
+  .service-section,
+  .about-section,
+  .feature-section,
+  .team-member-section,
+  .testimonial-section,
+  .instagram-section,
+  .faq-section,
+  .contact-section{
+    padding-top:52px;
+    padding-bottom:52px;
+  }
+
+  /* cabeçalho de seção: era 207px de altura, quase um quarto de tela */
+  .service-heading-wrapper,
+  .feature-heading-wrapper,
+  .testimonial-heading-wrapper,
+  .instagram-container > .h1,
+  .faq-heading-wrapper{
+    row-gap:10px;
+  }
+  .h1{
+    font-size:1.625rem;
+    line-height:2rem;
+    letter-spacing:-.01em;
+  }
+  .service-container{row-gap:34px}
+  .secao-sub{font-size:.9375rem;line-height:1.6}
+  .tag{padding:5px 16px}
+  .upper-heading{font-size:.6875rem;letter-spacing:.14rem}
+
+  /* ---------- cards em lista horizontal ----------
+     O ganho principal da página. Vale para "Por que escolher",
+     "Nossos Serviços" e "O que esperar da consulta".
+     Os passos do "Como funciona" têm numeração própria e são tratados
+     logo abaixo, por isso ficam de fora aqui. */
+  .service-blocks-wrapper{
+    grid-row-gap:14px;
+    grid-column-gap:0;
+  }
+  .service-block:not(.passo-block):not(.parceiro-block){
+    display:grid;
+    grid-template-columns:46px 1fr;
+    grid-template-areas:"ic tt" "ic tx";
+    column-gap:15px;
+    row-gap:4px;
+    align-items:start;
+    justify-content:stretch;
+    text-align:left;
+    max-width:none;
+    width:100%;
+    padding:18px 18px 20px;
+    border-radius:16px;
+  }
+  .service-block:not(.passo-block):not(.parceiro-block) .service-block-icon{
+    grid-area:ic;
+    width:46px;
+    height:46px;
+    margin-bottom:0;
+    object-fit:contain;
+  }
+  .service-block:not(.passo-block):not(.parceiro-block) .h6{
+    grid-area:tt;
+    font-size:1rem;
+    line-height:1.3;
+  }
+  .service-block:not(.passo-block):not(.parceiro-block) .paragraph{
+    grid-area:tx;
+    font-size:.875rem;
+    line-height:1.55;
+  }
+  /* a sombra deslocada de 8px some num card estreito; 5px mantém o efeito */
+  .service-block.shadow{box-shadow:5px 6px 0 0 rgba(21,11,51,.1)}
+
+  /* ---------- Como funciona: o número vira o marcador da linha ---------- */
+  .passos-wrapper{grid-row-gap:12px}
+  .passo-block{
+    display:grid;
+    grid-template-columns:46px 1fr;
+    grid-template-areas:"nu tt" "nu tx";
+    column-gap:15px;
+    row-gap:4px;
+    align-items:start;
+    text-align:left;
+    max-width:none;
+    width:100%;
+    padding:18px 18px 20px;
+    border-radius:16px;
+  }
+  .passo-block .passo-numero{
+    grid-area:nu;
+    position:static;
+    transform:none;
+    width:46px;
+    height:46px;
+    font-size:1.125rem;
+  }
+  /* no celular o ícone e o número diziam a mesma coisa; fica o número */
+  .passo-block .service-block-icon{display:none}
+  .passo-block .h6{grid-area:tt;font-size:1rem;line-height:1.3}
+  .passo-block .paragraph{grid-area:tx;font-size:.875rem;line-height:1.55}
+
+  /* ---------- Diferenciais ---------- */
+  .feature-blocks-wrapper{grid-row-gap:14px}
+  .feature-block-column{grid-row-gap:14px}
+  .feature-block{
+    display:flex;
+    flex-direction:row;
+    grid-column-gap:14px;
+    column-gap:14px;
+    align-items:flex-start;
+    padding:18px;
+    border-radius:16px;
+  }
+  .feature-block-icon{width:44px;height:44px;flex:none}
+  .feature-block .h6{font-size:1rem;line-height:1.3}
+  .feature-block .paragraph{font-size:.875rem;line-height:1.55}
+  .feature-block-text{grid-row-gap:4px}
+  /* a foto decorativa não some, só deixa de ocupar meia tela */
+  .feature-image-wrapper img{max-height:240px;object-fit:cover;width:100%}
+
+  /* ---------- Comparativo ---------- */
+  .comparativo-wrapper{row-gap:16px}
+  .comparativo-block{padding:22px 20px 24px;row-gap:16px;border-radius:16px}
+  .comparativo-header{column-gap:11px}
+  .comparativo-selo{width:32px;height:32px;background-size:16px 16px}
+  .comparativo-header .h6{font-size:1rem}
+  .comparativo-lista{row-gap:10px}
+  .comparativo-lista li{font-size:.875rem;line-height:1.5;padding-left:27px}
+  .comparativo-lista li:before{width:16px;height:16px;top:.2em}
+
+  /* ---------- Equipe: duas colunas em vez de seis cards empilhados ----------
+     Empilhado, cada card custava 368px e a seção inteira quase 4 telas.
+     Em duas colunas a mesma informação cabe em pouco mais de uma tela. */
+  .team-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    column-gap:12px;
+    row-gap:20px;
+  }
+  .team-grid .team-block{
+    padding:16px 10px 14px;
+    border-radius:18px;
+    border-width:2px;
+    row-gap:8px;
+    box-shadow:4px 5px 0 0 rgba(21,11,51,.12);
+  }
+  .team-grid .team-member-image{
+    width:84px;
+    height:84px;
+    margin:0 auto;
+    border-radius:50%;
+    object-fit:cover;
+  }
+  .team-grid .team-member-name-wrapper{row-gap:2px}
+  .team-grid .team-block .h6{font-size:.8125rem;line-height:1.25}
+  .team-grid .team-block .paragraph{font-size:.6875rem;line-height:1.35}
+  .vet-perfil-btn{
+    padding:7px 8px;
+    font-size:.625rem;
+    letter-spacing:.02em;
+    border-width:1px;
+    border-radius:8px;
+  }
+  .team-grid-wrapper{row-gap:26px}
+
+  /* ---------- Depoimentos ---------- */
+  .testimonial-slide-content-wrapper{padding:22px 20px 26px;row-gap:16px;border-radius:20px}
+  .testimonial-image-wrapper img{max-height:210px;object-fit:cover;width:100%}
+  .testimonial-slide-text-wrapper .h4{font-size:1.125rem;line-height:1.3}
+  .testimonial-slide-text-wrapper .paragraph{font-size:.875rem;line-height:1.55}
+  .testimonial-star-widget{transform:scale(.82);transform-origin:left center}
+
+  /* ---------- Instagram: faixa que desliza, não pilha ----------
+     Eram 7 fotos de 300px de altura, 2.709px de decoração pura.
+     Vira uma tira horizontal com encaixe, no gesto natural do polegar. */
+  .instagram-feed-blocks-wrapper{
+    display:flex !important;
+    /* o template vira coluna abaixo de 479px; aqui a tira e horizontal */
+    flex-direction:row !important;
+    grid-template-columns:none !important;
+    grid-template-rows:none !important;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    column-gap:10px;
+    /* sangra até as bordas da tela para indicar que continua */
+    margin-left:-20px;
+    margin-right:-20px;
+    padding:4px 20px;
+  }
+  .instagram-feed-blocks-wrapper::-webkit-scrollbar{display:none}
+  .instagram-feed-block{
+    flex:0 0 auto;
+    width:152px;
+    height:152px;
+    scroll-snap-align:start;
+  }
+  .instagram-feed-block > a,
+  .instagram-feed-block-image{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:14px;
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-ajuda .faq-image{max-width:210px}
+  .faq-ajuda .faq-image-wrapper:before{width:186px;height:186px;bottom:38px}
+  .faq-ajuda .faq-image-wrapper{margin-top:-16px;margin-bottom:-22px}
+  .faq-left-block.faq-ajuda{padding:26px 22px 0}
+  .faq-ajuda .h4{font-size:1.25rem}
+  .faq-ajuda .paragraph{font-size:.875rem}
+
+  /* ---------- Contato ---------- */
+  .contato-acoes{padding:28px 22px;row-gap:10px}
+  .contato-secundario{padding:12px 16px;font-size:.9375rem}
+
+  /* ---------- Rodapé ---------- */
+  .footer-section{padding-top:48px;padding-bottom:34px}
+
+  /* ---------- alvos de toque confortáveis ---------- */
+  .primary-button,
+  .secondary-button,
+  .w-button{min-height:48px;display:inline-flex;align-items:center;justify-content:center}
+  /* alvos que ficavam abaixo dos 40px confortaveis para o polegar */
+  .vet-perfil-btn{min-height:40px}
+  .footer-simples-link{padding-top:6px;padding-bottom:8px;display:inline-block}
+  .contato-secundario{min-height:44px;display:flex;align-items:center;justify-content:center}
+}
+
+/* ==========================================================================
+   Atalho fixo do WhatsApp — só no celular
+   Os CTAs da página ficavam presos dentro das seções: em 30 telas de
+   rolagem, na maior parte do tempo não havia nenhum botão à mão. Este fica
+   sempre na zona do polegar, no canto inferior direito.
+   ========================================================================== */
+.zap-fixo{display:none}
+
+@media screen and (max-width:767px){
+  .zap-fixo{
+    position:fixed;
+    right:16px;
+    bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index:900;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    column-gap:9px;
+    height:52px;
+    padding:0 20px;
+    background-color:#25d366;
+    color:var(--white);
+    border-radius:999px;
+    font-size:.9375rem;
+    font-weight:700;
+    text-decoration:none;
+    box-shadow:0 6px 20px rgba(21,11,51,.28);
+  }
+  .zap-fixo svg{flex:none}
+  .zap-fixo:active{background-color:#1da851}
+  .zap-fixo:focus-visible{outline:3px solid var(--dark);outline-offset:3px}
+  /* espaço para o botão não cobrir o fim do rodapé */
+  .footer-section{padding-bottom:96px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .instagram-feed-blocks-wrapper{scroll-behavior:auto}
+}
+
+/* ==========================================================================
+   TABLET (768-991px)
+   Aqui o problema e o oposto do celular: sobra largura e ela nao era usada.
+   O template empilha os cards em uma coluna so, entao a pagina ficava tao
+   longa quanto no celular (23.786px) com metade da tela vazia dos lados.
+   Solucao: duas colunas. Os cards continuam verticais, como no desktop.
+   ========================================================================== */
+@media screen and (min-width:768px) and (max-width:991px){
+  .service-section,
+  .about-section,
+  .feature-section,
+  .team-member-section,
+  .testimonial-section,
+  .instagram-section,
+  .faq-section,
+  .contact-section{
+    padding-top:70px;
+    padding-bottom:70px;
+  }
+
+  .service-blocks-wrapper{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-column-gap:22px;
+    grid-row-gap:26px;
+    align-items:stretch;
+    /* iguala tambem as linhas entre si, nao so os cards de cada linha */
+    grid-auto-rows:1fr;
+  }
+  .service-blocks-wrapper .service-block{max-width:none;width:100%}
+  /* os passos sao tres: em duas colunas sobraria um orfao */
+  .passos-wrapper{grid-template-columns:repeat(3,minmax(0,1fr));grid-column-gap:18px}
+
+  .team-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    column-gap:26px;
+    row-gap:34px;
+  }
+  .team-grid .team-member-image{
+    width:130px;
+    height:130px;
+    margin:0 auto;
+    border-radius:50%;
+    object-fit:cover;
+  }
+
+  .comparativo-block{flex-basis:100%}
+  .h1{font-size:2.25rem;line-height:2.6rem}
+}
+
+/* ==========================================================================
+   Cards de servico com a mesma altura
+   O template usa flex com align-items:flex-start, entao cada card ficava
+   com a altura do proprio texto: variavam de 316 a 351px na mesma secao.
+   Em grade, align-items:stretch iguala os cards de uma mesma linha e
+   grid-auto-rows:1fr iguala as linhas entre si -- todos ficam do tamanho
+   do maior. As colunas seguem em 370px, a mesma medida de antes.
+   Vale para: Por que escolher / Nossos Servicos / O que esperar.
+   Fora: os passos do Como funciona (tem numeracao e sao tres) e as
+   parcerias (ja tem tratamento proprio).
+   ========================================================================== */
+@media screen and (min-width:992px){
+  .service-blocks-wrapper:not(.passos-wrapper):not(.parceiros-wrapper){
+    display:grid;
+    grid-template-columns:repeat(3,370px);
+    grid-auto-rows:1fr;
+    justify-content:center;
+    align-items:stretch;
+  }
+  .service-blocks-wrapper:not(.passos-wrapper):not(.parceiros-wrapper) .service-block{
+    max-width:none;
+    width:100%;
+  }
+}
+/* ==========================================================================
+   MOBILE — segunda rodada de ajustes
+   Cada bloco abaixo corrige um ponto observado no iPhone.
+   ========================================================================== */
+
+@media screen and (max-width:767px){
+
+  /* ---------- 1. a faixa cinza depois do hero ----------
+     A seção do hero tinha 140px de padding embaixo. A foto terminava em
+     700px e a seção ia até 849px: 149px de cinza vazio, que na tela do
+     celular viravam quase um quarto de tela sem nada. */
+  .hero-section{padding-bottom:18px}
+
+  /* ---------- 2. a moça boiando no azul dos Diferenciais ----------
+     Eu tinha limitado a foto a 240px de altura com object-fit:cover, o que
+     cortava a moça na altura do peito e deixava o azul sobrando embaixo.
+     Agora a foto aparece inteira, na proporção dela (374x495), e encosta
+     na borda da seção — sem faixa vazia. */
+  .feature-image-wrapper img{
+    max-height:none;
+    object-fit:contain;
+    width:100%;
+    height:auto;
+    display:block;
+  }
+  .feature-section{padding-bottom:0}
+  .feature-image-wrapper{margin-bottom:-4px}
+
+  /* ---------- 3. as estrelas em cima do texto ----------
+     No desktop as estrelas flutuam sobre o canto da foto, onde há espaço.
+     No celular a foto é estreita e elas caíam por cima do título. Aqui
+     saem do posicionamento absoluto e entram no fluxo, centradas entre a
+     foto e o título. */
+  .testimonial-star-widget{
+    position:static;
+    transform:none;
+    display:flex;
+    justify-content:center;
+    margin:16px 0 4px;
+    inset:auto;
+  }
+  .testimonial-image-container{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:static;
+  }
+  .testimonial-star-widget svg{width:118px;height:auto}
+
+  /* ---------- 4. a seta solta embaixo do depoimento ----------
+     O slider dimensiona a moldura pelo depoimento mais alto. O da Viviane
+     tinha 791px contra 541px do mais curto, então nos outros sobravam até
+     250px de vazio e a seta ficava boiando longe do card.
+     Texto um pouco mais justo derruba o mais alto, e a altura mínima
+     iguala todos: a seta encosta no card em qualquer depoimento. */
+  .testimonial-slide-text-wrapper .paragraph{
+    font-size:.8125rem;
+    line-height:1.5;
+  }
+  .testimonial-slide-content-wrapper{
+    min-height:810px;
+    /* o template usa space-between, que com a altura fixa abria um buraco
+       entre a foto e o texto; centralizado, a sobra se divide em cima e
+       embaixo e o card fica arejado em vez de furado */
+    justify-content:center;
+  }
+  .testimonial-slider .slider-arrow{
+    border-width:2px;
+    background-color:var(--white);
+  }
+
+  /* ---------- 5. o "Entre em contato" repetido ----------
+     Logo acima já existe o bloco com WhatsApp, telefone, Instagram e
+     e-mail em botões clicáveis. Este segundo bloco repetia os mesmos
+     quatro dados, só que como texto. No celular, repetir custa uma tela
+     inteira de rolagem. */
+  .contact-text-wrapper{display:none}
+
+  /* ---------- 6. logo maior ---------- */
+  .navbar .logo{width:150px;max-width:150px}
+
+  /* ==========================================================================
+     7. Ajustes de experiência — o que ajuda o tutor a fechar
+     ========================================================================== */
+
+  /* O botão flutuante era uma pílula de 128px e cobria texto em boa parte
+     das telas. Vira um círculo só com o ícone: o verde do WhatsApp já diz
+     o que é, e a área coberta cai para menos de um terço. */
+  .zap-fixo{
+    width:58px;
+    height:58px;
+    padding:0;
+    column-gap:0;
+    font-size:0;
+    right:14px;
+    bottom:calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+  .zap-fixo svg{width:27px;height:27px}
+  .footer-section{padding-bottom:88px}
+
+  /* A barra de navegação é fixa e cobria o título da seção quando se
+     chega por um link do menu. Agora a seção para abaixo dela. */
+  section,
+  .anchor-div,
+  [id]{scroll-margin-top:88px}
+
+  /* O primeiro botão é o que mais converte: ganha largura total e passa a
+     ser o elemento mais evidente da primeira tela. */
+  .hero-text-wrapper .primary-button{
+    width:100%;
+    text-align:center;
+    font-size:1rem;
+  }
+
+  /* As setas sao posicionadas no rodape do slider. Com o card ocupando a
+     moldura inteira, elas caiam em cima do nome de quem deu o depoimento.
+     Esta faixa abre espaco proprio para elas, abaixo do card. */
+  .testimonial-slider{padding-bottom:76px}
+}
+
+/* ==========================================================================
+   MOBILE — terceira rodada: marca, hero e depoimentos
+   ========================================================================== */
+
+@media screen and (max-width:767px){
+
+  /* ---------- 1. A LOGO ----------
+     Ela nao estava so pequena: estava DISTORCIDA. O template fixa
+     height:35px e eu tinha dado width:150px. Como o arquivo tem 444x174
+     (proporcao 2,55) e o object-fit e contain, a arte real aparecia com
+     89x35 dentro de uma caixa de 150px -- quase metade do espaco vazio.
+     Tirando a altura fixa, a altura passa a seguir a largura e a arte
+     ocupa a caixa inteira. */
+  .navbar .logo{
+    width:168px;
+    max-width:168px;
+    height:auto;
+    max-height:none;
+  }
+  /* a barra tinha 75px fixos; com a marca em 66px sobravam 5px de cada
+     lado. Passa a acompanhar o conteudo. */
+  .navbar{height:auto;min-height:88px}
+  .navbar .nav-container{padding-top:11px;padding-bottom:11px}
+
+  /* ---------- 2. HERO: marca > servico > beneficio > acao ----------
+     O titulo vinha em 41,6px fixos, largo demais para 320px, e os blocos
+     tinham respiros de tamanhos diferentes. Agora o corpo acompanha a
+     largura da tela e o ritmo entre os blocos e constante. */
+  .hero-section .display{
+    font-size:clamp(1.9rem, 8.6vw, 2.5rem);
+    line-height:1.12;
+    letter-spacing:-.015em;
+    margin-bottom:0;
+  }
+  .hero-text-wrapper{row-gap:18px}
+  .hero-para-wrapper{margin:0}
+  .hero-section .paragraph-big{
+    font-size:1rem;
+    line-height:1.6;
+  }
+  /* a linha do telefone e prova de proximidade, nao um bloco a parte */
+  .hero-section .phone-link{
+    margin:0;
+    column-gap:10px;
+  }
+  .hero-section .phone-link .h6{font-size:.9375rem;line-height:1.35}
+  .hero-section .phone-icon{width:22px;height:22px}
+  .hero-container{row-gap:22px}
+
+  /* ==========================================================================
+     3. DEPOIMENTOS — carrossel que desliza no dedo
+     Antes: um card de 810px de altura por vez, texto corrido de ate 656
+     caracteres, e a moldura do slider dimensionada pelo depoimento mais
+     longo. No celular isso vira uma parede de texto.
+     Agora: cards lado a lado que deslizam no gesto natural, com a foto do
+     pet em destaque, as estrelas, o texto recolhido em 6 linhas com "ler
+     mais" e o nome do tutor. Nenhuma palavra foi removida -- o texto
+     completo continua a um toque.
+     ========================================================================== */
+  .testimonial-slider{
+    height:auto !important;
+    padding-bottom:0;
+    overflow:visible;
+  }
+  .testimonial-slider-mask{
+    display:flex !important;
+    height:auto !important;
+    overflow-x:auto;
+    overflow-y:visible;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    column-gap:14px;
+    /* sangra ate as bordas: o proximo card espia e convida ao gesto */
+    margin-left:-20px;
+    margin-right:-20px;
+    padding:6px 20px 10px;
+    white-space:normal;
+  }
+  .testimonial-slider-mask::-webkit-scrollbar{display:none}
+
+  .testimonial-slide{
+    position:static !important;
+    transform:none !important;
+    opacity:1 !important;
+    display:block !important;
+    float:none !important;
+    /* largura da tela menos a espiada do proximo card */
+    flex:0 0 calc(100vw - 76px);
+    width:auto !important;
+    margin:0 !important;
+    scroll-snap-align:center;
+  }
+
+  .testimonial-slide-content-wrapper{
+    min-height:0;
+    height:100%;
+    justify-content:flex-start;
+    row-gap:14px;
+    padding:16px 16px 20px;
+    border-radius:22px;
+  }
+
+  /* a foto do pet ganha o topo do card, larga e recortada */
+  .testimonial-image-container{width:100%}
+  .testimonial-image-wrapper{width:100%;border-radius:16px;overflow:hidden}
+  .testimonial-image-wrapper img{
+    width:100%;
+    height:186px;
+    object-fit:cover;
+    display:block;
+  }
+  .testimonial-star-widget{margin:12px 0 0}
+  .testimonial-star-widget svg{width:104px}
+
+  .testimonial-slide-text-wrapper{row-gap:8px}
+  .testimonial-slide-text-wrapper .h4{
+    font-size:1.0625rem;
+    line-height:1.28;
+  }
+  /* recolhido em 6 linhas; o botao abaixo abre o restante */
+  .testimonial-slide-text-wrapper .paragraph{
+    font-size:.875rem;
+    line-height:1.55;
+    display:-webkit-box;
+    -webkit-line-clamp:6;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .testimonial-slide.dep-aberto .testimonial-slide-text-wrapper .paragraph{
+    -webkit-line-clamp:unset;
+    overflow:visible;
+  }
+  .dep-mais{
+    align-self:flex-start;
+    margin-top:2px;
+    padding:0;
+    border:none;
+    background:none;
+    font-size:.8125rem;
+    font-weight:700;
+    text-decoration:underline;
+    text-underline-offset:3px;
+    cursor:pointer;
+    color:inherit;
+    opacity:.85;
+  }
+  .dep-mais:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+  .reviewer-details{margin-top:2px}
+  .reviewer-details .h6{font-size:1rem}
+  .reviewer-details .paragraph-big{font-size:.875rem}
+
+  /* as setas do template nao servem a um carrossel de gesto */
+  .testimonial-slider .slider-arrow{display:none !important}
+
+  /* bolinhas: quantos depoimentos existem e onde voce esta */
+  .dep-dots{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    column-gap:7px;
+    margin-top:16px;
+    padding:0;
+    list-style:none;
+  }
+  .dep-dots button{
+    width:8px;
+    height:8px;
+    padding:0;
+    border:none;
+    border-radius:999px;
+    background:rgba(21,11,51,.22);
+    cursor:pointer;
+    transition:width .2s ease,background .2s ease;
+  }
+  .dep-dots button[aria-current="true"]{width:24px;background:var(--dark)}
+  .dep-dots button:focus-visible{outline:2px solid var(--dark);outline-offset:3px}
+
+  /* ---------- 4. Hierarquia e respiro ---------- */
+  /* a barra fixa ficou mais alta com a marca maior */
+  section,
+  .anchor-div,
+  [id]{scroll-margin-top:104px}
+
+  /* titulos de secao acompanham a largura da tela em vez de um valor fixo */
+  .h1{font-size:clamp(1.5rem, 6.6vw, 1.75rem)}
+
+  /* o botao flutuante ja existia; aqui so garante que nunca encoste na
+     borda inferior do iPhone nem cubra o fim do rodape */
+  .zap-fixo{bottom:calc(16px + env(safe-area-inset-bottom, 0px))}
+  .footer-section{padding-bottom:calc(92px + env(safe-area-inset-bottom, 0px))}
+}
+
+/* telas bem estreitas: o card do carrossel ganha quase a tela toda */
+@media screen and (max-width:360px){
+  .testimonial-slide{flex-basis:calc(100vw - 58px)}
+  .testimonial-image-wrapper img{height:168px}
+  .navbar .logo{width:148px;max-width:148px}
+}
