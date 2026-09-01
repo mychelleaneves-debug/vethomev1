@@ -277,7 +277,7 @@
     "foto": "assets/vets/felipe-martins.jpg",
     "descricao": "Especialista em afecções oftalmológicas. Realiza cirurgias oculares e diagnósticos complexos. Atendimento domiciliar com equipamento de última geração.",
     "areas": [],
-    "status": "ativo",
+    "status": "inativo",
     "ordem": 20,
     "slug": "dr-felipe-martins"
   }
